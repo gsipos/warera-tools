@@ -1,0 +1,7 @@
+node_modules
+build
+dist
+coverage
+storybook-static
+public/mockServiceWorker.js
+src/pages/legal/content
