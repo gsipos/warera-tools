@@ -3,7 +3,7 @@ import { QueryClient } from '@tanstack/react-query'
 import { createAsyncStoragePersister } from '@tanstack/query-async-storage-persister'
 import { del, get, set } from 'idb-keyval'
 
-export const DEFAULT_QUERY_STALE_TIME = 15 * 60 * 1000 // 15min
+export const DEFAULT_QUERY_STALE_TIME = 1 * 60 * 60 * 1000 // 1 hour
 
 const asyncStorage = {
   getItem: (key: string) => get(key),
