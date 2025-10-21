@@ -4,6 +4,7 @@ import { WarEra } from 'warera-api'
 import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
 import { formatters, FormatType } from '@/functions/number-formats'
+import { SimpleTooltip } from '../ui/tooltip'
 
 const badgeVariants = cva('', {
   variants: {
@@ -22,6 +23,7 @@ interface Props {
   icon: ReactNode
   rank: WarEra.Rank
   type: FormatType
+  tooltip?: ReactNode
 }
 
 export const RankingBadge = (props: Props) => {
@@ -29,9 +31,11 @@ export const RankingBadge = (props: Props) => {
 
   const value = props.type === 'percent' ? props.rank.value / 100 : props.rank.value
   return (
-    <Badge variant="outline" className={cn(badgeVariants({ tier: props.rank.tier }))}>
-      {props.icon}
-      {formatter.format(value ?? 0)}
-    </Badge>
+    <SimpleTooltip tooltip={props.tooltip ?? `Rank #${props.rank.rank} (${props.rank.tier.toUpperCase()})`}>
+      <Badge variant="outline" className={cn(badgeVariants({ tier: props.rank.tier }))}>
+        {props.icon}
+        {formatter.format(value ?? 0)}
+      </Badge>
+    </SimpleTooltip>
   )
 }

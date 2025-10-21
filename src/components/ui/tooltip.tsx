@@ -45,4 +45,13 @@ function TooltipContent({
   )
 }
 
-export { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider }
+const SimpleTooltip = (props: React.PropsWithChildren<{ tooltip: React.ReactNode }>) => {
+  return (
+    <Tooltip>
+      <TooltipTrigger>{props.children}</TooltipTrigger>
+      <TooltipContent>{props.tooltip}</TooltipContent>
+    </Tooltip>
+  )
+}
+
+export { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider, SimpleTooltip }

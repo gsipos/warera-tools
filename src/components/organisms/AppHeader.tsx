@@ -5,12 +5,11 @@ import {
   NavigationMenuLink,
   NavigationMenuList,
   NavigationMenuTrigger,
-  navigationMenuTriggerStyle,
 } from '@/components/ui/navigation-menu'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { Separator } from '@radix-ui/react-separator'
 import { Link } from '@tanstack/react-router'
-import { CircleCheckIcon, CircleHelpIcon, CircleIcon, ToolCaseIcon } from 'lucide-react'
+import { ToolCaseIcon } from 'lucide-react'
 
 const components: { title: string; href: string; description: string }[] = [
   {

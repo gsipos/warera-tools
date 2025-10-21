@@ -10,11 +10,11 @@ const useItemSellPrice = (item: WarEra.ItemCode) => {
 }
 
 export const useItemWageReport = (item: WarEra.ItemCode, countryProductionBonus: number = 0) => {
-  const wage = useTopWorkOfferWage()
-  const sellPrice = useItemSellPrice(item)
-  const recipe = itemRecipes[item]
+  //const wage = useTopWorkOfferWage()
+  //const sellPrice = useItemSellPrice(item)
+  //const recipe = itemRecipes[item]
 
-  const baseWage = recipe.productionPoints * (wage * (1 - countryProductionBonus))
+  //const baseWage = recipe.productionPoints * (wage * (1 - countryProductionBonus))
 
   return 0
 }
