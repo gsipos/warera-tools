@@ -9,9 +9,17 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './pages/__root'
+import { Route as RegionsRouteImport } from './pages/regions'
 import { Route as CountriesRouteImport } from './pages/countries'
 import { Route as IndexRouteImport } from './pages/index'
+import { Route as DepositsIndexRouteImport } from './pages/deposits.index'
+import { Route as ItemDepositsItemCodeRouteImport } from './pages/itemDeposits.$itemCode'
 
+const RegionsRoute = RegionsRouteImport.update({
+  id: '/regions',
+  path: '/regions',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CountriesRoute = CountriesRouteImport.update({
   id: '/countries',
   path: '/countries',
@@ -22,35 +30,75 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DepositsIndexRoute = DepositsIndexRouteImport.update({
+  id: '/deposits/',
+  path: '/deposits/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ItemDepositsItemCodeRoute = ItemDepositsItemCodeRouteImport.update({
+  id: '/itemDeposits/$itemCode',
+  path: '/itemDeposits/$itemCode',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/countries': typeof CountriesRoute
+  '/regions': typeof RegionsRoute
+  '/itemDeposits/$itemCode': typeof ItemDepositsItemCodeRoute
+  '/deposits': typeof DepositsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/countries': typeof CountriesRoute
+  '/regions': typeof RegionsRoute
+  '/itemDeposits/$itemCode': typeof ItemDepositsItemCodeRoute
+  '/deposits': typeof DepositsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/countries': typeof CountriesRoute
+  '/regions': typeof RegionsRoute
+  '/itemDeposits/$itemCode': typeof ItemDepositsItemCodeRoute
+  '/deposits/': typeof DepositsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/countries'
+  fullPaths:
+    | '/'
+    | '/countries'
+    | '/regions'
+    | '/itemDeposits/$itemCode'
+    | '/deposits'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/countries'
-  id: '__root__' | '/' | '/countries'
+  to: '/' | '/countries' | '/regions' | '/itemDeposits/$itemCode' | '/deposits'
+  id:
+    | '__root__'
+    | '/'
+    | '/countries'
+    | '/regions'
+    | '/itemDeposits/$itemCode'
+    | '/deposits/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CountriesRoute: typeof CountriesRoute
+  RegionsRoute: typeof RegionsRoute
+  ItemDepositsItemCodeRoute: typeof ItemDepositsItemCodeRoute
+  DepositsIndexRoute: typeof DepositsIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/regions': {
+      id: '/regions'
+      path: '/regions'
+      fullPath: '/regions'
+      preLoaderRoute: typeof RegionsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/countries': {
       id: '/countries'
       path: '/countries'
@@ -65,12 +113,29 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/deposits/': {
+      id: '/deposits/'
+      path: '/deposits'
+      fullPath: '/deposits'
+      preLoaderRoute: typeof DepositsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/itemDeposits/$itemCode': {
+      id: '/itemDeposits/$itemCode'
+      path: '/itemDeposits/$itemCode'
+      fullPath: '/itemDeposits/$itemCode'
+      preLoaderRoute: typeof ItemDepositsItemCodeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CountriesRoute: CountriesRoute,
+  RegionsRoute: RegionsRoute,
+  ItemDepositsItemCodeRoute: ItemDepositsItemCodeRoute,
+  DepositsIndexRoute: DepositsIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

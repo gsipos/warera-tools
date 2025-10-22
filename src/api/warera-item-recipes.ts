@@ -31,3 +31,14 @@ export const itemRecipes: Record<WarEra.ItemCode, WarEra.ItemRecipe> = {
 
   case1: onlyProduction(1), // TODO: remove this
 }
+
+export const depositItemCodes: WarEra.ItemCode[] = [
+  'grain',
+  'limestone',
+  'lead',
+  'petroleum',
+  'iron',
+  'coca',
+  'livestock',
+  'fish',
+]

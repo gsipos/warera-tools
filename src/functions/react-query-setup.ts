@@ -1,4 +1,4 @@
-import { PersistedClient, persistQueryClient } from '@tanstack/react-query-persist-client'
+import { PersistedClient } from '@tanstack/react-query-persist-client'
 import { QueryClient } from '@tanstack/react-query'
 import { createAsyncStoragePersister } from '@tanstack/query-async-storage-persister'
 import { del, get, set } from 'idb-keyval'
@@ -11,10 +11,10 @@ const asyncStorage = {
   removeItem: (key: string) => del(key),
 }
 
-const asyncStoragePersister = createAsyncStoragePersister({
+export const asyncStoragePersister = createAsyncStoragePersister({
   storage: asyncStorage,
   throttleTime: 1000,
-  key: 'reactQuery',
+  key: 'warera-tools-query-cache',
   serialize: (client: PersistedClient) => client as unknown as string,
   deserialize: (cached: string) => cached as unknown as PersistedClient,
 })
@@ -33,8 +33,10 @@ export const queryClient = new QueryClient({
   },
 })
 
+/*
 persistQueryClient({
   queryClient,
   persister: asyncStoragePersister,
   buster: import.meta.env.VITE_QUERY_CACHE_BUSTER,
 })
+*/

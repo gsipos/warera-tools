@@ -1,6 +1,6 @@
 import { useCountries } from '@/api/warera-api'
 import { createFileRoute } from '@tanstack/react-router'
-import { useState } from 'react'
+import { useDeferredValue, useState } from 'react'
 import { WarEra } from 'warera-api'
 import { CountrySortButtonGroup, CountrySortValue } from './countries/-molecules/CountrySortBToggleGroup'
 import { CountryCard } from './countries/-organisms/CountryCard'
@@ -30,13 +30,14 @@ function CountryListPage() {
     const sortFn = sortValues[sortBy]
     return sortFn(b) - sortFn(a)
   })
+  const sortedCountriesDeferred = useDeferredValue(sortedCountries)
 
   return (
     <div className="grid grid-cols-4 gap-6 p-2">
       <div className="col-span-full flex">
         <CountrySortButtonGroup value={sortBy} onChange={setSortBy} />
       </div>
-      {sortedCountries.map((country, idx) => (
+      {sortedCountriesDeferred.map((country, idx) => (
         <CountryCard country={country} key={country._id} idx={idx + 1} />
       ))}
     </div>

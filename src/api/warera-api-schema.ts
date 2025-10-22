@@ -67,3 +67,5 @@ export const itemTradindPricesResponseSchema = z.object({
     data: itemTradingPricesSchema,
   }),
 })
+
+export const itemCodes = Array.from(itemsSchema.values)

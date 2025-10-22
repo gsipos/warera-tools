@@ -101,5 +101,75 @@ declare module 'warera-api' {
       ingredient?: ItemCode
       ingredientQuantity?: number
     }
+
+    interface Deposit {
+      type: ItemCode
+      quantity: number
+      consumed: number
+    }
+
+    interface Region {
+      stats: { investedMoney: number }
+      dates: Record<string, unknown>
+      _id: string
+      code: string
+      country: string
+      initialCountry: string
+      neighbors: string[]
+      isCapital: boolean
+      isLinkedToCapital: boolean
+      upgradesV2: {
+        upgrades: {
+          base: {
+            level: number
+            constructionPoints: number
+            investedMoney: number
+            constructionStartedAt: IsoDateTime
+            isUnderConstruction: IsoDateTime | null
+            lastConstructions: unknown[]
+            status: string
+            constructionEndedAt: IsoDateTime
+            statusChangedAt: IsoDateTime
+          }
+        }
+        activeConstructionCount: number
+      }
+      name: string
+      mainCity: string
+      development: number
+      baseDevelopment: number
+      countryCode: string
+      position: [number, number]
+      biome: string
+      climate: string
+      __v: number
+      resistance: number
+      activeUpgradeLevels: unknown
+      deposit: Deposit
+    }
+
+    type RegionObject = Record<string, Region>
+
+    interface Company {
+      _id: string
+      user: string
+      region: string
+      itemCode: ItemCode
+      isFull: boolean
+      name: string
+      concreteInvested: number
+      production: number
+      activeUpgradeLevels: {
+        storage: number
+        automatedEngine: number
+        breakRoom: number
+      }
+      workers: string[]
+      createdAt: IsoDateTime
+      updatedAt: IsoDateTime
+      __v: number
+      movedUpAt: IsoDateTime
+      estimatedValue: number
+    }
   }
 }

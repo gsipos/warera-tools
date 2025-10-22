@@ -1,17 +1,11 @@
 import { queryClient } from '@/functions/react-query-setup'
 import { createCollection } from '@tanstack/db'
 import { queryCollectionOptions } from '@tanstack/query-db-collection'
-import { useLiveQuery } from '@tanstack/react-db'
-import z from 'zod'
-import {
-  countriesResponseSchema,
-  countrySchema,
-  itemPricesCollectionSchema,
-  itemsSchema,
-  itemTradindPricesResponseSchema,
-} from './warera-api-schema'
-import { useQuery } from '@tanstack/react-query'
+import { useInfiniteQuery, useQueries, useQuery, UseQueryResult } from '@tanstack/react-query'
+import { useEffect, useMemo } from 'react'
 import { WarEra } from 'warera-api'
+import z from 'zod'
+import { itemPricesCollectionSchema, itemsSchema, itemTradindPricesResponseSchema } from './warera-api-schema'
 
 const warEraApiUrl = 'https://api2.warera.io/trpc/'
 
@@ -24,19 +18,11 @@ const getApiUrl = (endpoint: string, input?: Record<string, unknown>) => {
   return url.toString()
 }
 
-export const countryCollection = createCollection(
-  queryCollectionOptions({
-    queryKey: ['countries'],
-    queryClient,
-    getKey: (c) => c._id,
-    schema: countrySchema,
-    queryFn: async () => {
-      const response = await fetch(getApiUrl('country.getAllCountries'))
-      const data = (await response.json()) as z.infer<typeof countriesResponseSchema>
-      return data.result.data
-    },
-  }),
-)
+const warEraApiFetch = async <TData>(endPoint: string) => {
+  const response = await fetch(endPoint)
+  const data = (await response.json()) as WarEra.ApiResponse<TData>
+  return data.result.data
+}
 
 export const itemTradingPricesCollection = createCollection(
   queryCollectionOptions({
@@ -56,48 +42,118 @@ export const itemTradingPricesCollection = createCollection(
   }),
 )
 
-export const useAllCountries = () => useLiveQuery((q) => q.from({ countries: countryCollection }))
-
-export const useCountries = () => {
-  return useQuery<WarEra.Country[]>({
-    queryKey: ['countries'],
-    queryFn: async () => {
-      const response = await fetch(getApiUrl('country.getAllCountries'))
-      const data = (await response.json()) as WarEra.ApiResponse<WarEra.Country[]>
-      return data.result.data
-    },
+export const useWarEraApiQuery = <TData, Input extends Record<string, unknown> = {}>(
+  fragment: string,
+  input?: Input,
+) => {
+  return useQuery<TData>({
+    queryKey: [fragment, input],
+    queryFn: async () => warEraApiFetch<TData>(getApiUrl(fragment, input)),
   })
 }
 
-export const useItemTradingPrices = () => {
-  return useQuery<WarEra.ItemPrices>({
-    queryKey: ['itemTradingPrices'],
-    queryFn: async () => {
-      const response = await fetch(getApiUrl('itemTrading.getPrices'))
-      const data = (await response.json()) as WarEra.ApiResponse<WarEra.ItemPrices>
-      return data.result.data
+export const useCountries = () => useWarEraApiQuery<WarEra.Country[]>('country.getAllCountries')
+export const useItemTradingPrices = () => useWarEraApiQuery<WarEra.ItemPrices>('itemTrading.getPrices')
+
+export const useTradingTopOrders = (itemCode: WarEra.ItemCode, limit: number = 10) =>
+  useWarEraApiQuery<WarEra.TradingTopOrder<typeof itemCode>>('tradingOrder.getTopOrders', { itemCode, limit })
+
+export const useWorkOffers = (limit: number = 10) =>
+  useWarEraApiQuery<WarEra.Paginated<WarEra.WorkOffer>>('workOffer.getWorkOffersPaginated', { limit })
+
+export const useRegionObject = () => useWarEraApiQuery<WarEra.RegionObject>('region.getRegionsObject')
+
+export const useCompanyIds = (limit: number = 100) => {
+  const query = useInfiniteQuery<WarEra.Paginated<string>>({
+    queryKey: ['companies', limit],
+    staleTime: Infinity,
+    queryFn: async ({ pageParam }) => {
+      return warEraApiFetch<WarEra.Paginated<string>>(
+        getApiUrl('company.getCompanies', {
+          perPage: limit,
+          cursor: pageParam,
+        }),
+      )
     },
+    getNextPageParam: (lastPage) => lastPage.nextCursor,
+    initialPageParam: undefined,
   })
+
+  useEffect(() => {
+    let isMounted = true
+
+    const loadAllPages = async () => {
+      while (query.hasNextPage && isMounted && !query.isFetchingNextPage) {
+        await query.fetchNextPage({ cancelRefetch: false })
+      }
+    }
+
+    if (!query.isLoading && !query.error) {
+      loadAllPages()
+    }
+
+    return () => {
+      isMounted = false
+    }
+  }, [query])
+
+  console.log('useCompanyIds', query.data)
+
+  return query
 }
 
-export const useTradingTopOrders = (itemCode: WarEra.ItemCode, limit: number = 10) => {
-  return useQuery({
-    queryKey: ['tradingTopOrders', itemCode, limit],
-    queryFn: async () => {
-      const response = await fetch(getApiUrl(`tradingOrder.getTopOrders`, { itemCode, limit }))
-      const data = (await response.json()) as WarEra.ApiResponse<WarEra.TradingTopOrder<typeof itemCode>>
-      return data.result.data
-    },
+const companyResultCombiner = (results: UseQueryResult<unknown>[]) =>
+  results.map<WarEra.Company[]>((r) => (r.data as WarEra.Company[]) ?? []).flat()
+
+export const useAllCompanies = () => {
+  const companiesQuery = useCompanyIds()
+  const companyIds = useMemo(
+    () => companiesQuery.data?.pages.flatMap((page) => page.items) || [],
+    [companiesQuery.data],
+  )
+
+  const companies = useQueries<WarEra.Company[], WarEra.Company[]>({
+    queries: companyIds.map((id) => ({
+      queryKey: ['company', id],
+      queryFn: async () => warEraApiFetch<WarEra.Company>(getApiUrl('company.getById', { companyId: id })),
+    })),
+    combine: companyResultCombiner,
   })
+
+  console.log('useAllCompanies', companies)
+
+  return companies ?? []
 }
 
-export const useWorkOffers = (limit: number = 10) => {
-  return useQuery({
-    queryKey: ['workOffers', limit],
-    queryFn: async () => {
-      const response = await fetch(getApiUrl(`workOffer.getWorkOffersPaginated`, { limit }))
-      const data = (await response.json()) as WarEra.ApiResponse<WarEra.Paginated<WarEra.WorkOffer>>
-      return data.result.data.items
-    },
+const fetchAllCompanies = async (limit = 100) => {
+  const companyIds: string[] = []
+  const companies: WarEra.Company[] = []
+  let cursor: string | undefined = undefined
+
+  let page: WarEra.Paginated<string> | undefined
+  do {
+    page = await warEraApiFetch<WarEra.Paginated<string>>(
+      getApiUrl('company.getCompanies', {
+        perPage: limit,
+        cursor,
+      }),
+    )
+
+    companyIds.push(...page.items)
+    cursor = page.nextCursor
+  } while (cursor)
+
+  for (const id of companyIds) {
+    const company = await warEraApiFetch<WarEra.Company>(getApiUrl('company.getById', { companyId: id }))
+    companies.push(company)
+  }
+
+  return companies
+}
+
+export const useBatchedCompanies = () => {
+  return useQuery<WarEra.Company[]>({
+    queryKey: ['batchedCompanies'],
+    queryFn: () => fetchAllCompanies(),
   })
 }

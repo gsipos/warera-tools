@@ -1,3 +1,5 @@
+import { itemCodes } from '@/api/warera-api-schema'
+import { depositItemCodes } from '@/api/warera-item-recipes'
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -11,13 +13,54 @@ import { Separator } from '@radix-ui/react-separator'
 import { Link } from '@tanstack/react-router'
 import { ToolCaseIcon } from 'lucide-react'
 
-const components: { title: string; href: string; description: string }[] = [
+interface NavLinkk {
+  title: string
+  href: string
+  description: string
+}
+
+const mapLinks: NavLinkk[] = [
   {
-    title: 'Country list',
+    title: 'Countries',
     href: '/countries',
     description: 'List of all countries.',
   },
+  {
+    title: 'Regions',
+    href: '/regions',
+    description: 'List of all regions.',
+  },
 ]
+
+const depositLinks: NavLinkk[] = [
+  {
+    title: 'Deposits',
+    href: '/deposits',
+    description: 'List of all deposits.',
+  },
+  ...depositItemCodes.map((code) => ({
+    title: `Deposit: ${code}`,
+    href: `/itemDeposits/${code}`,
+    description: `Regions with deposit type: ${code}.`,
+  })),
+]
+
+const NavLinkGroup = (props: { links: NavLinkk[]; groupTitle: string }) => {
+  return (
+    <NavigationMenuItem>
+      <NavigationMenuTrigger>{props.groupTitle}</NavigationMenuTrigger>
+      <NavigationMenuContent>
+        <ul className="grid gap-2 sm:w-[400px] md:w-[500px] md:grid-cols-2 lg:w-[600px]">
+          {props.links.map((component) => (
+            <ListItem key={component.title} title={component.title} href={component.href}>
+              {component.description}
+            </ListItem>
+          ))}
+        </ul>
+      </NavigationMenuContent>
+    </NavigationMenuItem>
+  )
+}
 
 function AppNavigationMenu() {
   const isMobile = useIsMobile()
@@ -55,18 +98,8 @@ function AppNavigationMenu() {
             </ul>
           </NavigationMenuContent>
         </NavigationMenuItem>
-        <NavigationMenuItem>
-          <NavigationMenuTrigger>Countries</NavigationMenuTrigger>
-          <NavigationMenuContent>
-            <ul className="grid gap-2 sm:w-[400px] md:w-[500px] md:grid-cols-2 lg:w-[600px]">
-              {components.map((component) => (
-                <ListItem key={component.title} title={component.title} href={component.href}>
-                  {component.description}
-                </ListItem>
-              ))}
-            </ul>
-          </NavigationMenuContent>
-        </NavigationMenuItem>
+        <NavLinkGroup links={mapLinks} groupTitle="Map" />
+        <NavLinkGroup links={depositLinks} groupTitle="Deposits" />
       </NavigationMenuList>
     </NavigationMenu>
   )

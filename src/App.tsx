@@ -39,7 +39,7 @@ export const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <div>Welcome to War Era Tools!</div>
-      
+
       <ReactQueryDevtools initialIsOpen={false} position="bottom" buttonPosition="bottom-right" />
     </QueryClientProvider>
   )
