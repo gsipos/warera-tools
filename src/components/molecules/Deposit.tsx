@@ -24,7 +24,7 @@ export const Deposit = ({
     return null
   }
 
-  const labourCost = topWage * (depositItemProductionPoints * (1 - productionBonus / 100))
+  const labourCost = topWage * (depositItemProductionPoints * (1 / (1 + productionBonus / 100)))
   const profit = sellPrice - labourCost
 
   const all = deposit.quantity + deposit.consumed
