@@ -12,6 +12,7 @@ import { useIsMobile } from '@/hooks/use-mobile'
 import { Separator } from '@radix-ui/react-separator'
 import { Link } from '@tanstack/react-router'
 import { ToolCaseIcon } from 'lucide-react'
+import { LoadingIndicator } from '../molecules/LoadingIndicator'
 
 interface NavLinkk {
   title: string
@@ -129,7 +130,7 @@ export const AppHeader = () => {
 
         <AppNavigationMenu />
 
-        <div />
+        <LoadingIndicator />
       </div>
       <Separator className="my-2" />
     </>

@@ -1,4 +1,4 @@
-import { queryClient } from '@/functions/react-query-setup'
+import { LONG_QUERY_STALE_TIME, queryClient } from '@/functions/react-query-setup'
 import { createCollection } from '@tanstack/db'
 import { queryCollectionOptions } from '@tanstack/query-db-collection'
 import { useInfiniteQuery, useQueries, useQuery, UseQueryResult } from '@tanstack/react-query'
@@ -6,6 +6,7 @@ import { useEffect, useMemo } from 'react'
 import { WarEra } from 'warera-api'
 import z from 'zod'
 import { itemPricesCollectionSchema, itemsSchema, itemTradindPricesResponseSchema } from './warera-api-schema'
+import { LoadingStateStore, useLoadingState } from '@/hooks/use-loading-state'
 
 const warEraApiUrl = 'https://api2.warera.io/trpc/'
 
@@ -46,9 +47,15 @@ export const useWarEraApiQuery = <TData, Input extends Record<string, unknown> =
   fragment: string,
   input?: Input,
 ) => {
+  const loadingState = useLoadingState()
   return useQuery<TData>({
     queryKey: [fragment, input],
-    queryFn: async () => warEraApiFetch<TData>(getApiUrl(fragment, input)),
+    queryFn: async () => {
+      loadingState.addItems(1)
+      const result = await warEraApiFetch<TData>(getApiUrl(fragment, input))
+      loadingState.finishItems(1)
+      return result
+    },
   })
 }
 
@@ -125,13 +132,14 @@ export const useAllCompanies = () => {
   return companies ?? []
 }
 
-const fetchAllCompanies = async (limit = 100) => {
+const fetchAllCompanies = async (limit = 100, loadingState: LoadingStateStore) => {
   const companyIds: string[] = []
   const companies: WarEra.Company[] = []
   let cursor: string | undefined = undefined
 
   let page: WarEra.Paginated<string> | undefined
   do {
+    loadingState.addItems(1)
     page = await warEraApiFetch<WarEra.Paginated<string>>(
       getApiUrl('company.getCompanies', {
         perPage: limit,
@@ -141,19 +149,28 @@ const fetchAllCompanies = async (limit = 100) => {
 
     companyIds.push(...page.items)
     cursor = page.nextCursor
+    loadingState.finishItems(1)
   } while (cursor)
 
+  loadingState.addItems(companyIds.length)
   for (const id of companyIds) {
-    const company = await warEraApiFetch<WarEra.Company>(getApiUrl('company.getById', { companyId: id }))
+    const company = await queryClient.ensureQueryData({
+      queryKey: ['company', id],
+      queryFn: async () => warEraApiFetch<WarEra.Company>(getApiUrl('company.getById', { companyId: id })),
+      staleTime: LONG_QUERY_STALE_TIME,
+    })
     companies.push(company)
+    loadingState.finishItems(1)
   }
 
   return companies
 }
 
 export const useBatchedCompanies = () => {
+  const loadingState = useLoadingState()
+
   return useQuery<WarEra.Company[]>({
     queryKey: ['batchedCompanies'],
-    queryFn: () => fetchAllCompanies(),
+    queryFn: () => fetchAllCompanies(100, loadingState),
   })
 }

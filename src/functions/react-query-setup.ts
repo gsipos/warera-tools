@@ -4,6 +4,7 @@ import { createAsyncStoragePersister } from '@tanstack/query-async-storage-persi
 import { del, get, set } from 'idb-keyval'
 
 export const DEFAULT_QUERY_STALE_TIME = 1 * 60 * 60 * 1000 // 1 hour
+export const LONG_QUERY_STALE_TIME = 6 * 60 * 60 * 1000 // 6 hours
 
 const asyncStorage = {
   getItem: (key: string) => get(key),
