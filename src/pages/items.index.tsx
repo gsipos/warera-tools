@@ -6,13 +6,11 @@ export const Route = createFileRoute('/items/')({
 })
 
 function ItemIndexPage() {
-
   const topProdBonusCountry = useTopProdBonusCountry()
 
   return (
     <div>
       <h1>Items</h1>
-      
     </div>
   )
 }

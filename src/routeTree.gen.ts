@@ -10,18 +10,20 @@
 
 import { Route as rootRouteImport } from './pages/__root'
 import { Route as RegionsRouteImport } from './pages/regions'
-import { Route as CountriesRouteImport } from './pages/countries'
+import { Route as CountriesRouteRouteImport } from './pages/countries.route'
 import { Route as IndexRouteImport } from './pages/index'
 import { Route as ItemsIndexRouteImport } from './pages/items.index'
 import { Route as DepositsIndexRouteImport } from './pages/deposits.index'
+import { Route as CountriesIndexRouteImport } from './pages/countries.index'
 import { Route as ItemDepositsItemCodeRouteImport } from './pages/itemDeposits.$itemCode'
+import { Route as CountriesAlliancesRouteImport } from './pages/countries.alliances'
 
 const RegionsRoute = RegionsRouteImport.update({
   id: '/regions',
   path: '/regions',
   getParentRoute: () => rootRouteImport,
 } as any)
-const CountriesRoute = CountriesRouteImport.update({
+const CountriesRouteRoute = CountriesRouteRouteImport.update({
   id: '/countries',
   path: '/countries',
   getParentRoute: () => rootRouteImport,
@@ -41,34 +43,49 @@ const DepositsIndexRoute = DepositsIndexRouteImport.update({
   path: '/deposits/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CountriesIndexRoute = CountriesIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => CountriesRouteRoute,
+} as any)
 const ItemDepositsItemCodeRoute = ItemDepositsItemCodeRouteImport.update({
   id: '/itemDeposits/$itemCode',
   path: '/itemDeposits/$itemCode',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CountriesAlliancesRoute = CountriesAlliancesRouteImport.update({
+  id: '/alliances',
+  path: '/alliances',
+  getParentRoute: () => CountriesRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/countries': typeof CountriesRoute
+  '/countries': typeof CountriesRouteRouteWithChildren
   '/regions': typeof RegionsRoute
+  '/countries/alliances': typeof CountriesAlliancesRoute
   '/itemDeposits/$itemCode': typeof ItemDepositsItemCodeRoute
+  '/countries/': typeof CountriesIndexRoute
   '/deposits': typeof DepositsIndexRoute
   '/items': typeof ItemsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/countries': typeof CountriesRoute
   '/regions': typeof RegionsRoute
+  '/countries/alliances': typeof CountriesAlliancesRoute
   '/itemDeposits/$itemCode': typeof ItemDepositsItemCodeRoute
+  '/countries': typeof CountriesIndexRoute
   '/deposits': typeof DepositsIndexRoute
   '/items': typeof ItemsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/countries': typeof CountriesRoute
+  '/countries': typeof CountriesRouteRouteWithChildren
   '/regions': typeof RegionsRoute
+  '/countries/alliances': typeof CountriesAlliancesRoute
   '/itemDeposits/$itemCode': typeof ItemDepositsItemCodeRoute
+  '/countries/': typeof CountriesIndexRoute
   '/deposits/': typeof DepositsIndexRoute
   '/items/': typeof ItemsIndexRoute
 }
@@ -78,15 +95,18 @@ export interface FileRouteTypes {
     | '/'
     | '/countries'
     | '/regions'
+    | '/countries/alliances'
     | '/itemDeposits/$itemCode'
+    | '/countries/'
     | '/deposits'
     | '/items'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/countries'
     | '/regions'
+    | '/countries/alliances'
     | '/itemDeposits/$itemCode'
+    | '/countries'
     | '/deposits'
     | '/items'
   id:
@@ -94,14 +114,16 @@ export interface FileRouteTypes {
     | '/'
     | '/countries'
     | '/regions'
+    | '/countries/alliances'
     | '/itemDeposits/$itemCode'
+    | '/countries/'
     | '/deposits/'
     | '/items/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  CountriesRoute: typeof CountriesRoute
+  CountriesRouteRoute: typeof CountriesRouteRouteWithChildren
   RegionsRoute: typeof RegionsRoute
   ItemDepositsItemCodeRoute: typeof ItemDepositsItemCodeRoute
   DepositsIndexRoute: typeof DepositsIndexRoute
@@ -121,7 +143,7 @@ declare module '@tanstack/react-router' {
       id: '/countries'
       path: '/countries'
       fullPath: '/countries'
-      preLoaderRoute: typeof CountriesRouteImport
+      preLoaderRoute: typeof CountriesRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -145,6 +167,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DepositsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/countries/': {
+      id: '/countries/'
+      path: '/'
+      fullPath: '/countries/'
+      preLoaderRoute: typeof CountriesIndexRouteImport
+      parentRoute: typeof CountriesRouteRoute
+    }
     '/itemDeposits/$itemCode': {
       id: '/itemDeposits/$itemCode'
       path: '/itemDeposits/$itemCode'
@@ -152,12 +181,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ItemDepositsItemCodeRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/countries/alliances': {
+      id: '/countries/alliances'
+      path: '/alliances'
+      fullPath: '/countries/alliances'
+      preLoaderRoute: typeof CountriesAlliancesRouteImport
+      parentRoute: typeof CountriesRouteRoute
+    }
   }
 }
 
+interface CountriesRouteRouteChildren {
+  CountriesAlliancesRoute: typeof CountriesAlliancesRoute
+  CountriesIndexRoute: typeof CountriesIndexRoute
+}
+
+const CountriesRouteRouteChildren: CountriesRouteRouteChildren = {
+  CountriesAlliancesRoute: CountriesAlliancesRoute,
+  CountriesIndexRoute: CountriesIndexRoute,
+}
+
+const CountriesRouteRouteWithChildren = CountriesRouteRoute._addFileChildren(
+  CountriesRouteRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  CountriesRoute: CountriesRoute,
+  CountriesRouteRoute: CountriesRouteRouteWithChildren,
   RegionsRoute: RegionsRoute,
   ItemDepositsItemCodeRoute: ItemDepositsItemCodeRoute,
   DepositsIndexRoute: DepositsIndexRoute,

@@ -31,6 +31,11 @@ const mapLinks: NavLinkk[] = [
     href: '/regions',
     description: 'List of all regions.',
   },
+  {
+    title: 'Alliances',
+    href: '/countries/alliances',
+    description: 'Chart of all alliances.',
+  },
 ]
 
 const depositLinks: NavLinkk[] = [
