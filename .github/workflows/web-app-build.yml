@@ -12,7 +12,7 @@ jobs:
         with:
           node-version: lts/*
           cache: 'npm'
-          cache-dependency-path: ./webapp/package-lock.json
+          cache-dependency-path: ./package-lock.json
       - run: npm ci --legacy-peer-deps
       - run: npm run tsc
 
@@ -24,7 +24,7 @@ jobs:
         with:
           node-version: lts/*
           cache: 'npm'
-          cache-dependency-path: ./webapp/package-lock.json
+          cache-dependency-path: ./package-lock.json
       - run: npm ci --legacy-peer-deps
       - run: npm run format:check
 

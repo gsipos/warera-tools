@@ -5,7 +5,7 @@ import { WarEra } from 'warera-api'
 import { CountrySortButtonGroup, CountrySortValue } from './countries/-molecules/CountrySortBToggleGroup'
 import { CountryCard } from './countries/-organisms/CountryCard'
 
-export const Route = createFileRoute('/countries')({
+export const Route = createFileRoute('/countries/')({
   component: CountryListPage,
 })
 
