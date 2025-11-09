@@ -8,6 +8,7 @@ import { createFileRoute } from '@tanstack/react-router'
 import { FactoryIcon, SwordsIcon } from 'lucide-react'
 import { CountryCard } from './countries/-organisms/CountryCard'
 import { useMemo } from 'react'
+import { WarEra } from 'warera-api'
 
 export const Route = createFileRoute('/countries/$countryId')({
   component: CountryDetailPage,
@@ -21,8 +22,7 @@ const useCountryUsers = (countryId: string) => {
 }
 
 const toSum = (a: number, b: number) => a + b
-const usecountryUserBuildDistribution = (countryId: string) => {
-  const users = useCountryUsers(countryId)
+const usecountryUserBuildDistribution = (users: WarEra.UserLite[]) => {
   return useMemo(() => {
     const eco = users.map((user) => getUserEcoSkillLevels(user)).reduce(toSum, 0)
     const dmg = users.map((user) => getUserCombatSkillLevels(user)).reduce(toSum, 0)
@@ -32,18 +32,8 @@ const usecountryUserBuildDistribution = (countryId: string) => {
   }, [users])
 }
 
-const UserList = ({ countryId }: { countryId: string }) => {
-  const users = useCountryUsers(countryId).toReversed()
-
-  return (
-    <div className="grid w-full grid-cols-[repeat(auto-fill,minmax(250px,1fr))] gap-6 p-2">
-      {users.map((user) => (user ? <UserCard user={user} key={user._id} /> : null))}
-    </div>
-  )
-}
-
-const CountryStatsCard = ({ countryId }: { countryId: string }) => {
-  const skillDistribution = usecountryUserBuildDistribution(countryId)
+const CountryStatsCard = ({ users }: { users: WarEra.UserLite[] }) => {
+  const skillDistribution = usecountryUserBuildDistribution(users)
   return (
     <Card>
       <CardHeader>
@@ -70,6 +60,7 @@ const CountryStatsCard = ({ countryId }: { countryId: string }) => {
 function CountryDetailPage() {
   const { countryId } = Route.useParams()
   const country = useCountry(countryId)
+  const users = useCountryUsers(countryId).toReversed()
 
   if (!country) {
     return <div>Country not found</div>
@@ -79,10 +70,12 @@ function CountryDetailPage() {
     <div className="flex flex-col items-center gap-4">
       <div className="flex flex-row gap-4">
         <CountryCard country={country} />
-        <CountryStatsCard countryId={countryId} />
+        <CountryStatsCard users={users} />
       </div>
 
-      <UserList countryId={countryId} />
+      <div className="grid w-full grid-cols-[repeat(auto-fill,minmax(250px,1fr))] gap-6 p-2">
+        {users.map((user) => (user ? <UserCard user={user} key={user._id} /> : null))}
+      </div>
     </div>
   )
 }
