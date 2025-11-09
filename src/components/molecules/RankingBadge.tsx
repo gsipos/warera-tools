@@ -21,13 +21,17 @@ const badgeVariants = cva('', {
 
 interface Props {
   icon: ReactNode
-  rank: WarEra.Rank
+  rank: WarEra.Rank | undefined
   type: FormatType
   tooltip?: ReactNode
 }
 
 export const RankingBadge = (props: Props) => {
   const formatter = formatters[props.type]
+
+  if (!props.rank) {
+    return null
+  }
 
   const value = props.type === 'percent' ? props.rank.value / 100 : props.rank.value
   return (
