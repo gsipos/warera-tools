@@ -20,7 +20,7 @@ const useCountryUsers = (countryId: string) => {
   const usersQueries = useAllUsersLite(userIds)
   const users = usersQueries.map((q) => q.data as WarEra.UserLite) ?? []
 
-  return users
+  return users.filter((u) => !!u)
 }
 
 const toSum = (a: number, b: number) => a + b
