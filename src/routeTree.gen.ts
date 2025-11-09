@@ -16,7 +16,9 @@ import { Route as ItemsIndexRouteImport } from './pages/items.index'
 import { Route as DepositsIndexRouteImport } from './pages/deposits.index'
 import { Route as CountriesIndexRouteImport } from './pages/countries.index'
 import { Route as ItemDepositsItemCodeRouteImport } from './pages/itemDeposits.$itemCode'
+import { Route as CountriesMatchupRouteImport } from './pages/countries.matchup'
 import { Route as CountriesAlliancesRouteImport } from './pages/countries.alliances'
+import { Route as CountriesCountryIdRouteImport } from './pages/countries.$countryId'
 
 const RegionsRoute = RegionsRouteImport.update({
   id: '/regions',
@@ -53,9 +55,19 @@ const ItemDepositsItemCodeRoute = ItemDepositsItemCodeRouteImport.update({
   path: '/itemDeposits/$itemCode',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CountriesMatchupRoute = CountriesMatchupRouteImport.update({
+  id: '/matchup',
+  path: '/matchup',
+  getParentRoute: () => CountriesRouteRoute,
+} as any)
 const CountriesAlliancesRoute = CountriesAlliancesRouteImport.update({
   id: '/alliances',
   path: '/alliances',
+  getParentRoute: () => CountriesRouteRoute,
+} as any)
+const CountriesCountryIdRoute = CountriesCountryIdRouteImport.update({
+  id: '/$countryId',
+  path: '/$countryId',
   getParentRoute: () => CountriesRouteRoute,
 } as any)
 
@@ -63,7 +75,9 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/countries': typeof CountriesRouteRouteWithChildren
   '/regions': typeof RegionsRoute
+  '/countries/$countryId': typeof CountriesCountryIdRoute
   '/countries/alliances': typeof CountriesAlliancesRoute
+  '/countries/matchup': typeof CountriesMatchupRoute
   '/itemDeposits/$itemCode': typeof ItemDepositsItemCodeRoute
   '/countries/': typeof CountriesIndexRoute
   '/deposits': typeof DepositsIndexRoute
@@ -72,7 +86,9 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/regions': typeof RegionsRoute
+  '/countries/$countryId': typeof CountriesCountryIdRoute
   '/countries/alliances': typeof CountriesAlliancesRoute
+  '/countries/matchup': typeof CountriesMatchupRoute
   '/itemDeposits/$itemCode': typeof ItemDepositsItemCodeRoute
   '/countries': typeof CountriesIndexRoute
   '/deposits': typeof DepositsIndexRoute
@@ -83,7 +99,9 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/countries': typeof CountriesRouteRouteWithChildren
   '/regions': typeof RegionsRoute
+  '/countries/$countryId': typeof CountriesCountryIdRoute
   '/countries/alliances': typeof CountriesAlliancesRoute
+  '/countries/matchup': typeof CountriesMatchupRoute
   '/itemDeposits/$itemCode': typeof ItemDepositsItemCodeRoute
   '/countries/': typeof CountriesIndexRoute
   '/deposits/': typeof DepositsIndexRoute
@@ -95,7 +113,9 @@ export interface FileRouteTypes {
     | '/'
     | '/countries'
     | '/regions'
+    | '/countries/$countryId'
     | '/countries/alliances'
+    | '/countries/matchup'
     | '/itemDeposits/$itemCode'
     | '/countries/'
     | '/deposits'
@@ -104,7 +124,9 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/regions'
+    | '/countries/$countryId'
     | '/countries/alliances'
+    | '/countries/matchup'
     | '/itemDeposits/$itemCode'
     | '/countries'
     | '/deposits'
@@ -114,7 +136,9 @@ export interface FileRouteTypes {
     | '/'
     | '/countries'
     | '/regions'
+    | '/countries/$countryId'
     | '/countries/alliances'
+    | '/countries/matchup'
     | '/itemDeposits/$itemCode'
     | '/countries/'
     | '/deposits/'
@@ -181,6 +205,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ItemDepositsItemCodeRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/countries/matchup': {
+      id: '/countries/matchup'
+      path: '/matchup'
+      fullPath: '/countries/matchup'
+      preLoaderRoute: typeof CountriesMatchupRouteImport
+      parentRoute: typeof CountriesRouteRoute
+    }
     '/countries/alliances': {
       id: '/countries/alliances'
       path: '/alliances'
@@ -188,16 +219,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CountriesAlliancesRouteImport
       parentRoute: typeof CountriesRouteRoute
     }
+    '/countries/$countryId': {
+      id: '/countries/$countryId'
+      path: '/$countryId'
+      fullPath: '/countries/$countryId'
+      preLoaderRoute: typeof CountriesCountryIdRouteImport
+      parentRoute: typeof CountriesRouteRoute
+    }
   }
 }
 
 interface CountriesRouteRouteChildren {
+  CountriesCountryIdRoute: typeof CountriesCountryIdRoute
   CountriesAlliancesRoute: typeof CountriesAlliancesRoute
+  CountriesMatchupRoute: typeof CountriesMatchupRoute
   CountriesIndexRoute: typeof CountriesIndexRoute
 }
 
 const CountriesRouteRouteChildren: CountriesRouteRouteChildren = {
+  CountriesCountryIdRoute: CountriesCountryIdRoute,
   CountriesAlliancesRoute: CountriesAlliancesRoute,
+  CountriesMatchupRoute: CountriesMatchupRoute,
   CountriesIndexRoute: CountriesIndexRoute,
 }
 

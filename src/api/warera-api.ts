@@ -1,7 +1,14 @@
 import { LONG_QUERY_STALE_TIME, queryClient } from '@/functions/react-query-setup'
 import { createCollection } from '@tanstack/db'
 import { queryCollectionOptions } from '@tanstack/query-db-collection'
-import { useInfiniteQuery, useQueries, useQuery, UseQueryResult } from '@tanstack/react-query'
+import {
+  InfiniteData,
+  useInfiniteQuery,
+  UseInfiniteQueryResult,
+  useQueries,
+  useQuery,
+  UseQueryResult,
+} from '@tanstack/react-query'
 import { useEffect, useMemo } from 'react'
 import { WarEra } from 'warera-api'
 import z from 'zod'
@@ -70,22 +77,7 @@ export const useWorkOffers = (limit: number = 10) =>
 
 export const useRegionObject = () => useWarEraApiQuery<WarEra.RegionObject>('region.getRegionsObject')
 
-export const useCompanyIds = (limit: number = 100) => {
-  const query = useInfiniteQuery<WarEra.Paginated<string>>({
-    queryKey: ['companies', limit],
-    staleTime: Infinity,
-    queryFn: async ({ pageParam }) => {
-      return warEraApiFetch<WarEra.Paginated<string>>(
-        getApiUrl('company.getCompanies', {
-          perPage: limit,
-          cursor: pageParam,
-        }),
-      )
-    },
-    getNextPageParam: (lastPage) => lastPage.nextCursor,
-    initialPageParam: undefined,
-  })
-
+const useAllPages = <T>(query: UseInfiniteQueryResult<InfiniteData<WarEra.Paginated<T>>>) => {
   useEffect(() => {
     let isMounted = true
 
@@ -103,6 +95,25 @@ export const useCompanyIds = (limit: number = 100) => {
       isMounted = false
     }
   }, [query])
+}
+
+export const useCompanyIds = (limit: number = 100) => {
+  const query = useInfiniteQuery<WarEra.Paginated<string>>({
+    queryKey: ['companies', limit],
+    staleTime: Infinity,
+    queryFn: async ({ pageParam }) => {
+      return warEraApiFetch<WarEra.Paginated<string>>(
+        getApiUrl('company.getCompanies', {
+          perPage: limit,
+          cursor: pageParam,
+        }),
+      )
+    },
+    getNextPageParam: (lastPage) => lastPage.nextCursor,
+    initialPageParam: undefined,
+  })
+
+  useAllPages(query)
 
   console.log('useCompanyIds', query.data)
 
@@ -172,5 +183,36 @@ export const useBatchedCompanies = () => {
   return useQuery<WarEra.Company[]>({
     queryKey: ['batchedCompanies'],
     queryFn: () => fetchAllCompanies(100, loadingState),
+  })
+}
+
+export const useUsersByCountry = (countryId: WarEra.CountryId, limit = 10) => {
+  const query = useInfiniteQuery<WarEra.Paginated<WarEra.UserReference>>({
+    queryKey: ['usersByCountry', countryId, limit],
+    queryFn: async ({ pageParam }) => {
+      return warEraApiFetch<WarEra.Paginated<WarEra.UserReference>>(
+        getApiUrl('user.getUsersByCountry', {
+          countryId,
+          limit,
+          cursor: pageParam,
+        }),
+      )
+    },
+    getNextPageParam: (lastPage) => lastPage.nextCursor,
+    initialPageParam: undefined,
+    enabled: !!countryId,
+  })
+  useAllPages(query)
+  return query
+}
+
+export const useUserLite = (userId: string) => useWarEraApiQuery<WarEra.UserLite>('user.getUserLite', { userId })
+
+export const useAllUsersLite = (userIds: string[]) => {
+  return useQueries<WarEra.UserLite[]>({
+    queries: userIds.map((userId) => ({
+      queryKey: ['user.getUserLite', { userId }],
+      queryFn: async () => warEraApiFetch<WarEra.UserLite>(getApiUrl('user.getUserLite', { userId })),
+    })),
   })
 }

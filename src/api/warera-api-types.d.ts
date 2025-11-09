@@ -171,5 +171,67 @@ declare module 'warera-api' {
       movedUpAt: IsoDateTime
       estimatedValue: number
     }
+
+    interface UserSkill {
+      level: number
+      ammoPercent?: number
+      buffsPercent?: number
+      debuffsPercent?: number
+      value: number
+      weapon?: unknown
+      equipment?: unknown
+      total: number
+      limited: unknown | null
+    }
+
+    interface UserBarSkill extends UserSkill {
+      currentBarValue: number
+      hourlyBarRegen: number
+    }
+
+    interface UserLite {
+      _id: string
+      createdAt: IsoDateTime
+      username: string
+      country: CountryId
+      avatarUrl: string | null
+      mu: string
+      isActive: boolean
+      leveling: {
+        level: number
+        totalXp: number
+        dailyXpLeft: number
+        availableSkillPoints: number
+        spentSkillPoints: number
+        totalSkillPoints: number
+        freeReset: number
+      }
+      skills: {
+        energy: UserBarSkill
+        health: UserBarSkill
+        hunger: UserBarSkill
+        attack: UserSkill
+        companies: UserSkill
+        enterpreneurship: UserBarSkill
+        production: UserBarSkill
+        criticalChance: UserSkill
+        criticalDamages: UserSkill
+        armor: UserSkill
+        precision: UserSkill
+        dodge: UserSkill
+        lootChance: UserSkill
+      }
+      rankings: {
+        userDamages: Rank
+        weeklyUserDamages: Rank
+        userWealth: Rank
+        userLevel: Rank
+        userReferrals: Rank
+        userTerrans: Rank
+      }
+    }
+
+    type UserReference = Pick<UserLite, '_id' | 'createdAt'>
+    type SkillKey = keyof UserLite['skills']
   }
 }

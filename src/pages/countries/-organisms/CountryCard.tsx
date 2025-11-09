@@ -1,20 +1,26 @@
 import { CountryFlag } from '@/components/molecules/CountryFlag'
 import { Money } from '@/components/molecules/Money'
 import { RankingBadge } from '@/components/molecules/RankingBadge'
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardAction, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
 import { BedIcon, FactoryIcon, MapIcon, PiggyBankIcon, SwordIcon, SwordsIcon, UsersIcon } from 'lucide-react'
 import { WarEra } from 'warera-api'
 import { CountryFlagList } from './CountryFlagList'
+import { Button } from '@/components/ui/button'
 
-export const CountryCard = (props: { country: WarEra.Country; idx: number }) => {
+export const CountryCard = (props: { country: WarEra.Country; idx?: number | undefined }) => {
   return (
     <Card>
       <CardHeader>
         <CardTitle className="flex flex-row items-center gap-1">
-          <div className="text-muted-foreground mr-2">#{props.idx}</div>
+          {props.idx ? <div className="text-muted-foreground mr-2">#{props.idx}</div> : null}
           <CountryFlag code={props.country.code} className="text-4xl" /> {props.country.name}
         </CardTitle>
+        <CardAction>
+          <Button variant="link" asChild>
+            <a href={`/countries/${props.country._id}`}>View Details</a>
+          </Button>
+        </CardAction>
       </CardHeader>
       <CardContent>
         <div className="flex flex-row gap-2">
