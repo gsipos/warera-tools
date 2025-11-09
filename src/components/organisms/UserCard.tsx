@@ -48,14 +48,14 @@ export const UserCard = ({ user }: { user: WarEra.UserLite }) => {
         </div>
       </CardContent>
       <CardFooter className="flex-wrap gap-2">
-        <RankingBadge icon={<PiggyBankIcon />} rank={user.rankings.userWealth} type="money" tooltip="Total Wealth" />
+        <RankingBadge icon={<PiggyBankIcon />} rank={user.rankings?.userWealth} type="money" tooltip="Total Wealth" />
         <RankingBadge
           icon={<SwordIcon />}
-          rank={user.rankings.weeklyUserDamages}
+          rank={user.rankings?.weeklyUserDamages}
           type="damage"
           tooltip="Weekly Damage"
         />
-        <RankingBadge icon={<SwordsIcon />} rank={user.rankings.userDamages} type="damage" tooltip="Total Damage" />
+        <RankingBadge icon={<SwordsIcon />} rank={user.rankings?.userDamages} type="damage" tooltip="Total Damage" />
       </CardFooter>
     </Card>
   )
