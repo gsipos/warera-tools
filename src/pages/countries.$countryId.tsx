@@ -4,11 +4,12 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
 import { getUserCombatSkillLevels, getUserEcoSkillLevels } from '@/functions/user-utils'
 import { useCountry } from '@/hooks/game/useCountry'
-import { createFileRoute } from '@tanstack/react-router'
-import { FactoryIcon, SwordsIcon } from 'lucide-react'
+import { createFileRoute, Link } from '@tanstack/react-router'
+import { ChevronLeft, ChevronLeftIcon, FactoryIcon, SwordsIcon } from 'lucide-react'
 import { CountryCard } from './countries/-organisms/CountryCard'
 import { useMemo } from 'react'
 import { WarEra } from 'warera-api'
+import { Button } from '@/components/ui/button'
 
 export const Route = createFileRoute('/countries/$countryId')({
   component: CountryDetailPage,
@@ -68,6 +69,13 @@ function CountryDetailPage() {
 
   return (
     <div className="flex flex-col items-center gap-4">
+      <Button variant="link" asChild className="self-start">
+        <Link to="/countries">
+          <ChevronLeftIcon />
+          Back to Countries
+        </Link>
+      </Button>
+
       <div className="flex flex-row gap-4">
         <CountryCard country={country} />
         <CountryStatsCard users={users} />

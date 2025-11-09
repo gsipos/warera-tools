@@ -7,6 +7,7 @@ import { BedIcon, FactoryIcon, MapIcon, PiggyBankIcon, SwordIcon, SwordsIcon, Us
 import { WarEra } from 'warera-api'
 import { CountryFlagList } from './CountryFlagList'
 import { Button } from '@/components/ui/button'
+import { Link } from '@tanstack/react-router'
 
 export const CountryCard = (props: { country: WarEra.Country; idx?: number | undefined }) => {
   return (
@@ -18,7 +19,7 @@ export const CountryCard = (props: { country: WarEra.Country; idx?: number | und
         </CardTitle>
         <CardAction>
           <Button variant="link" asChild>
-            <a href={`/countries/${props.country._id}`}>View Details</a>
+            <Link to={`/countries/${props.country._id}`}>View Details</Link>
           </Button>
         </CardAction>
       </CardHeader>
