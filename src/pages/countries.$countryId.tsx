@@ -6,9 +6,8 @@ import { getUserCombatSkillLevels, getUserEcoSkillLevels } from '@/functions/use
 import { useCountry } from '@/hooks/game/useCountry'
 import { createFileRoute } from '@tanstack/react-router'
 import { FactoryIcon, SwordsIcon } from 'lucide-react'
-import { WarEra } from 'warera-api'
 import { CountryCard } from './countries/-organisms/CountryCard'
-import { useDeferredValue } from 'react'
+import { useMemo } from 'react'
 
 export const Route = createFileRoute('/countries/$countryId')({
   component: CountryDetailPage,
@@ -16,22 +15,21 @@ export const Route = createFileRoute('/countries/$countryId')({
 
 const useCountryUsers = (countryId: string) => {
   const userIdsByCountry = useUsersByCountry(countryId)
-  const userIds = useDeferredValue(userIdsByCountry.data?.pages.flatMap((page) => page.items).map((r) => r._id) || [])
-  const usersQueries = useAllUsersLite(userIds)
-  const users = usersQueries.map((q) => q.data as WarEra.UserLite) ?? []
-
-  return users.filter((u) => !!u)
+  const userIds = userIdsByCountry.data?.pages.flatMap((page) => page.items).map((r) => r._id) || []
+  const users = useAllUsersLite(userIds).data
+  return users
 }
 
 const toSum = (a: number, b: number) => a + b
 const usecountryUserBuildDistribution = (countryId: string) => {
   const users = useCountryUsers(countryId)
+  return useMemo(() => {
+    const eco = users.map((user) => getUserEcoSkillLevels(user)).reduce(toSum, 0)
+    const dmg = users.map((user) => getUserCombatSkillLevels(user)).reduce(toSum, 0)
+    const total = eco + dmg
 
-  const eco = users.map((user) => getUserEcoSkillLevels(user)).reduce(toSum, 0)
-  const dmg = users.map((user) => getUserCombatSkillLevels(user)).reduce(toSum, 0)
-  const total = eco + dmg
-
-  return { eco, dmg, total }
+    return { eco, dmg, total }
+  }, [users])
 }
 
 const UserList = ({ countryId }: { countryId: string }) => {

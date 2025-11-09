@@ -209,10 +209,13 @@ export const useUsersByCountry = (countryId: WarEra.CountryId, limit = 10) => {
 export const useUserLite = (userId: string) => useWarEraApiQuery<WarEra.UserLite>('user.getUserLite', { userId })
 
 export const useAllUsersLite = (userIds: string[]) => {
-  return useQueries<WarEra.UserLite[]>({
+  return useQueries<WarEra.UserLite[], { data: WarEra.UserLite[]}>({
     queries: userIds.map((userId) => ({
       queryKey: ['user.getUserLite', { userId }],
       queryFn: async () => warEraApiFetch<WarEra.UserLite>(getApiUrl('user.getUserLite', { userId })),
     })),
+    combine: (results) => ({
+      data: results.map((r) => r.data as WarEra.UserLite).filter((u) => !!u)
+    })
   })
 }
