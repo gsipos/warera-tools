@@ -1,26 +1,23 @@
-import { useAllUsersLite, useUsersByCountry } from '@/api/warera-api'
+import { useWorkOffersByCompanies } from '@/api/warera-api'
 import { UserCard } from '@/components/organisms/UserCard'
+import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
+import { Separator } from '@/components/ui/separator'
 import { getUserCombatSkillLevels, getUserEcoSkillLevels } from '@/functions/user-utils'
+import { useCompaniesByUsers } from '@/hooks/game/use-companies-by-users'
+import { useCountryUsers } from '@/hooks/game/use-country-users'
 import { useCountry } from '@/hooks/game/useCountry'
 import { createFileRoute, Link } from '@tanstack/react-router'
-import { ChevronLeft, ChevronLeftIcon, FactoryIcon, SwordsIcon } from 'lucide-react'
-import { CountryCard } from './countries/-organisms/CountryCard'
+import { ChevronLeftIcon, FactoryIcon, SwordsIcon } from 'lucide-react'
 import { useMemo } from 'react'
 import { WarEra } from 'warera-api'
-import { Button } from '@/components/ui/button'
+import { CountryCard } from './countries/-organisms/CountryCard'
+import { CountryUserLevelChart } from '@/components/organisms/CountryUserLevelChart'
 
 export const Route = createFileRoute('/countries/$countryId')({
   component: CountryDetailPage,
 })
-
-const useCountryUsers = (countryId: string) => {
-  const userIdsByCountry = useUsersByCountry(countryId)
-  const userIds = userIdsByCountry.data?.pages.flatMap((page) => page.items).map((r) => r._id) || []
-  const users = useAllUsersLite(userIds).data
-  return users
-}
 
 const toSum = (a: number, b: number) => a + b
 const usecountryUserBuildDistribution = (users: WarEra.UserLite[]) => {
@@ -79,11 +76,14 @@ function CountryDetailPage() {
       <div className="flex flex-row gap-4">
         <CountryCard country={country} />
         <CountryStatsCard users={users} />
+        <CountryUserLevelChart countryId={countryId} />
       </div>
 
       <div className="grid w-full grid-cols-[repeat(auto-fill,minmax(250px,1fr))] gap-6 p-2">
         {users.map((user) => (user ? <UserCard user={user} key={user._id} /> : null))}
       </div>
+
+      <Separator />
     </div>
   )
 }
