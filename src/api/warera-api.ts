@@ -14,6 +14,7 @@ import { WarEra } from 'warera-api'
 import z from 'zod'
 import { itemPricesCollectionSchema, itemsSchema, itemTradindPricesResponseSchema } from './warera-api-schema'
 import { LoadingStateStore, useLoadingState } from '@/hooks/use-loading-state'
+import pLimit from 'p-limit'
 
 const warEraApiUrl = 'https://api2.warera.io/trpc/'
 
@@ -27,8 +28,10 @@ const getApiUrl = (endpoint: string, input?: Record<string, unknown>) => {
 }
 
 const warEraApiFetch = async <TData>(endPoint: string) => {
+  useLoadingState.getState().addItems(1)
   const response = await fetch(endPoint)
   const data = (await response.json()) as WarEra.ApiResponse<TData>
+  useLoadingState.getState().finishItems(1)
   return data.result.data
 }
 
@@ -74,6 +77,9 @@ export const useTradingTopOrders = (itemCode: WarEra.ItemCode, limit: number = 1
 
 export const useWorkOffers = (limit: number = 10) =>
   useWarEraApiQuery<WarEra.Paginated<WarEra.WorkOffer>>('workOffer.getWorkOffersPaginated', { limit })
+
+export const useWorkOffersByCompanyId = (companyId: string) =>
+  useWarEraApiQuery<WarEra.WorkOffer[]>('workOffer.getWorkOfferByCompanyId', { companyId })
 
 export const useRegionObject = () => useWarEraApiQuery<WarEra.RegionObject>('region.getRegionsObject')
 
@@ -164,15 +170,21 @@ const fetchAllCompanies = async (limit = 100, loadingState: LoadingStateStore) =
   } while (cursor)
 
   loadingState.addItems(companyIds.length)
-  for (const id of companyIds) {
-    const company = await queryClient.ensureQueryData({
-      queryKey: ['company', id],
-      queryFn: async () => warEraApiFetch<WarEra.Company>(getApiUrl('company.getById', { companyId: id })),
-      staleTime: LONG_QUERY_STALE_TIME,
-    })
+
+  const fetchLimit = pLimit(5)
+
+  const fetches = companyIds.map(async (id) => {
+    const company = await fetchLimit(() =>
+      queryClient.ensureQueryData({
+        queryKey: ['company', id],
+        queryFn: async () => warEraApiFetch<WarEra.Company>(getApiUrl('company.getById', { companyId: id })),
+        staleTime: LONG_QUERY_STALE_TIME,
+      }),
+    )
     companies.push(company)
     loadingState.finishItems(1)
-  }
+  })
+  await Promise.all(fetches)
 
   return companies
 }
@@ -209,6 +221,7 @@ export const useUsersByCountry = (countryId: WarEra.CountryId, limit = 10) => {
 export const useUserLite = (userId: string) => useWarEraApiQuery<WarEra.UserLite>('user.getUserLite', { userId })
 
 export const useAllUsersLite = (userIds: string[]) => {
+  const loadingState = useLoadingState()
   return useQueries<WarEra.UserLite[], { data: WarEra.UserLite[] }>({
     queries: userIds.map((userId) => ({
       queryKey: ['user.getUserLite', { userId }],
@@ -217,5 +230,21 @@ export const useAllUsersLite = (userIds: string[]) => {
     combine: (results) => ({
       data: results.map((r) => r.data as WarEra.UserLite).filter((u) => !!u),
     }),
+  })
+}
+
+export const useWorkOffersByCompanies = (companyIds: string[]) => {
+  return useQueries<WarEra.WorkOffer[], WarEra.WorkOffer[]>({
+    queries: companyIds.map((c) => ({
+      queryKey: ['workOffer.getWorkOfferByCompanyId', c],
+      enabled: !!c,
+      queryFn: async () =>
+        warEraApiFetch<WarEra.WorkOffer[]>(getApiUrl('workOffer.getWorkOfferByCompanyId', { companyId: c })),
+    })),
+    combine: (results) =>
+      results
+        .map((r) => (r.data as WarEra.WorkOffer[]) || [])
+        .flat()
+        .filter((o) => !!o),
   })
 }

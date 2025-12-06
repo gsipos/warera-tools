@@ -8,6 +8,17 @@ import { WarEra } from 'warera-api'
 import { SimpleTooltip } from '../ui/tooltip'
 import { Badge } from '../ui/badge'
 
+export const UserAvatar = ({ user }: { user: WarEra.UserLite }) => {
+  return (
+    <Avatar>
+      <AvatarImage src={user.avatarUrl ?? ''} alt={user.username} />
+      <AvatarFallback>
+        <UserIcon />
+      </AvatarFallback>
+    </Avatar>
+  )
+}
+
 export const UserCard = ({ user }: { user: WarEra.UserLite }) => {
   const ecoSkillLevels = getUserEcoSkillLevels(user)
   const combatSkillLevels = getUserCombatSkillLevels(user)
@@ -20,12 +31,7 @@ export const UserCard = ({ user }: { user: WarEra.UserLite }) => {
   return (
     <Card>
       <CardHeader className="flex flex-row items-center gap-1">
-        <Avatar>
-          <AvatarImage src={user.avatarUrl ?? ''} alt={user.username} />
-          <AvatarFallback>
-            <UserIcon />
-          </AvatarFallback>
-        </Avatar>
+        <UserAvatar user={user} />
         <CardTitle>{user.username}</CardTitle>
         <CardAction>
           <SimpleTooltip tooltip={'Level'}>
