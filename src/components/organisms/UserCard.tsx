@@ -2,11 +2,21 @@ import { RankingBadge } from '@/components/molecules/RankingBadge'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Card, CardAction, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
-import { getUserCombatSkillLevels, getUserEcoSkillLevels } from '@/functions/user-utils'
-import { FactoryIcon, PersonStandingIcon, PiggyBankIcon, SwordIcon, SwordsIcon, UserIcon } from 'lucide-react'
+import { getUserCombatSkillLevels, getUserEcoSkillLevels, getUserRespecDetails } from '@/functions/user-utils'
+import {
+  FactoryIcon,
+  PersonStandingIcon,
+  PiggyBankIcon,
+  SwordIcon,
+  SwordsIcon,
+  UserIcon,
+  UserRoundCheckIcon,
+  UserRoundPenIcon,
+} from 'lucide-react'
 import { WarEra } from 'warera-api'
 import { SimpleTooltip } from '../ui/tooltip'
 import { Badge } from '../ui/badge'
+import { DateTime } from 'luxon'
 
 export const UserAvatar = ({ user }: { user: WarEra.UserLite }) => {
   return (
@@ -27,6 +37,8 @@ export const UserCard = ({ user }: { user: WarEra.UserLite }) => {
   if (!user) {
     return null
   }
+
+  const { canRespec, timeUntilRespec } = getUserRespecDetails(user)
 
   return (
     <Card>
@@ -62,6 +74,12 @@ export const UserCard = ({ user }: { user: WarEra.UserLite }) => {
           tooltip="Weekly Damage"
         />
         <RankingBadge icon={<SwordsIcon />} rank={user.rankings?.userDamages} type="damage" tooltip="Total Damage" />
+        <Badge variant={canRespec ? 'default' : 'destructive'}>
+          {canRespec ? <UserRoundCheckIcon /> : <UserRoundPenIcon />}
+          {canRespec
+            ? 'Respec available'
+            : timeUntilRespec.toHuman({ maximumFractionDigits: 0, unitDisplay: 'narrow', listStyle: 'narrow' })}
+        </Badge>
       </CardFooter>
     </Card>
   )
