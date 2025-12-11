@@ -229,6 +229,9 @@ declare module 'warera-api' {
         userReferrals: Rank
         userTerrans: Rank
       }
+      dates: {
+        lastSkillsResetAt: IsoDateTime
+      }
     }
 
     type UserReference = Pick<UserLite, '_id' | 'createdAt'>

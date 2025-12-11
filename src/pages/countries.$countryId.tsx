@@ -4,12 +4,12 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
 import { Separator } from '@/components/ui/separator'
-import { getUserCombatSkillLevels, getUserEcoSkillLevels } from '@/functions/user-utils'
+import { getUserCombatSkillLevels, getUserEcoSkillLevels, getUserRespecDetails } from '@/functions/user-utils'
 import { useCompaniesByUsers } from '@/hooks/game/use-companies-by-users'
 import { useCountryUsers } from '@/hooks/game/use-country-users'
 import { useCountry } from '@/hooks/game/useCountry'
 import { createFileRoute, Link } from '@tanstack/react-router'
-import { ChevronLeftIcon, FactoryIcon, SwordsIcon } from 'lucide-react'
+import { ChevronLeftIcon, FactoryIcon, SwordsIcon, UserRoundPenIcon } from 'lucide-react'
 import { useMemo } from 'react'
 import { WarEra } from 'warera-api'
 import { CountryCard } from './countries/-organisms/CountryCard'
@@ -32,6 +32,10 @@ const usecountryUserBuildDistribution = (users: WarEra.UserLite[]) => {
 
 const CountryStatsCard = ({ users }: { users: WarEra.UserLite[] }) => {
   const skillDistribution = usecountryUserBuildDistribution(users)
+
+  const userCount = users.length
+  const canRespec = users.filter((user) => getUserRespecDetails(user).canRespec).length
+
   return (
     <Card>
       <CardHeader>
@@ -48,6 +52,11 @@ const CountryStatsCard = ({ users }: { users: WarEra.UserLite[] }) => {
             <SwordsIcon />
             dmg
             <Progress value={(skillDistribution.dmg / skillDistribution.total) * 100} className="w-48" />
+          </div>
+          <div className="flex flex-row items-center gap-1">
+            <UserRoundPenIcon />
+            respec
+            <Progress value={(canRespec / userCount) * 100} className="w-48" />
           </div>
         </div>
       </CardContent>
