@@ -19,7 +19,9 @@ export const getUserCombatSkillLevels = (user: WarEra.UserLite) =>
 export const getUserRespecDetails = (user: WarEra.UserLite) => {
   const lastRespec = user.dates?.lastSkillsResetAt
   const nextPossibleRespecDate = DateTime.fromISO(lastRespec).plus({ days: 7 })
-  const canRespec = DateTime.now() >= nextPossibleRespecDate || !!user.leveling.freeReset
+  const canRespec = lastRespec
+    ? DateTime.now().toMillis() >= nextPossibleRespecDate.toMillis()
+    : !!user.leveling.freeReset
   const timeUntilRespec = nextPossibleRespecDate.diffNow(['days', 'hours'])
 
   return { canRespec, timeUntilRespec }
