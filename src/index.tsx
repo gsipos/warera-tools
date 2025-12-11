@@ -3,6 +3,7 @@ import { RouterProvider, createRouter } from '@tanstack/react-router'
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { asyncStoragePersister, queryClient } from './functions/react-query-setup'
+import { Analytics } from '@vercel/analytics/react';
 
 const root = document.getElementById('root')
 const reactRoot = ReactDOM.createRoot(root!)
@@ -21,6 +22,7 @@ reactRoot.render(
       <AppSplashScreen>
         <RouterProvider router={router} />
       </AppSplashScreen>
+      <Analytics />
       <ReactQueryDevtools initialIsOpen={false} />
     </PersistQueryClientProvider>
   </React.StrictMode>,
