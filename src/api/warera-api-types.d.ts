@@ -184,6 +184,10 @@ declare module 'warera-api' {
       limited: unknown | null
     }
 
+    interface UserAttackSkill extends UserSkill {
+      militaryRankPercent: 15.75
+    }
+
     interface UserBarSkill extends UserSkill {
       currentBarValue: number
       hourlyBarRegen: number
@@ -197,6 +201,7 @@ declare module 'warera-api' {
       avatarUrl: string | null
       mu: string
       isActive: boolean
+      militaryRank: number
       leveling: {
         level: number
         totalXp: number
@@ -210,7 +215,7 @@ declare module 'warera-api' {
         energy: UserBarSkill
         health: UserBarSkill
         hunger: UserBarSkill
-        attack: UserSkill
+        attack: UserAttackSkill
         companies: UserSkill
         enterpreneurship: UserBarSkill
         production: UserBarSkill
@@ -228,9 +233,13 @@ declare module 'warera-api' {
         userLevel: Rank
         userReferrals: Rank
         userTerrans: Rank
+        userCasesOpened: Rank
       }
       dates: {
         lastSkillsResetAt: IsoDateTime
+      }
+      stats: {
+        damagesCount: number
       }
     }
 

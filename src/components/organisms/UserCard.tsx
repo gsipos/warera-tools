@@ -4,7 +4,9 @@ import { Card, CardAction, CardContent, CardFooter, CardHeader, CardTitle } from
 import { Progress } from '@/components/ui/progress'
 import { getUserCombatSkillLevels, getUserEcoSkillLevels, getUserRespecDetails } from '@/functions/user-utils'
 import {
+  BriefcaseMedicalIcon,
   FactoryIcon,
+  GaugeIcon,
   PersonStandingIcon,
   PiggyBankIcon,
   SwordIcon,
@@ -17,6 +19,7 @@ import { WarEra } from 'warera-api'
 import { SimpleTooltip } from '../ui/tooltip'
 import { Badge } from '../ui/badge'
 import { DateTime } from 'luxon'
+import { formatters } from '@/functions/number-formats'
 
 export const UserAvatar = ({ user }: { user: WarEra.UserLite }) => {
   return (
@@ -74,12 +77,24 @@ export const UserCard = ({ user }: { user: WarEra.UserLite }) => {
           tooltip="Weekly Damage"
         />
         <RankingBadge icon={<SwordsIcon />} rank={user.rankings?.userDamages} type="damage" tooltip="Total Damage" />
+        <RankingBadge
+          icon={<BriefcaseMedicalIcon />}
+          rank={user.rankings?.userCasesOpened}
+          type="count"
+          tooltip="Cases Opened"
+        />
         <Badge variant={canRespec ? 'default' : 'destructive'}>
           {canRespec ? <UserRoundCheckIcon /> : <UserRoundPenIcon />}
           {canRespec
             ? 'Respec available'
             : timeUntilRespec.toHuman({ maximumFractionDigits: 0, unitDisplay: 'narrow', listStyle: 'narrow' })}
         </Badge>
+        <SimpleTooltip tooltip="Military Rank">
+          <Badge variant={'outline'}>
+            <GaugeIcon />
+            {formatters.percent.format(user.skills.attack.militaryRankPercent / 100)} ({user.militaryRank})
+          </Badge>
+        </SimpleTooltip>
       </CardFooter>
     </Card>
   )
