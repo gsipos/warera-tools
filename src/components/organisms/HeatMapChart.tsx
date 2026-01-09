@@ -11,7 +11,10 @@ interface Props {
 
 export const HeatMapChart = (props: Props) => {
   const config = useMemo(() => {
-    const values = props.seriesData.map((d) => d[2]).filter((v) => typeof v === 'number') as number[]
+    const safeSeriesData = (props.seriesData || []).filter(
+      (d) => !(d as unknown[]).includes(undefined) || !(d as unknown[]).includes(null),
+    ) as [number, number, number][]
+    const values = safeSeriesData.map((d) => d[2]).filter((v) => typeof v === 'number') as number[]
     const min = Math.min(...values)
     const max = Math.max(...values)
     const chart: EChartsOption = {
@@ -43,7 +46,7 @@ export const HeatMapChart = (props: Props) => {
         {
           name: 'Data',
           type: 'heatmap',
-          data: props.seriesData,
+          data: safeSeriesData,
           label: {
             show: true,
           },

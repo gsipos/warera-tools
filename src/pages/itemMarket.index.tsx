@@ -1,19 +1,26 @@
 import { useTransactions } from '@/api/warera-api'
-import { itemCodes, weaponsCodes } from '@/api/warera-api-schema'
+import { armorCodes, equipmentCodes, weaponsCodes } from '@/api/warera-api-schema'
 import { EquipmentGridSelect } from '@/components/molecules/EquipmentGridSelect'
-import { EquipmentSelect } from '@/components/molecules/EquipmentSelect'
 import { HeatMapChart } from '@/components/organisms/HeatMapChart'
 import { Button } from '@/components/ui/button'
-import { Card, CardAction, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
-import { Separator } from '@/components/ui/separator'
-import { createFileRoute } from '@tanstack/react-router'
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
+import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { DateTime } from 'luxon'
-import { useState } from 'react'
-import { Fragment } from 'react/jsx-runtime'
+import { useEffect, useState } from 'react'
 import { WarEra } from 'warera-api'
+import { ErrorBoundary } from 'react-error-boundary'
+import z from 'zod'
+import { zodValidator, fallback } from '@tanstack/zod-adapter'
+
+const itemMarketSearchSchema = z.object({
+  code: fallback(z.enum(equipmentCodes).default('gun'), 'gun'),
+})
+
+type ItemMarketSearch = z.infer<typeof itemMarketSearchSchema>
 
 export const Route = createFileRoute('/itemMarket/')({
   component: RouteComponent,
+  validateSearch: zodValidator(itemMarketSearchSchema),
 })
 
 const skillsToString = (skills: Record<string, number>) => {
@@ -93,12 +100,17 @@ const SingleSkillTxHeatmap = ({
         <CardTitle>{title[type]}</CardTitle>
       </CardHeader>
       <CardContent>
-        <HeatMapChart
-          className="h-40 w-140"
-          xAxisLabels={skillValues.map((x) => '' + x)}
-          yAxisLabels={[firstSkill]}
-          seriesData={series}
-        />
+        <ErrorBoundary
+          resetKeys={[series]}
+          fallback={<div className="text-red-500">Failed to load heatmap chart.</div>}
+        >
+          <HeatMapChart
+            className="h-40 w-140"
+            xAxisLabels={skillValues.map((x) => '' + x)}
+            yAxisLabels={[firstSkill]}
+            seriesData={series}
+          />
+        </ErrorBoundary>
       </CardContent>
     </Card>
   )
@@ -141,19 +153,30 @@ const DualSkillTxHeatmap = ({
         <CardTitle>{title[type]}</CardTitle>
       </CardHeader>
       <CardContent>
-        <HeatMapChart
-          className="h-80 w-360"
-          xAxisLabels={firstSkillValues.map((x) => '' + x)}
-          yAxisLabels={secondSkillValues.map((x) => '' + x)}
-          seriesData={series}
-        />
+        <ErrorBoundary
+          resetKeys={[series]}
+          fallback={<div className="text-red-500">Failed to load heatmap chart.</div>}
+        >
+          <HeatMapChart
+            className="h-80 w-360"
+            xAxisLabels={firstSkillValues.map((x) => '' + x)}
+            yAxisLabels={secondSkillValues.map((x) => '' + x)}
+            seriesData={series}
+          />
+        </ErrorBoundary>
       </CardContent>
     </Card>
   )
 }
 
 function RouteComponent() {
-  const [eqCode, setEqCode] = useState<WarEra.EquipmentCode>('gun')
+  const { code } = Route.useSearch()
+  const eqCode = code
+
+  const navigate = useNavigate({ from: Route.fullPath })
+  const setEqCode = (newCode: WarEra.EquipmentCode) => {
+    navigate({ search: (old: ItemMarketSearch) => ({ ...old, code: newCode }) })
+  }
 
   const tqQuery = useTransactions({
     limit: 50,
@@ -167,6 +190,16 @@ function RouteComponent() {
 
   const lastTxTimeStamp = txList.at(-1)?.createdAt
   const latestTxTimeStamp = txList.at(0)?.createdAt
+
+  useEffect(() => {
+    const canFetchMore = tqQuery.hasNextPage && !tqQuery.isFetchingNextPage
+    if (!canFetchMore) return
+    const last2Weeks = DateTime.now().minus({ weeks: 2 })
+    const isLastTxOlder = DateTime.fromISO(lastTxTimeStamp ?? '') < last2Weeks
+    if (isLastTxOlder) return
+
+    tqQuery.fetchNextPage()
+  })
 
   return (
     <div className="flex flex-col gap-4 p-2">

@@ -51,6 +51,14 @@ const depositLinks: NavLinkk[] = [
   })),
 ]
 
+const marketLinks: NavLinkk[] = [
+  {
+    title: 'Item Market',
+    href: '/itemMarket',
+    description: 'Item Market analysis and prices.',
+  },
+]
+
 const NavLinkGroup = (props: { links: NavLinkk[]; groupTitle: string }) => {
   return (
     <NavigationMenuItem>
@@ -106,6 +114,7 @@ function AppNavigationMenu() {
         </NavigationMenuItem>
         <NavLinkGroup links={mapLinks} groupTitle="Map" />
         <NavLinkGroup links={depositLinks} groupTitle="Deposits" />
+        <NavLinkGroup links={marketLinks} groupTitle="Market" />
       </NavigationMenuList>
     </NavigationMenu>
   )
