@@ -1,3 +1,4 @@
+import { WarEra } from 'warera-api'
 import { z } from 'zod'
 
 const countryTaxSchema = z.object({
@@ -12,28 +13,7 @@ const countryDevelopmentSchema = z.object({
   tier: z.string(),
 })
 
-export const countrySchema = z.object({
-  _id: z.string(),
-  name: z.string(),
-  code: z.string(),
-  money: z.number(),
-  orgs: z.array(z.string()),
-  allies: z.array(z.string()),
-  warsWith: z.array(z.string()),
-  taxes: countryTaxSchema,
-  updatedAt: z.iso.datetime(),
-  ranking: z.object({
-    countryDevelopment: countryDevelopmentSchema,
-  }),
-})
-
-export const countriesResponseSchema = z.object({
-  result: z.object({
-    data: z.array(countrySchema),
-  }),
-})
-
-export const itemsSchema = z.literal([
+export const itemsSchema = z.enum([
   'cookedFish',
   'heavyAmmo',
   'steel',
@@ -68,4 +48,35 @@ export const itemTradindPricesResponseSchema = z.object({
   }),
 })
 
-export const itemCodes = Array.from(itemsSchema.values)
+export const itemCodes = [
+  'cookedFish',
+  'heavyAmmo',
+  'steel',
+  'bread',
+  'grain',
+  'limestone',
+  'coca',
+  'concrete',
+  'oil',
+  'case1',
+  'lightAmmo',
+  'steak',
+  'livestock',
+  'cocain',
+  'lead',
+  'fish',
+  'petroleum',
+  'ammo',
+  'iron',
+]
+
+export const weaponsCodes = ['knife', 'gun', 'rifle', 'sniper', 'tank', 'jet'] as const satisfies WarEra.WeaponCode[]
+
+export const armorLevels = [1, 2, 3, 4, 5, 6] as const satisfies WarEra.ArmorLevel[]
+export const armorTypes = ['boots', 'pants', 'chest', 'helmet', 'gloves'] as const satisfies WarEra.ArmorType[]
+
+export const armorCodes: WarEra.ArmorCode[] = armorTypes.flatMap((type) =>
+  armorLevels.map<WarEra.ArmorCode>((level) => `${type}${level}`),
+)
+
+export const equipmentCodes = [...weaponsCodes, ...armorCodes] as const satisfies WarEra.EquipmentCode[]

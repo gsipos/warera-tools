@@ -245,5 +245,59 @@ declare module 'warera-api' {
 
     type UserReference = Pick<UserLite, '_id' | 'createdAt'>
     type SkillKey = keyof UserLite['skills']
+
+    type WeaponCode = 'knife' | 'gun' | 'rifle' | 'sniper' | 'tank' | 'jet'
+    type ArmorLevel = 1 | 2 | 3 | 4 | 5 | 6
+    type ArmorType = 'boots' | 'pants' | 'chest' | 'helmet' | 'gloves'
+    type ArmorCode = `${ArmorType}${ArmorLevel}`
+    type EquipmentCode = WeaponCode | ArmorCode
+
+    interface Item {
+      _id: string
+      code: EquipmentCode
+      skills: Record<string, number>
+      state: number
+      maxState: number
+      quantity: number
+      lasAquisitionAt: IsoDateTime
+    }
+
+    type TransactionType =
+      | 'applicationFee'
+      | 'trading'
+      | 'itemMarket'
+      | 'wage'
+      | 'donation'
+      | 'articleTip'
+      | 'openCase'
+      | 'craftItem'
+      | 'dismantleItem'
+
+    interface TransactionOptions {
+      limit?: number
+      cursor?: string
+      userId?: string
+      muId?: string
+      countryId?: string
+      itemCode?: ItemCode | EquipmentCode
+      transactionType?: TransactionType
+    }
+
+    interface Transaction {
+      _id: string
+      createdAt: IsoDateTime
+      offerCreatedAt: IsoDateTime
+      updatedAt: IsoDateTime
+
+      buyerId: string
+      sellerId: string
+      itemCode: ItemCode
+      quantity: number
+      money: number
+      transactionType: TransactionType
+      __v: number
+
+      item: Item
+    }
   }
 }

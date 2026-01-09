@@ -44,6 +44,14 @@ const depositNavCards: NavCard[] = [
   },
 ]
 
+const marketNavCards: NavCard[] = [
+  {
+    title: 'Item Market',
+    description: 'Item Market analysis and prices',
+    link: '/itemMarket/',
+  },
+]
+
 const NavCardComponent = ({ card }: { card: NavCard }) => {
   return (
     <Card key={card.title}>
@@ -83,6 +91,14 @@ function Index() {
       <div className="text-primary col-span-full text-lg">Deposits</div>
 
       {depositNavCards.map((card) => (
+        <NavCardComponent key={card.title} card={card} />
+      ))}
+
+      <Separator className="col-span-full" />
+
+      <div className="text-primary col-span-full text-lg">Market</div>
+
+      {marketNavCards.map((card) => (
         <NavCardComponent key={card.title} card={card} />
       ))}
     </div>

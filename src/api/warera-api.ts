@@ -1,5 +1,4 @@
 import { LONG_QUERY_STALE_TIME, queryClient } from '@/functions/react-query-setup'
-import { createCollection } from '@tanstack/db'
 import { queryCollectionOptions } from '@tanstack/query-db-collection'
 import {
   InfiniteData,
@@ -11,8 +10,6 @@ import {
 } from '@tanstack/react-query'
 import { useEffect, useMemo } from 'react'
 import { WarEra } from 'warera-api'
-import z from 'zod'
-import { itemPricesCollectionSchema, itemsSchema, itemTradindPricesResponseSchema } from './warera-api-schema'
 import { LoadingStateStore, useLoadingState } from '@/hooks/use-loading-state'
 import pLimit from 'p-limit'
 
@@ -34,24 +31,6 @@ const warEraApiFetch = async <TData>(endPoint: string) => {
   useLoadingState.getState().finishItems(1)
   return data.result.data
 }
-
-export const itemTradingPricesCollection = createCollection(
-  queryCollectionOptions({
-    queryKey: ['itemTradingPrices'],
-    queryClient,
-    getKey: (c) => c.item,
-    schema: itemPricesCollectionSchema,
-    queryFn: async () => {
-      const response = await fetch(getApiUrl('itemTrading.getPrices'))
-      const data = (await response.json()) as z.infer<typeof itemTradindPricesResponseSchema>
-      const mappedData = Array.from(itemsSchema.values).map((item) => ({
-        item,
-        price: data.result.data[item],
-      }))
-      return mappedData
-    },
-  }),
-)
 
 export const useWarEraApiQuery = <TData, Input extends Record<string, unknown> = {}>(
   fragment: string,
@@ -246,5 +225,22 @@ export const useWorkOffersByCompanies = (companyIds: string[]) => {
         .map((r) => (r.data as WarEra.WorkOffer[]) || [])
         .flat()
         .filter((o) => !!o),
+  })
+}
+
+export const useTransactions = (options: WarEra.TransactionOptions) => {
+  return useInfiniteQuery<WarEra.Paginated<WarEra.Transaction>>({
+    queryKey: ['transactions', options],
+    queryFn: async ({ pageParam }) => {
+      return warEraApiFetch<WarEra.Paginated<WarEra.Transaction>>(
+        getApiUrl('transaction.getPaginatedTransactions', {
+          ...options,
+          cursor: pageParam,
+          limit: options.limit || 50,
+        }),
+      )
+    },
+    getNextPageParam: (lastPage) => lastPage.nextCursor,
+    initialPageParam: undefined,
   })
 }

@@ -13,6 +13,7 @@ import { Route as RegionsRouteImport } from './pages/regions'
 import { Route as CountriesRouteRouteImport } from './pages/countries.route'
 import { Route as IndexRouteImport } from './pages/index'
 import { Route as ItemsIndexRouteImport } from './pages/items.index'
+import { Route as ItemMarketIndexRouteImport } from './pages/itemMarket.index'
 import { Route as DepositsIndexRouteImport } from './pages/deposits.index'
 import { Route as CountriesIndexRouteImport } from './pages/countries.index'
 import { Route as ItemDepositsItemCodeRouteImport } from './pages/itemDeposits.$itemCode'
@@ -38,6 +39,11 @@ const IndexRoute = IndexRouteImport.update({
 const ItemsIndexRoute = ItemsIndexRouteImport.update({
   id: '/items/',
   path: '/items/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ItemMarketIndexRoute = ItemMarketIndexRouteImport.update({
+  id: '/itemMarket/',
+  path: '/itemMarket/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DepositsIndexRoute = DepositsIndexRouteImport.update({
@@ -81,6 +87,7 @@ export interface FileRoutesByFullPath {
   '/itemDeposits/$itemCode': typeof ItemDepositsItemCodeRoute
   '/countries/': typeof CountriesIndexRoute
   '/deposits': typeof DepositsIndexRoute
+  '/itemMarket': typeof ItemMarketIndexRoute
   '/items': typeof ItemsIndexRoute
 }
 export interface FileRoutesByTo {
@@ -92,6 +99,7 @@ export interface FileRoutesByTo {
   '/itemDeposits/$itemCode': typeof ItemDepositsItemCodeRoute
   '/countries': typeof CountriesIndexRoute
   '/deposits': typeof DepositsIndexRoute
+  '/itemMarket': typeof ItemMarketIndexRoute
   '/items': typeof ItemsIndexRoute
 }
 export interface FileRoutesById {
@@ -105,6 +113,7 @@ export interface FileRoutesById {
   '/itemDeposits/$itemCode': typeof ItemDepositsItemCodeRoute
   '/countries/': typeof CountriesIndexRoute
   '/deposits/': typeof DepositsIndexRoute
+  '/itemMarket/': typeof ItemMarketIndexRoute
   '/items/': typeof ItemsIndexRoute
 }
 export interface FileRouteTypes {
@@ -119,6 +128,7 @@ export interface FileRouteTypes {
     | '/itemDeposits/$itemCode'
     | '/countries/'
     | '/deposits'
+    | '/itemMarket'
     | '/items'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -130,6 +140,7 @@ export interface FileRouteTypes {
     | '/itemDeposits/$itemCode'
     | '/countries'
     | '/deposits'
+    | '/itemMarket'
     | '/items'
   id:
     | '__root__'
@@ -142,6 +153,7 @@ export interface FileRouteTypes {
     | '/itemDeposits/$itemCode'
     | '/countries/'
     | '/deposits/'
+    | '/itemMarket/'
     | '/items/'
   fileRoutesById: FileRoutesById
 }
@@ -151,6 +163,7 @@ export interface RootRouteChildren {
   RegionsRoute: typeof RegionsRoute
   ItemDepositsItemCodeRoute: typeof ItemDepositsItemCodeRoute
   DepositsIndexRoute: typeof DepositsIndexRoute
+  ItemMarketIndexRoute: typeof ItemMarketIndexRoute
   ItemsIndexRoute: typeof ItemsIndexRoute
 }
 
@@ -182,6 +195,13 @@ declare module '@tanstack/react-router' {
       path: '/items'
       fullPath: '/items'
       preLoaderRoute: typeof ItemsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/itemMarket/': {
+      id: '/itemMarket/'
+      path: '/itemMarket'
+      fullPath: '/itemMarket'
+      preLoaderRoute: typeof ItemMarketIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/deposits/': {
@@ -253,6 +273,7 @@ const rootRouteChildren: RootRouteChildren = {
   RegionsRoute: RegionsRoute,
   ItemDepositsItemCodeRoute: ItemDepositsItemCodeRoute,
   DepositsIndexRoute: DepositsIndexRoute,
+  ItemMarketIndexRoute: ItemMarketIndexRoute,
   ItemsIndexRoute: ItemsIndexRoute,
 }
 export const routeTree = rootRouteImport
