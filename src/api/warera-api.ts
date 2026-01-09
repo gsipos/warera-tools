@@ -248,3 +248,20 @@ export const useWorkOffersByCompanies = (companyIds: string[]) => {
         .filter((o) => !!o),
   })
 }
+
+export const useTransactions = (options: WarEra.TransactionOptions) => {
+  return useInfiniteQuery<WarEra.Paginated<WarEra.Transaction>>({
+    queryKey: ['transactions', options],
+    queryFn: async ({ pageParam }) => {
+      return warEraApiFetch<WarEra.Paginated<WarEra.Transaction>>(
+        getApiUrl('transaction.getPaginatedTransactions', {
+          ...options,
+          cursor: pageParam,
+          limit: options.limit || 50,
+        }),
+      )
+    },
+    getNextPageParam: (lastPage) => lastPage.nextCursor,
+    initialPageParam: undefined,
+  })
+}

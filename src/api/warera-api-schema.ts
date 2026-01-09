@@ -1,3 +1,4 @@
+import { WarEra } from 'warera-api'
 import { z } from 'zod'
 
 const countryTaxSchema = z.object({
@@ -69,3 +70,14 @@ export const itemTradindPricesResponseSchema = z.object({
 })
 
 export const itemCodes = Array.from(itemsSchema.values)
+
+export const weaponsCodes = ['knife', 'gun', 'rifle', 'sniper', 'tank', 'jet'] as const satisfies WarEra.WeaponCode[]
+
+export const armorLevels = [1, 2, 3, 4, 5, 6] as const satisfies WarEra.ArmorLevel[]
+export const armorTypes = ['boots', 'pants', 'chest', 'helmet', 'gloves'] as const satisfies WarEra.ArmorType[]
+
+export const armorCodes: WarEra.ArmorCode[] = armorTypes.flatMap((type) =>
+  armorLevels.map<WarEra.ArmorCode>((level) => `${type}${level}`),
+)
+
+export const equipmentCodes = [...weaponsCodes, ...armorCodes] as const satisfies WarEra.EquipmentCode[]
