@@ -51,10 +51,10 @@ export const UserAvatar = ({ user }: { user: WarEra.UserLite }) => {
 }
 
 export const UserCompaniesProdSummary = ({ userId }: { userId: string }) => {
-  const companyQuery = use(useBatchedCompanies(userId).promise)
-  if (!companyQuery) return null
+  const companyQuery = useBatchedCompanies(userId)
+  if (!companyQuery) return <Skeleton className="h-4 w-full rounded-full" />
 
-  const companies = companyQuery ?? []
+  const companies = companyQuery.data ?? []
   const itemsProduced = companies.map((c) => c.itemCode)
 
   return (
@@ -237,9 +237,8 @@ export const UserCard = ({ user }: { user: WarEra.UserLite }) => {
 
       <CardContent>
         <div className="text-muted-foreground mb-1 text-xs uppercase">Companies</div>
-        <Suspense fallback={<Skeleton className="h-4 w-full rounded-full" />}>
-          <UserCompaniesProdSummary userId={user._id} />
-        </Suspense>
+
+        <UserCompaniesProdSummary userId={user._id} />
       </CardContent>
 
       <Separator className="px-2" />
