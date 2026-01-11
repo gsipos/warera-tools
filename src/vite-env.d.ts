@@ -7,3 +7,10 @@ interface ImportMetaEnv {
 interface ImportMeta {
   readonly env: ImportMetaEnv
 }
+
+declare module '*.svg?react' {
+  import type { SVGAttributes, DefineComponent } from 'react'
+
+  const content: DefineComponent<SVGAttributes>
+  export default content
+}

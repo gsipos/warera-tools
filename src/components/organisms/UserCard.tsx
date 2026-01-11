@@ -22,11 +22,22 @@ import { WarEra } from 'warera-api'
 import { SimpleTooltip } from '../ui/tooltip'
 import { Badge } from '../ui/badge'
 import { DateTime } from 'luxon'
-import { formatters } from '@/functions/number-formats'
+import { formatters, percentFormat } from '@/functions/number-formats'
 import { useBatchedCompanies } from '@/api/warera-api'
 import { ItemImage } from '../atoms/ItemImage'
 import { Suspense, use } from 'react'
 import { Skeleton } from '../ui/skeleton'
+
+import AttackIcon from './../../assets/icons/attack.svg?react'
+import PrecisionIcon from './../../assets/icons/precision.svg?react'
+import CritChanceIcon from './../../assets/icons/critChance.svg?react'
+import CritDamagesIcon from './../../assets/icons/critDamages.svg?react'
+import ArmorIcon from './../../assets/icons/armor.svg?react'
+import DodgeIcon from './../../assets/icons/dodge.svg?react'
+import HealthIcon from './../../assets/icons/health.svg?react'
+import LootChangeIcon from './../../assets/icons/lootChange.svg?react'
+import HungerIcon from './../../assets/icons/hunger.svg?react'
+import { Separator } from '../ui/separator'
 
 export const UserAvatar = ({ user }: { user: WarEra.UserLite }) => {
   return (
@@ -54,6 +65,82 @@ export const UserCompaniesProdSummary = ({ userId }: { userId: string }) => {
         ))}
       </div>
     </SimpleTooltip>
+  )
+}
+
+export const UserCombatSummary = ({ user }: { user: WarEra.UserLite }) => {
+  const attack = user.skills.attack.total
+  const armor = user.skills.armor.total
+  const precision = user.skills.precision.total
+  const dodge = user.skills.dodge.total
+
+  const critChace = user.skills.criticalChance.total
+  const critDamage = user.skills.criticalDamages.total
+
+  const hp = user.skills.health.total
+  const lootChance = user.skills.lootChance.total
+  const hunger = user.skills.hunger.total
+
+  return (
+    <div className="grid w-full grid-cols-4 gap-1">
+      <SimpleTooltip tooltip="Attack">
+        <Badge variant="secondary">
+          <AttackIcon className="size-3.5!" />
+          {attack}
+        </Badge>
+      </SimpleTooltip>
+
+      <SimpleTooltip tooltip="Precision">
+        <Badge variant="secondary">
+          <PrecisionIcon className="size-3.5!" />
+          {percentFormat.format(precision / 100)}
+        </Badge>
+      </SimpleTooltip>
+
+      <SimpleTooltip tooltip="Critical Chance">
+        <Badge variant="secondary">
+          <CritChanceIcon className="size-3.5!" />
+          {percentFormat.format(critChace / 100)}{' '}
+        </Badge>
+      </SimpleTooltip>
+      <SimpleTooltip tooltip="Critical Damage">
+        <Badge variant="secondary">
+          <CritDamagesIcon className="size-3.5!" />
+          {percentFormat.format(critDamage / 100)}{' '}
+        </Badge>
+      </SimpleTooltip>
+
+      <SimpleTooltip tooltip="Armor">
+        <Badge variant="secondary">
+          <ArmorIcon className="size-3.5!" />
+          {percentFormat.format(armor / 100)}{' '}
+        </Badge>
+      </SimpleTooltip>
+      <SimpleTooltip tooltip="Dodge">
+        <Badge variant="secondary">
+          <DodgeIcon className="size-3.5!" />
+          {percentFormat.format(dodge / 100)}
+        </Badge>
+      </SimpleTooltip>
+      <SimpleTooltip tooltip="Health Points">
+        <Badge variant="secondary">
+          <HealthIcon className="size-3.5!" />
+          {hp}
+        </Badge>
+      </SimpleTooltip>
+      <SimpleTooltip tooltip="Loot Chance">
+        <Badge variant="secondary">
+          <LootChangeIcon className="size-3.5!" />
+          {percentFormat.format(lootChance / 100)}
+        </Badge>
+      </SimpleTooltip>
+      <SimpleTooltip tooltip="Hunger">
+        <Badge variant="secondary">
+          <HungerIcon className="size-3.5!" />
+          {hunger}
+        </Badge>
+      </SimpleTooltip>
+    </div>
   )
 }
 
@@ -94,6 +181,19 @@ const UserBuffBadge = ({ user }: { user: WarEra.UserLite }) => {
   )
 }
 
+const UserRespecBadge = ({ user }: { user: WarEra.UserLite }) => {
+  const { canRespec, timeUntilRespec } = getUserRespecDetails(user)
+
+  return (
+    <Badge variant={canRespec ? 'default' : 'destructive'}>
+      {canRespec ? <UserRoundCheckIcon /> : <UserRoundPenIcon />}
+      {canRespec
+        ? 'Respec available'
+        : timeUntilRespec.toHuman({ maximumFractionDigits: 0, unitDisplay: 'narrow', listStyle: 'narrow' })}
+    </Badge>
+  )
+}
+
 export const UserCard = ({ user }: { user: WarEra.UserLite }) => {
   const ecoSkillLevels = getUserEcoSkillLevels(user)
   const combatSkillLevels = getUserCombatSkillLevels(user)
@@ -107,7 +207,7 @@ export const UserCard = ({ user }: { user: WarEra.UserLite }) => {
 
   return (
     <Card>
-      <CardHeader className="flex flex-row items-center gap-1">
+      <CardHeader className="flex flex-row items-center gap-2">
         <UserAvatar user={user} />
         <CardTitle>{user.username}</CardTitle>
         <CardAction>
@@ -119,7 +219,8 @@ export const UserCard = ({ user }: { user: WarEra.UserLite }) => {
           </SimpleTooltip>
         </CardAction>
       </CardHeader>
-      <CardContent>
+      <CardContent className="flex flex-col gap-2">
+        <div className="text-muted-foreground mb-1 text-xs uppercase">Skills</div>
         <div className="grid grid-cols-[1fr_1fr_3fr] items-center gap-x-0.5 gap-y-1">
           <SwordsIcon />
           <div>dmg</div>
@@ -129,40 +230,54 @@ export const UserCard = ({ user }: { user: WarEra.UserLite }) => {
           <div>eco</div>
           <Progress value={(ecoSkillLevels / totalSkillLevels) * 100} className="w-full" />
         </div>
+        <UserRespecBadge user={user} />
+      </CardContent>
 
-        <Suspense fallback={<Skeleton className="rounded-fulln my-2 h-4 w-full" />}>
+      <Separator className="px-2" />
+
+      <CardContent>
+        <div className="text-muted-foreground mb-1 text-xs uppercase">Companies</div>
+        <Suspense fallback={<Skeleton className="h-4 w-full rounded-full" />}>
           <UserCompaniesProdSummary userId={user._id} />
         </Suspense>
       </CardContent>
-      <UserBuffBadge user={user} />
+
+      <Separator className="px-2" />
+
+      <CardContent className="flex flex-col gap-2">
+        <div className="text-muted-foreground mb-1 text-xs uppercase">Combat</div>
+        <UserCombatSummary user={user} />
+        <div className="flex flex-wrap gap-2">
+          <RankingBadge
+            icon={<SwordIcon />}
+            rank={user.rankings?.weeklyUserDamages}
+            type="damage"
+            tooltip="Weekly Damage"
+          />
+          <RankingBadge icon={<SwordsIcon />} rank={user.rankings?.userDamages} type="damage" tooltip="Total Damage" />
+
+          <SimpleTooltip tooltip="Military Rank">
+            <Badge variant={'outline'}>
+              <GaugeIcon />
+              {formatters.percent.format(user.skills.attack.militaryRankPercent / 100)} ({user.militaryRank})
+            </Badge>
+          </SimpleTooltip>
+          <UserBuffBadge user={user} />
+        </div>
+      </CardContent>
+
+      <div className="flex-grow-1" />
+
+      <Separator className="px-2" />
+
       <CardFooter className="flex-wrap gap-2">
         <RankingBadge icon={<PiggyBankIcon />} rank={user.rankings?.userWealth} type="money" tooltip="Total Wealth" />
-        <RankingBadge
-          icon={<SwordIcon />}
-          rank={user.rankings?.weeklyUserDamages}
-          type="damage"
-          tooltip="Weekly Damage"
-        />
-        <RankingBadge icon={<SwordsIcon />} rank={user.rankings?.userDamages} type="damage" tooltip="Total Damage" />
         <RankingBadge
           icon={<BriefcaseMedicalIcon />}
           rank={user.rankings?.userCasesOpened}
           type="count"
           tooltip="Cases Opened"
         />
-        <Badge variant={canRespec ? 'default' : 'destructive'}>
-          {canRespec ? <UserRoundCheckIcon /> : <UserRoundPenIcon />}
-          {canRespec
-            ? 'Respec available'
-            : timeUntilRespec.toHuman({ maximumFractionDigits: 0, unitDisplay: 'narrow', listStyle: 'narrow' })}
-        </Badge>
-
-        <SimpleTooltip tooltip="Military Rank">
-          <Badge variant={'outline'}>
-            <GaugeIcon />
-            {formatters.percent.format(user.skills.attack.militaryRankPercent / 100)} ({user.militaryRank})
-          </Badge>
-        </SimpleTooltip>
       </CardFooter>
     </Card>
   )
