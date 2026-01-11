@@ -194,13 +194,14 @@ export const useUserLite = (userId: string) => useWarEraApiQuery<WarEra.UserLite
 
 export const useAllUsersLite = (userIds: string[]) => {
   const loadingState = useLoadingState()
-  return useQueries<WarEra.UserLite[], { data: WarEra.UserLite[] }>({
+  return useQueries<WarEra.UserLite[], { data: WarEra.UserLite[]; promise: Promise<WarEra.UserLite[]> }>({
     queries: userIds.map((userId) => ({
       queryKey: ['user.getUserLite', { userId }],
       queryFn: async () => warEraApiFetch<WarEra.UserLite>(getApiUrl('user.getUserLite', { userId })),
     })),
     combine: (results) => ({
       data: results.map((r) => r.data as WarEra.UserLite).filter((u) => !!u),
+      promise: Promise.all(results.map((r) => r.promise as Promise<WarEra.UserLite>)),
     }),
   })
 }

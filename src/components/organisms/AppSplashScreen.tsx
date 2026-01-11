@@ -2,7 +2,13 @@ import { useIsRestoring } from '@tanstack/react-query'
 import { PropsWithChildren } from 'react'
 import { Spinner } from '../ui/spinner'
 
-export const AppSplashScreen = (props: PropsWithChildren<unknown>) => {
+export const AppSplashScreen = (props: PropsWithChildren<unknown>) => (
+  <div className="bg-background flex h-screen w-screen items-center justify-center">
+    <Spinner />
+  </div>
+)
+
+export const AppQueryCacheRestoringScreen = (props: PropsWithChildren<unknown>) => {
   const isRestoring = useIsRestoring()
 
   if (isRestoring) {

@@ -25,6 +25,8 @@ import { DateTime } from 'luxon'
 import { formatters } from '@/functions/number-formats'
 import { useBatchedCompanies } from '@/api/warera-api'
 import { ItemImage } from '../atoms/ItemImage'
+import { Suspense, use } from 'react'
+import { Skeleton } from '../ui/skeleton'
 
 export const UserAvatar = ({ user }: { user: WarEra.UserLite }) => {
   return (
@@ -38,15 +40,15 @@ export const UserAvatar = ({ user }: { user: WarEra.UserLite }) => {
 }
 
 export const UserCompaniesProdSummary = ({ userId }: { userId: string }) => {
-  const companyQuery = useBatchedCompanies(userId)
-  if (!companyQuery?.data) return null
+  const companyQuery = use(useBatchedCompanies(userId).promise)
+  if (!companyQuery) return null
 
-  const companies = companyQuery.data ?? []
+  const companies = companyQuery ?? []
   const itemsProduced = companies.map((c) => c.itemCode)
 
   return (
     <SimpleTooltip tooltip={`Items produced by companies`}>
-      <div className="grid grid-cols-12 gap-0">
+      <div className="my-1 grid grid-cols-12 gap-0">
         {itemsProduced.map((itemCode, index) => (
           <ItemImage key={itemCode + index} itemCode={itemCode} />
         ))}
@@ -128,7 +130,9 @@ export const UserCard = ({ user }: { user: WarEra.UserLite }) => {
           <Progress value={(ecoSkillLevels / totalSkillLevels) * 100} className="w-full" />
         </div>
 
-        <UserCompaniesProdSummary userId={user._id} />
+        <Suspense fallback={<Skeleton className="rounded-fulln my-2 h-4 w-full" />}>
+          <UserCompaniesProdSummary userId={user._id} />
+        </Suspense>
       </CardContent>
       <UserBuffBadge user={user} />
       <CardFooter className="flex-wrap gap-2">

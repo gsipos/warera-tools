@@ -1,6 +1,6 @@
 import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client'
 import { RouterProvider, createRouter } from '@tanstack/react-router'
-import React from 'react'
+import React, { Suspense } from 'react'
 import ReactDOM from 'react-dom/client'
 import { asyncStoragePersister, queryClient } from './functions/react-query-setup'
 import { Analytics } from '@vercel/analytics/react'
@@ -10,7 +10,7 @@ const reactRoot = ReactDOM.createRoot(root!)
 
 // Import the generated route tree
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
-import { AppSplashScreen } from './components/organisms/AppSplashScreen'
+import { AppQueryCacheRestoringScreen, AppSplashScreen } from './components/organisms/AppSplashScreen'
 import { routeTree } from './routeTree.gen'
 
 // Create a new router instance
@@ -19,9 +19,11 @@ const router = createRouter({ routeTree })
 reactRoot.render(
   <React.StrictMode>
     <PersistQueryClientProvider client={queryClient} persistOptions={{ persister: asyncStoragePersister }}>
-      <AppSplashScreen>
-        <RouterProvider router={router} />
-      </AppSplashScreen>
+      <AppQueryCacheRestoringScreen>
+        <Suspense fallback={<AppSplashScreen />}>
+          <RouterProvider router={router} />
+        </Suspense>
+      </AppQueryCacheRestoringScreen>
       <Analytics />
       <ReactQueryDevtools initialIsOpen={false} />
     </PersistQueryClientProvider>
