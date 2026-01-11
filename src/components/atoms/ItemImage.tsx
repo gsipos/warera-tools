@@ -6,7 +6,7 @@ const itemImages = Object.values(
 ) as string[]
 
 interface Props {
-  itemCode: WarEra.ItemCode
+  itemCode: WarEra.ItemCode | WarEra.EquipmentCode
   className?: string
 }
 
