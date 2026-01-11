@@ -24,10 +24,9 @@ export const EquipmentGridSelect = (props: Props) => {
           size="sm"
           onClick={() => props.onChange?.(code)}
         >
-          <ItemBackground level={(idx + 1) as WarEra.ArmorLevel} >
-            <ItemImage itemCode={code}  className="size-8" />
+          <ItemBackground level={(idx + 1) as WarEra.ArmorLevel}>
+            <ItemImage itemCode={code} className="size-8" />
           </ItemBackground>
-          
         </Button>
       ))}
 
