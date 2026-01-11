@@ -225,6 +225,7 @@ declare module 'warera-api' {
         precision: UserSkill
         dodge: UserSkill
         lootChance: UserSkill
+        management: UserSkill
       }
       rankings: {
         userDamages: Rank
@@ -240,6 +241,12 @@ declare module 'warera-api' {
       }
       stats: {
         damagesCount: number
+      }
+      buffs?: {
+        debuffCodes?: string[]
+        debuffEndAt?: IsoDateTime
+        buffCodes?: string[]
+        buffEndAt?: IsoDateTime
       }
     }
 

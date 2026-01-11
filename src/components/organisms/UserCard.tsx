@@ -5,10 +5,13 @@ import { Progress } from '@/components/ui/progress'
 import { getUserCombatSkillLevels, getUserEcoSkillLevels, getUserRespecDetails } from '@/functions/user-utils'
 import {
   BriefcaseMedicalIcon,
+  CandyIcon,
+  CandyOffIcon,
   FactoryIcon,
   GaugeIcon,
   PersonStandingIcon,
   PiggyBankIcon,
+  PillIcon,
   SwordIcon,
   SwordsIcon,
   UserIcon,
@@ -29,6 +32,43 @@ export const UserAvatar = ({ user }: { user: WarEra.UserLite }) => {
         <UserIcon />
       </AvatarFallback>
     </Avatar>
+  )
+}
+
+const getHumanReadableDurationUntil = (dateTime: DateTime) =>
+  dateTime
+    .diffNow(['hours', 'minutes'])
+    .toHuman({ maximumFractionDigits: 0, unitDisplay: 'narrow', listStyle: 'narrow' })
+
+const UserBuffBadge = ({ user }: { user: WarEra.UserLite }) => {
+  const hasBuffs = !!user.buffs?.buffEndAt
+  const hasDebuffs = !!user.buffs?.debuffEndAt
+
+  const buffDateTime = user.buffs?.buffEndAt ? DateTime.fromISO(user.buffs.buffEndAt) : null
+  const debuffDateTime = user.buffs?.debuffEndAt ? DateTime.fromISO(user.buffs.debuffEndAt) : null
+
+  const timeUntilBuffEnd = buffDateTime ? getHumanReadableDurationUntil(buffDateTime) : null
+  const timeUntilDebuffEnd = debuffDateTime ? getHumanReadableDurationUntil(debuffDateTime) : null
+
+  return (
+    <>
+      {timeUntilBuffEnd && buffDateTime && (
+        <SimpleTooltip tooltip={`Buff active until ${buffDateTime.toLocaleString(DateTime.DATETIME_MED)}`}>
+          <Badge variant="default" className="text-secondary-foreground border-emerald-600 bg-emerald-600">
+            <CandyIcon />
+            {timeUntilBuffEnd}
+          </Badge>
+        </SimpleTooltip>
+      )}
+      {timeUntilDebuffEnd && debuffDateTime && (
+        <SimpleTooltip tooltip={`Debuff active until ${debuffDateTime.toLocaleString(DateTime.DATETIME_MED)}`}>
+          <Badge variant="destructive">
+            <CandyOffIcon />
+            {timeUntilDebuffEnd}
+          </Badge>
+        </SimpleTooltip>
+      )}
+    </>
   )
 }
 
@@ -68,6 +108,7 @@ export const UserCard = ({ user }: { user: WarEra.UserLite }) => {
           <Progress value={(ecoSkillLevels / totalSkillLevels) * 100} className="w-full" />
         </div>
       </CardContent>
+      <UserBuffBadge user={user} />
       <CardFooter className="flex-wrap gap-2">
         <RankingBadge icon={<PiggyBankIcon />} rank={user.rankings?.userWealth} type="money" tooltip="Total Wealth" />
         <RankingBadge
@@ -89,6 +130,7 @@ export const UserCard = ({ user }: { user: WarEra.UserLite }) => {
             ? 'Respec available'
             : timeUntilRespec.toHuman({ maximumFractionDigits: 0, unitDisplay: 'narrow', listStyle: 'narrow' })}
         </Badge>
+
         <SimpleTooltip tooltip="Military Rank">
           <Badge variant={'outline'}>
             <GaugeIcon />
