@@ -12,7 +12,10 @@ interface Props {
 
 export const ItemImage = (props: Props) => {
   const url = itemImages.find((url) => url.includes(`${props.itemCode}.png`))
-  if (!url) return null
+    if (!url) {
+        console.error('Item image not found for itemCode:', props.itemCode, itemImages);
+        return null
+    }
 
   return <img src={url} alt={props.itemCode} className={cn('h-6 w-6 object-contain', props.className)} />
 }
