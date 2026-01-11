@@ -3,6 +3,9 @@ import { cn } from '@/lib/utils'
 import { WarEra } from 'warera-api'
 import { Button } from '../ui/button'
 import { Fragment } from 'react/jsx-runtime'
+import { ItemImage } from '../atoms/ItemImage'
+import { Item } from '@radix-ui/react-navigation-menu'
+import { ItemBackground } from '../atoms/ItemBackground'
 
 interface Props {
   className?: string
@@ -12,16 +15,18 @@ interface Props {
 
 export const EquipmentGridSelect = (props: Props) => {
   return (
-    <div className={cn('grid grid-cols-7 gap-1', props.className)}>
+    <div className={cn('grid grid-cols-7 gap-2', props.className)}>
       <div>Weapons</div>
-      {weaponsCodes.map((code) => (
+      {weaponsCodes.map((code, idx) => (
         <Button
           key={code}
           variant={props.value === code ? 'default' : 'ghost'}
           size="sm"
           onClick={() => props.onChange?.(code)}
         >
-          {code}
+          <ItemBackground level={(idx + 1) as WarEra.ArmorLevel}>
+            <ItemImage itemCode={code} className="size-8" />
+          </ItemBackground>
         </Button>
       ))}
 
@@ -35,7 +40,9 @@ export const EquipmentGridSelect = (props: Props) => {
               size="sm"
               onClick={() => props.onChange?.(`${armor}${level}` as WarEra.EquipmentCode)}
             >
-              {armor}-{level}
+              <ItemBackground level={level}>
+                <ItemImage itemCode={`${armor}${level}`} className="size-8" />
+              </ItemBackground>
             </Button>
           ))}
         </Fragment>
