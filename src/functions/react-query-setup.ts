@@ -7,14 +7,23 @@ export const DEFAULT_QUERY_STALE_TIME = 1 * 60 * 60 * 1000 // 1 hour
 export const LONG_QUERY_STALE_TIME = 6 * 60 * 60 * 1000 // 6 hours
 
 const asyncStorage = {
-  getItem: (key: string) => get(key),
-  setItem: (key: string, value: string) => set(key, value),
+  getItem: async (key: string) => {
+    console.time(`idb-keyval get ${key}`)
+    const result = await get(key)
+    console.timeEnd(`idb-keyval get ${key}`)
+    return result
+  },
+  setItem: async (key: string, value: string) => {
+    console.time(`idb-keyval set ${key}`)
+    await set(key, value)
+    console.timeEnd(`idb-keyval set ${key}`)
+  },
   removeItem: (key: string) => del(key),
 }
 
 export const asyncStoragePersister = createAsyncStoragePersister({
   storage: asyncStorage,
-  throttleTime: 1000,
+  throttleTime: 10_000,
   key: 'warera-tools-query-cache',
   serialize: (client: PersistedClient) => client as unknown as string,
   deserialize: (cached: string) => cached as unknown as PersistedClient,
@@ -30,6 +39,7 @@ export const queryClient = new QueryClient({
       networkMode: 'offlineFirst',
       retry: 5,
       retryDelay: exponentialBackoff,
+      experimental_prefetchInRender: true,
     },
   },
 })

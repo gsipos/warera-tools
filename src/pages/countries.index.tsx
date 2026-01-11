@@ -1,6 +1,6 @@
 import { useCountries } from '@/api/warera-api'
 import { createFileRoute } from '@tanstack/react-router'
-import { useDeferredValue, useState } from 'react'
+import { Suspense, useDeferredValue, useState } from 'react'
 import { WarEra } from 'warera-api'
 import { CountrySortButtonGroup, CountrySortValue } from './countries/-molecules/CountrySortBToggleGroup'
 import { CountryCard } from './countries/-organisms/CountryCard'
@@ -37,9 +37,11 @@ function CountryListPage() {
       <div className="col-span-full flex">
         <CountrySortButtonGroup value={sortBy} onChange={setSortBy} />
       </div>
-      {sortedCountriesDeferred.map((country, idx) => (
-        <CountryCard country={country} key={country._id} idx={idx + 1} />
-      ))}
+      <Suspense fallback={<div>Loading...</div>}>
+        {sortedCountriesDeferred.map((country, idx) => (
+          <CountryCard country={country} key={country._id} idx={idx + 1} />
+        ))}
+      </Suspense>
     </div>
   )
 }
