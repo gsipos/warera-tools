@@ -1,0 +1,18 @@
+import { cn } from '@/lib/utils'
+import { WarEra } from 'warera-api'
+
+const itemImages = Object.values(
+  import.meta.glob('./../../assets/images/items/*.png', { eager: true, query: '?url', import: 'default' }),
+) as string[]
+
+interface Props {
+  itemCode: WarEra.ItemCode
+  className?: string
+}
+
+export const ItemImage = (props: Props) => {
+  const url = itemImages.find((url) => url.includes(`${props.itemCode}.png`))
+  if (!url) return null
+
+  return <img src={url} alt={props.itemCode} className={cn('h-6 w-6 object-contain', props.className)} />
+}

@@ -23,6 +23,8 @@ import { SimpleTooltip } from '../ui/tooltip'
 import { Badge } from '../ui/badge'
 import { DateTime } from 'luxon'
 import { formatters } from '@/functions/number-formats'
+import { useBatchedCompanies } from '@/api/warera-api'
+import { ItemImage } from '../atoms/ItemImage'
 
 export const UserAvatar = ({ user }: { user: WarEra.UserLite }) => {
   return (
@@ -32,6 +34,24 @@ export const UserAvatar = ({ user }: { user: WarEra.UserLite }) => {
         <UserIcon />
       </AvatarFallback>
     </Avatar>
+  )
+}
+
+export const UserCompaniesProdSummary = ({ userId }: { userId: string }) => {
+  const companyQuery = useBatchedCompanies(userId)
+  if (!companyQuery?.data) return null
+
+  const companies = companyQuery.data ?? []
+  const itemsProduced = companies.map((c) => c.itemCode)
+
+  return (
+    <SimpleTooltip tooltip={`Items produced by companies`}>
+      <div className="grid grid-cols-12 gap-0">
+        {itemsProduced.map((itemCode, index) => (
+          <ItemImage key={itemCode + index} itemCode={itemCode} />
+        ))}
+      </div>
+    </SimpleTooltip>
   )
 }
 
@@ -107,6 +127,8 @@ export const UserCard = ({ user }: { user: WarEra.UserLite }) => {
           <div>eco</div>
           <Progress value={(ecoSkillLevels / totalSkillLevels) * 100} className="w-full" />
         </div>
+
+        <UserCompaniesProdSummary userId={user._id} />
       </CardContent>
       <UserBuffBadge user={user} />
       <CardFooter className="flex-wrap gap-2">

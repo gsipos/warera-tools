@@ -6,6 +6,7 @@ import { useItemSellPrice } from '@/hooks/game/use-item-wage-report'
 import { useTopWorkOfferWage } from '@/hooks/game/use-top-work-offer-wage'
 import { FactoryIcon, PickaxeIcon } from 'lucide-react'
 import { WarEra } from 'warera-api'
+import { ItemImage } from '../atoms/ItemImage'
 
 export const Deposit = ({
   deposit,
@@ -38,7 +39,10 @@ export const Deposit = ({
     <div className="flex flex-col gap-1">
       <div className="flex flex-row items-center justify-between gap-1">
         <PickaxeIcon />
-        {deposit.type}
+        <div className="flex flex-row items-center capitalize">
+          <ItemImage itemCode={deposit.type} />
+          {deposit.type}
+        </div>
         <Badge>
           <FactoryIcon /> +{percentFormat.format(bonus / 100)}
         </Badge>
