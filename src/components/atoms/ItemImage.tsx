@@ -2,7 +2,7 @@ import { cn } from '@/lib/utils'
 import { WarEra } from 'warera-api'
 
 const itemImages = Object.values(
-  import.meta.glob('./../../assets/images/items/*.png', { eager: true, query: '?url', import: 'default' }),
+  import.meta.glob('../../assets/images/items/*.png', { eager: true, query: '?url', import: 'default' }),
 ) as string[]
 
 interface Props {
