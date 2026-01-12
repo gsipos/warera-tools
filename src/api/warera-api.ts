@@ -14,11 +14,27 @@ import { WarEra } from 'warera-api'
 
 const warEraApiUrl = 'https://api2.warera.io/trpc/'
 
+interface TrpcBatchEntry {
+  endpoint: string
+  input: Record<string, unknown>
+}
+
 const getApiUrl = (endpoint: string, input?: Record<string, unknown>) => {
   const url = new URL(endpoint, warEraApiUrl)
   if (input) {
     url.searchParams.set('input', JSON.stringify(input))
   }
+
+  return url.toString()
+}
+
+const getBatchApiUrl = (entries: TrpcBatchEntry[]) => {
+  const url = new URL(entries.map((e) => e.endpoint).join(','), warEraApiUrl)
+  url.searchParams.set('batch', '1')
+
+  const inputObj: Record<number, string> = {}
+  entries.forEach((e, index) => (inputObj[index] = JSON.stringify(e.input)))
+  url.searchParams.set('input', JSON.stringify(inputObj))
 
   return url.toString()
 }
