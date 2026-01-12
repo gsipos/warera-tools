@@ -11,6 +11,7 @@ import { WarEra } from 'warera-api'
 import { ErrorBoundary } from 'react-error-boundary'
 import z from 'zod'
 import { zodValidator, fallback } from '@tanstack/zod-adapter'
+import { PriceDistributionChart } from '@/components/organisms/PriceDistributionChart'
 
 const itemMarketSearchSchema = z.object({
   code: fallback(z.enum(equipmentCodes).default('gun'), 'gun'),
@@ -29,7 +30,7 @@ const skillsToString = (skills: Record<string, number>) => {
     .join(', ')
 }
 
-interface AggregatedTx {
+export interface AggregatedTx {
   skillId: string
   skills: Record<string, number>
   money: number[]
@@ -70,46 +71,30 @@ const useAggregatedTransactions = (txList: WarEra.Transaction[]) => {
   return txGroups
 }
 
-const SingleSkillTxHeatmap = ({
-  txGroups,
-  type,
-}: {
-  txGroups: AggregatedTx[]
-  type: 'min' | 'max' | 'count' | 'avg'
-}) => {
+const SingleSkillChart = ({ txGroups }: { txGroups: AggregatedTx[] }) => {
   const skillNames = Object.keys(txGroups.at(0)?.skills ?? {}) || []
   const firstSkill = skillNames[0] || ''
-  const skillValues = [...new Set(txGroups.map((tx) => tx.skills[firstSkill]))].toSorted()
 
-  const series: [number, number, number][] = txGroups.map((tx) => [
-    skillValues.indexOf(tx.skills[firstSkill]),
-    0,
-    tx[type],
-  ])
-
-  const title: Record<typeof type, string> = {
-    min: `Minimum Price per ${firstSkill}`,
-    max: `Maximum Price per ${firstSkill}`,
-    count: `Number of Transactions per ${firstSkill}`,
-    avg: `Average Price per ${firstSkill}`,
-  }
-
+  const dataSet = txGroups
+    .map((tx) => ({
+      name: '' + tx.skills[firstSkill],
+      min: tx.min,
+      avg: tx.avg,
+      max: tx.max,
+      count: tx.count,
+    }))
+    .toSorted((a, b) => (Number(a.name) || 0) - (Number(b.name) || 0))
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{title[type]}</CardTitle>
+        <CardTitle>Prices by {firstSkill} min/avg/max</CardTitle>
       </CardHeader>
       <CardContent>
         <ErrorBoundary
-          resetKeys={[series]}
+          resetKeys={[dataSet]}
           fallback={<div className="text-red-500">Failed to load heatmap chart.</div>}
         >
-          <HeatMapChart
-            className="h-40 w-140"
-            xAxisLabels={skillValues.map((x) => '' + x)}
-            yAxisLabels={[firstSkill]}
-            seriesData={series}
-          />
+          <PriceDistributionChart className="h-120 w-140" dataSet={dataSet} />
         </ErrorBoundary>
       </CardContent>
     </Card>
@@ -158,7 +143,7 @@ const DualSkillTxHeatmap = ({
           fallback={<div className="text-red-500">Failed to load heatmap chart.</div>}
         >
           <HeatMapChart
-            className="h-80 w-360"
+            className="h-80 w-800"
             xAxisLabels={firstSkillValues.map((x) => '' + x)}
             yAxisLabels={secondSkillValues.map((x) => '' + x)}
             seriesData={series}
@@ -233,21 +218,16 @@ function RouteComponent() {
             <EquipmentGridSelect value={eqCode} onChange={setEqCode} />
           </CardContent>
         </Card>
+
+        {!weaponsCodes.includes(eqCode as WarEra.WeaponCode) && <SingleSkillChart txGroups={txGroups} />}
       </div>
 
-      {weaponsCodes.includes(eqCode as WarEra.WeaponCode) ? (
+      {weaponsCodes.includes(eqCode as WarEra.WeaponCode) && (
         <div className="flex flex-col justify-center gap-4">
           <DualSkillTxHeatmap txGroups={txGroups} type="min" />
           <DualSkillTxHeatmap txGroups={txGroups} type="avg" />
           <DualSkillTxHeatmap txGroups={txGroups} type="max" />
           <DualSkillTxHeatmap txGroups={txGroups} type="count" />
-        </div>
-      ) : (
-        <div className="flex flex-row flex-wrap justify-start gap-4">
-          <SingleSkillTxHeatmap txGroups={txGroups} type="min" />
-          <SingleSkillTxHeatmap txGroups={txGroups} type="avg" />
-          <SingleSkillTxHeatmap txGroups={txGroups} type="max" />
-          <SingleSkillTxHeatmap txGroups={txGroups} type="count" />
         </div>
       )}
     </div>

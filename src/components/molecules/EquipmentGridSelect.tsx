@@ -15,7 +15,7 @@ interface Props {
 
 export const EquipmentGridSelect = (props: Props) => {
   return (
-    <div className={cn('grid grid-cols-7 gap-2', props.className)}>
+    <div className={cn('grid grid-cols-7 gap-1', props.className)}>
       <div>Weapons</div>
       {weaponsCodes.map((code, idx) => (
         <Button
@@ -23,9 +23,10 @@ export const EquipmentGridSelect = (props: Props) => {
           variant={props.value === code ? 'default' : 'ghost'}
           size="sm"
           onClick={() => props.onChange?.(code)}
+          className="h-auto"
         >
           <ItemBackground level={(idx + 1) as WarEra.ArmorLevel}>
-            <ItemImage itemCode={code} className="size-8" />
+            <ItemImage itemCode={code} className="size-12" />
           </ItemBackground>
         </Button>
       ))}
@@ -39,9 +40,10 @@ export const EquipmentGridSelect = (props: Props) => {
               variant={props.value === `${armor}${level}` ? 'default' : 'ghost'}
               size="sm"
               onClick={() => props.onChange?.(`${armor}${level}` as WarEra.EquipmentCode)}
+              className="h-auto"
             >
               <ItemBackground level={level}>
-                <ItemImage itemCode={`${armor}${level}`} className="size-8" />
+                <ItemImage itemCode={`${armor}${level}`} className="size-12" />
               </ItemBackground>
             </Button>
           ))}
