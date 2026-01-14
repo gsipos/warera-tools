@@ -4,13 +4,14 @@ import { Separator } from '../ui/separator'
 import { ItemBackground } from '../atoms/ItemBackground'
 import { ItemImage } from '../atoms/ItemImage'
 import { DateTime } from 'luxon'
+import { useTimeBoxedTransactions } from '@/hooks/game/use-time-boxed-transactions'
 
 export const UserItemMarketCard = ({ userId }: { userId: string }) => {
   const itemMarketQuery = useTransactions({
     userId: userId,
     transactionType: 'itemMarket',
   })
-  const tsx = itemMarketQuery.data?.pages.flatMap((p) => p.items) ?? []
+  const tsx = useTimeBoxedTransactions(itemMarketQuery)
 
   const soldItems = tsx.filter((tx) => tx.sellerId === userId)
   const boughtItems = tsx.filter((tx) => tx.buyerId === userId)

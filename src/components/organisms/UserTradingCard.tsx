@@ -6,6 +6,7 @@ import { Separator } from '@radix-ui/react-separator'
 import { ItemBackground } from '../atoms/ItemBackground'
 import { ItemImage } from '../atoms/ItemImage'
 import { moneyFormat } from '@/functions/number-formats'
+import { useTimeBoxedTransactions } from '@/hooks/game/use-time-boxed-transactions'
 
 interface AggregatedTx {
   itemCode: WarEra.ItemCode
@@ -36,7 +37,7 @@ export const UserTradingCard = ({ userId }: { userId: string }) => {
     userId: userId,
     transactionType: 'trading',
   })
-  const tsx = tradeQuery.data?.pages.flatMap((p) => p.items) ?? []
+  const tsx = useTimeBoxedTransactions(tradeQuery)
 
   const soldItems = tsx.filter((tx) => tx.sellerId === userId)
   const boughtItems = tsx.filter((tx) => tx.buyerId === userId)

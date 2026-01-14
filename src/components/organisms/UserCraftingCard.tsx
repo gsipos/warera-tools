@@ -3,13 +3,14 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '../ui/card
 import { ItemBackground } from '../atoms/ItemBackground'
 import { ItemImage } from '../atoms/ItemImage'
 import { DateTime } from 'luxon'
+import { useTimeBoxedTransactions } from '@/hooks/game/use-time-boxed-transactions'
 
 export const UserCraftingCard = ({ userId }: { userId: string }) => {
   const craftingTxQuery = useTransactions({
     userId: userId,
     transactionType: 'craftItem',
   })
-  const craftingTxs = craftingTxQuery.data?.pages.flatMap((p) => p.items) ?? []
+  const craftingTxs = useTimeBoxedTransactions(craftingTxQuery)
   const scrapsAmount = craftingTxs.reduce((acc, tx) => acc + tx.quantity, 0)
   const craftedItems = craftingTxs.map((tx) => tx.item.code).toSorted()
 
@@ -17,7 +18,7 @@ export const UserCraftingCard = ({ userId }: { userId: string }) => {
     userId: userId,
     transactionType: 'dismantleItem',
   })
-  const dismantledTxs = dismantledItems.data?.pages.flatMap((p) => p.items) ?? []
+  const dismantledTxs = useTimeBoxedTransactions(dismantledItems)
   const dismantledScraps = dismantledTxs.reduce((acc, tx) => acc + tx.quantity, 0)
 
   const lastTxTimeStamp = craftingTxs.at(-1)?.createdAt
