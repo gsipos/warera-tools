@@ -1,43 +1,44 @@
+import { useBatchedCompanies } from '@/api/warera-api'
 import { RankingBadge } from '@/components/molecules/RankingBadge'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Card, CardAction, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
+import { formatters, percentFormat } from '@/functions/number-formats'
 import { getUserCombatSkillLevels, getUserEcoSkillLevels, getUserRespecDetails } from '@/functions/user-utils'
 import {
   BriefcaseMedicalIcon,
   CandyIcon,
   CandyOffIcon,
+  ExternalLinkIcon,
   FactoryIcon,
   GaugeIcon,
   PersonStandingIcon,
   PiggyBankIcon,
-  PillIcon,
   SwordIcon,
   SwordsIcon,
   UserIcon,
   UserRoundCheckIcon,
   UserRoundPenIcon,
 } from 'lucide-react'
-import { WarEra } from 'warera-api'
-import { SimpleTooltip } from '../ui/tooltip'
-import { Badge } from '../ui/badge'
 import { DateTime } from 'luxon'
-import { formatters, percentFormat } from '@/functions/number-formats'
-import { useBatchedCompanies } from '@/api/warera-api'
+import { WarEra } from 'warera-api'
 import { ItemImage } from '../atoms/ItemImage'
-import { Suspense, use } from 'react'
+import { Badge } from '../ui/badge'
+import { Button } from '../ui/button'
+import { Separator } from '../ui/separator'
 import { Skeleton } from '../ui/skeleton'
+import { SimpleTooltip } from '../ui/tooltip'
 
+import ArmorIcon from './../../assets/icons/armor.svg?react'
 import AttackIcon from './../../assets/icons/attack.svg?react'
-import PrecisionIcon from './../../assets/icons/precision.svg?react'
 import CritChanceIcon from './../../assets/icons/critChance.svg?react'
 import CritDamagesIcon from './../../assets/icons/critDamages.svg?react'
-import ArmorIcon from './../../assets/icons/armor.svg?react'
 import DodgeIcon from './../../assets/icons/dodge.svg?react'
 import HealthIcon from './../../assets/icons/health.svg?react'
-import LootChangeIcon from './../../assets/icons/lootChange.svg?react'
 import HungerIcon from './../../assets/icons/hunger.svg?react'
-import { Separator } from '../ui/separator'
+import LootChangeIcon from './../../assets/icons/lootChange.svg?react'
+import PrecisionIcon from './../../assets/icons/precision.svg?react'
+import { Link } from '@tanstack/react-router'
 
 export const UserAvatar = ({ user }: { user: WarEra.UserLite }) => {
   return (
@@ -203,20 +204,20 @@ export const UserCard = ({ user }: { user: WarEra.UserLite }) => {
     return null
   }
 
-  const { canRespec, timeUntilRespec } = getUserRespecDetails(user)
-
   return (
     <Card>
-      <CardHeader className="flex flex-row items-center gap-2">
-        <UserAvatar user={user} />
-        <CardTitle>{user.username}</CardTitle>
-        <CardAction>
-          <SimpleTooltip tooltip={'Level'}>
-            <Badge variant="outline">
-              <PersonStandingIcon />
-              {user.leveling.level}
-            </Badge>
-          </SimpleTooltip>
+      <CardHeader>
+        <CardTitle className="flex flex-row items-center gap-2">
+          <UserAvatar user={user} />
+
+          {user.username}
+        </CardTitle>
+        <CardAction className="flex justify-between gap-2">
+          <Button variant="outline" size="icon-sm" asChild>
+            <Link to={`/users/${user._id}`}>
+              <ExternalLinkIcon />
+            </Link>
+          </Button>
         </CardAction>
       </CardHeader>
       <CardContent className="flex flex-col gap-2">
@@ -270,6 +271,12 @@ export const UserCard = ({ user }: { user: WarEra.UserLite }) => {
       <Separator className="px-2" />
 
       <CardFooter className="flex-wrap gap-2">
+        <SimpleTooltip tooltip={'Level'}>
+          <Badge variant="outline">
+            <PersonStandingIcon />
+            {user.leveling.level}
+          </Badge>
+        </SimpleTooltip>
         <RankingBadge icon={<PiggyBankIcon />} rank={user.rankings?.userWealth} type="money" tooltip="Total Wealth" />
         <RankingBadge
           icon={<BriefcaseMedicalIcon />}

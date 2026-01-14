@@ -20,6 +20,7 @@ declare module 'warera-api' {
       | 'petroleum'
       | 'ammo'
       | 'iron'
+      | 'scraps'
 
     interface ApiResponse<T> {
       result: {
@@ -305,6 +306,7 @@ declare module 'warera-api' {
       __v: number
 
       item: Item
+      itemCode?: ItemCode | EquipmentCode
     }
   }
 }
