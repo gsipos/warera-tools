@@ -30,6 +30,7 @@ export const itemRecipes: Record<WarEra.ItemCode, WarEra.ItemRecipe> = {
   cocain: withIngredients(200, 'coca', 200),
 
   case1: onlyProduction(1), // TODO: remove this
+  scraps: onlyProduction(1), // TODO: remove this
 }
 
 export const depositItemCodes: WarEra.ItemCode[] = [
