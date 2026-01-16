@@ -5,6 +5,8 @@ import { ItemBackground } from '../atoms/ItemBackground'
 import { ItemImage } from '../atoms/ItemImage'
 import { DateTime } from 'luxon'
 import { useTimeBoxedTransactions } from '@/hooks/game/use-time-boxed-transactions'
+import { ItemThumbnail } from '../molecules/ItemThumbnail'
+import { ScrollArea } from '../ui/scroll-area'
 
 export const UserItemMarketCard = ({ userId }: { userId: string }) => {
   const itemMarketQuery = useTransactions({
@@ -20,6 +22,7 @@ export const UserItemMarketCard = ({ userId }: { userId: string }) => {
   const boughtValue = boughtItems.reduce((acc, tx) => acc + tx.money, 0)
 
   const lastTxTimeStamp = tsx.at(-1)?.createdAt
+  const soldPerValue = soldValue / (soldItems.length || 1)
 
   return (
     <Card>
@@ -30,6 +33,7 @@ export const UserItemMarketCard = ({ userId }: { userId: string }) => {
         <div>Since {DateTime.fromISO(lastTxTimeStamp ?? '').toLocaleString(DateTime.DATETIME_SHORT)}</div>
         <div>
           Items Sold: {soldItems.length} for {soldValue.toLocaleString()}{' '}
+          <span className="text-muted-foreground">({soldPerValue.toFixed(1)} avg)</span>
         </div>
         <div>
           Items Bought: {boughtItems.length} for {boughtValue.toLocaleString()}{' '}
@@ -37,22 +41,22 @@ export const UserItemMarketCard = ({ userId }: { userId: string }) => {
 
         <Separator />
         <div>Sold Items</div>
-        <div className="grid grid-cols-6 gap-2">
-          {soldItems.map((tx, idx) => (
-            <ItemBackground key={idx} code={tx.item.code}>
-              <ItemImage itemCode={tx.item.code} className="size-6" />
-            </ItemBackground>
-          ))}
-        </div>
+        <ScrollArea className="max-h-120">
+          <div className="grid grid-cols-6 gap-2">
+            {soldItems.map((tx) => (
+              <ItemThumbnail key={tx.item._id} item={tx.item} />
+            ))}
+          </div>
+        </ScrollArea>
         <Separator />
         <div>Bought Items</div>
-        <div className="grid grid-cols-6 gap-2">
-          {boughtItems.map((tx, idx) => (
-            <ItemBackground key={idx} code={tx.item.code}>
-              <ItemImage itemCode={tx.item.code} className="size-6" />
-            </ItemBackground>
-          ))}
-        </div>
+        <ScrollArea className="max-h-120">
+          <div className="grid grid-cols-6 gap-2">
+            {boughtItems.map((tx) => (
+              <ItemThumbnail key={tx.item._id} item={tx.item} />
+            ))}
+          </div>
+        </ScrollArea>
       </CardContent>
       <CardFooter></CardFooter>
     </Card>
