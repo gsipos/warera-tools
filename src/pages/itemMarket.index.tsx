@@ -169,7 +169,7 @@ function RouteComponent() {
     itemCode: eqCode,
   })
 
-  const txList = tqQuery.data?.pages.flatMap((p) => p.items) ?? []
+  const txList = (tqQuery.data?.pages.flatMap((p) => p.items) ?? []).filter((tx) => tx.item.state === tx.item.maxState)
 
   const txGroups = useAggregatedTransactions(txList)
 
