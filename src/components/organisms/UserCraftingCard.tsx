@@ -4,6 +4,8 @@ import { ItemBackground } from '../atoms/ItemBackground'
 import { ItemImage } from '../atoms/ItemImage'
 import { DateTime } from 'luxon'
 import { useTimeBoxedTransactions } from '@/hooks/game/use-time-boxed-transactions'
+import { ItemThumbnail } from '../molecules/ItemThumbnail'
+import { ScrollArea } from '../ui/scroll-area'
 
 export const UserCraftingCard = ({ userId }: { userId: string }) => {
   const craftingTxQuery = useTransactions({
@@ -12,7 +14,7 @@ export const UserCraftingCard = ({ userId }: { userId: string }) => {
   })
   const craftingTxs = useTimeBoxedTransactions(craftingTxQuery)
   const scrapsAmount = craftingTxs.reduce((acc, tx) => acc + tx.quantity, 0)
-  const craftedItems = craftingTxs.map((tx) => tx.item.code).toSorted()
+  const craftedItems = craftingTxs.map((tx) => tx.item).toSorted()
 
   const dismantledItems = useTransactions({
     userId: userId,
@@ -47,13 +49,13 @@ export const UserCraftingCard = ({ userId }: { userId: string }) => {
         </div>
 
         <div>Crafted Items:</div>
-        <div className="grid grid-cols-6 gap-2">
-          {craftedItems.map((code, idx) => (
-            <ItemBackground key={idx} code={code}>
-              <ItemImage itemCode={code} className="size-6" />
-            </ItemBackground>
-          ))}
-        </div>
+        <ScrollArea className="max-h-120">
+          <div className="bg- grid grid-cols-6 gap-2">
+            {craftedItems.map((item) => (
+              <ItemThumbnail key={item._id} item={item} />
+            ))}
+          </div>
+        </ScrollArea>
       </CardContent>
       <CardFooter></CardFooter>
     </Card>
