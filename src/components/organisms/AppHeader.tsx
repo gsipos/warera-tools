@@ -11,8 +11,11 @@ import {
 import { useIsMobile } from '@/hooks/use-mobile'
 import { Separator } from '@radix-ui/react-separator'
 import { Link } from '@tanstack/react-router'
-import { ToolCaseIcon } from 'lucide-react'
+import { RefreshCwIcon, ToolCaseIcon } from 'lucide-react'
 import { LoadingIndicator } from '../molecules/LoadingIndicator'
+import { Button } from '../ui/button'
+import { SimpleTooltip } from '../ui/tooltip'
+import { useQueryClient } from '@tanstack/react-query'
 
 interface NavLinkk {
   title: string
@@ -133,6 +136,22 @@ function ListItem({ title, children, href, ...props }: React.ComponentPropsWitho
   )
 }
 
+export const RefreshDataButton = () => {
+  const queryClient = useQueryClient()
+
+  const handleRefresh = async () => {
+    await queryClient.invalidateQueries()
+  }
+
+  return (
+    <SimpleTooltip tooltip="Refresh Data">
+      <Button onClick={handleRefresh} size="icon-sm" variant="ghost">
+        <RefreshCwIcon />
+      </Button>
+    </SimpleTooltip>
+  )
+}
+
 export const AppHeader = () => {
   return (
     <>
@@ -145,6 +164,7 @@ export const AppHeader = () => {
         <AppNavigationMenu />
 
         <LoadingIndicator />
+        <RefreshDataButton />
       </div>
       <Separator className="my-2" />
     </>
