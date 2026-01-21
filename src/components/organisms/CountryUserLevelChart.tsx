@@ -22,10 +22,7 @@ export const CountryUserLevelChart = ({ countryId, className }: Props) => {
       },
       xAxis: {
         type: 'category',
-        data: levelData.map((d) => d.level.toString()),
         name: 'Level',
-        animationDuration: 300,
-        animationDurationUpdate: 300,
         axisTick: {
           alignWithLabel: true,
         },
@@ -33,25 +30,33 @@ export const CountryUserLevelChart = ({ countryId, className }: Props) => {
       yAxis: {
         type: 'value',
         name: 'Number of Citizens',
-        animationDuration: 300,
-        animationDurationUpdate: 300,
       },
       series: [
         {
           type: 'bar',
-          data: levelData.map((d) => d.count),
+          encode: {
+            x: 'level',
+            y: 'count',
+          },
         },
       ],
-      animationDuration: 0,
-      animationDurationUpdate: 3000,
-      animationEasing: 'linear',
-      animationEasingUpdate: 'linear',
+      animationThreshold: 2000,
     }
 
     return chart
-  }, [levelData])
+  }, [])
 
-  const ref = useEcharts(config)
+  const dataset = useMemo(
+    () => ({
+      dataset: {
+        dimensions: ['level', 'count'],
+        source: levelData,
+      },
+    }),
+    [levelData],
+  )
+
+  const ref = useEcharts(config, dataset)
 
   return (
     <Card className={className}>

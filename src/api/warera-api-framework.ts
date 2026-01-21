@@ -1,17 +1,21 @@
+import { chunkArray } from '@/functions/arrays'
 import { useLoadingState } from '@/hooks/use-loading-state'
-import { InfiniteData, useInfiniteQuery, UseInfiniteQueryResult, useQuery } from '@tanstack/react-query'
+import { InfiniteData, useInfiniteQuery, UseInfiniteQueryResult, useQueries, useQuery } from '@tanstack/react-query'
 import pThrottle from 'p-throttle'
 import { useEffect } from 'react'
 import { WarEra } from 'warera-api'
+import pLimit from 'p-limit'
 
 const warEraApiUrl = 'https://api2.warera.io/trpc/'
 
+type Input = Record<string, unknown>
+
 interface TrpcBatchEntry {
   endpoint: string
-  input: Record<string, unknown>
+  input: Input
 }
 
-export const getApiUrl = (endpoint: string, input?: Record<string, unknown>) => {
+export const getApiUrl = (endpoint: string, input?: Input) => {
   const url = new URL(endpoint, warEraApiUrl)
   if (input) {
     url.searchParams.set('input', JSON.stringify(input))
@@ -24,30 +28,39 @@ const getBatchApiUrl = (entries: TrpcBatchEntry[]) => {
   const url = new URL(entries.map((e) => e.endpoint).join(','), warEraApiUrl)
   url.searchParams.set('batch', '1')
 
-  const inputObj: Record<number, string> = {}
-  entries.forEach((e, index) => (inputObj[index] = JSON.stringify(e.input)))
+  const inputObj: Record<number, Input> = {}
+  entries.forEach((e, index) => (inputObj[index] = e.input))
   url.searchParams.set('input', JSON.stringify(inputObj))
 
   return url.toString()
 }
 
 const apiFetchLimit = pThrottle({
-  limit: 100,
+  limit: 150,
   interval: 1000,
 })
 
-export const warEraApiFetch = async <TData>(endPoint: string) => {
+const apiConcurrencyLimit = pLimit(10)
+
+export const warEraBaseApiFetch = async <TData>(endPoint: string) => {
   useLoadingState.getState().addItems(1)
   const response = await apiFetchLimit(() =>
-    fetch(endPoint, {
-      headers: {
-        'X-API-Key': import.meta.env.VITE_WARERA_DEFAULT_API_KEY,
-      },
-    }),
+    apiConcurrencyLimit(() =>
+      fetch(endPoint, {
+        headers: {
+          'X-API-Key': import.meta.env.VITE_WARERA_DEFAULT_API_KEY,
+        },
+      }),
+    ),
   )()
-  const data = (await response.json()) as WarEra.ApiResponse<TData>
+  const data = (await response.json()) as TData
   useLoadingState.getState().finishItems(1)
-  return data.result.data
+  return data
+}
+
+export const warEraApiFetch = async <TData>(endPoint: string) => {
+  const response = await warEraBaseApiFetch<WarEra.ApiResponse<TData>>(endPoint)
+  return response.result.data
 }
 
 export const useWarEraApiQuery = <TData, Input extends Record<string, unknown> = {}>(
@@ -87,16 +100,28 @@ export const usePaginatedWarEraApiQuery = <TData, Input extends Record<string, u
 }
 
 export const useWarEraApiBatchQuery = <TData>(entries: TrpcBatchEntry[]) => {
+  const chunks = chunkArray(entries, 50)
   const loadingState = useLoadingState()
-  return useQuery<TData[]>({
-    queryKey: ['batch', entries],
-    queryFn: async () => {
-      loadingState.addItems(1)
-      const result = await warEraApiFetch<TData[]>(getBatchApiUrl(entries))
-      loadingState.finishItems(1)
-      return result
-    },
-    enabled: entries.length > 0,
+
+  return useQueries({
+    queries: chunks.map((chunk) => ({
+      queryKey: ['batch', chunk],
+      queryFn: async () => {
+        loadingState.addItems(1)
+        const result = await warEraBaseApiFetch<WarEra.BatchedApiResponse<TData>>(getBatchApiUrl(chunk))
+        loadingState.finishItems(1)
+        return (result ?? []).map((r) => r.result.data)
+      },
+      enabled: entries.length > 0,
+    })),
+    combine: (results) => ({
+      data: results
+        .flat()
+        .map((q) => q.data)
+        .flat()
+        .filter((d) => d !== undefined) as TData[],
+      queries: results,
+    }),
   })
 }
 

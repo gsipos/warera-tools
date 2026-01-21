@@ -5,6 +5,7 @@ import { Card, CardAction, CardContent, CardFooter, CardHeader, CardTitle } from
 import { Progress } from '@/components/ui/progress'
 import { formatters, percentFormat } from '@/functions/number-formats'
 import { getUserCombatSkillLevels, getUserEcoSkillLevels, getUserRespecDetails } from '@/functions/user-utils'
+import { Link } from '@tanstack/react-router'
 import {
   BriefcaseMedicalIcon,
   CandyIcon,
@@ -28,8 +29,6 @@ import { Button } from '../ui/button'
 import { Separator } from '../ui/separator'
 import { Skeleton } from '../ui/skeleton'
 import { SimpleTooltip } from '../ui/tooltip'
-
-import { Link } from '@tanstack/react-router'
 import ArmorIcon from './../../assets/icons/armor.svg?react'
 import AttackIcon from './../../assets/icons/attack.svg?react'
 import CritChanceIcon from './../../assets/icons/critChance.svg?react'
