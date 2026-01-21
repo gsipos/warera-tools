@@ -1,10 +1,11 @@
-import { useBatchedCompanies } from '@/api/warera-api'
+import { useUserCompanies } from '@/api/warera-api'
 import { RankingBadge } from '@/components/molecules/RankingBadge'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Card, CardAction, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
 import { formatters, percentFormat } from '@/functions/number-formats'
 import { getUserCombatSkillLevels, getUserEcoSkillLevels, getUserRespecDetails } from '@/functions/user-utils'
+import { Link } from '@tanstack/react-router'
 import {
   BriefcaseMedicalIcon,
   CandyIcon,
@@ -28,7 +29,6 @@ import { Button } from '../ui/button'
 import { Separator } from '../ui/separator'
 import { Skeleton } from '../ui/skeleton'
 import { SimpleTooltip } from '../ui/tooltip'
-
 import ArmorIcon from './../../assets/icons/armor.svg?react'
 import AttackIcon from './../../assets/icons/attack.svg?react'
 import CritChanceIcon from './../../assets/icons/critChance.svg?react'
@@ -38,7 +38,6 @@ import HealthIcon from './../../assets/icons/health.svg?react'
 import HungerIcon from './../../assets/icons/hunger.svg?react'
 import LootChangeIcon from './../../assets/icons/lootChange.svg?react'
 import PrecisionIcon from './../../assets/icons/precision.svg?react'
-import { Link } from '@tanstack/react-router'
 
 export const UserAvatar = ({ user }: { user: WarEra.UserLite }) => {
   return (
@@ -52,7 +51,7 @@ export const UserAvatar = ({ user }: { user: WarEra.UserLite }) => {
 }
 
 export const UserCompaniesProdSummary = ({ userId }: { userId: string }) => {
-  const companyQuery = useBatchedCompanies(userId)
+  const companyQuery = useUserCompanies(userId)
   if (!companyQuery) return <Skeleton className="h-4 w-full rounded-full" />
 
   const companies = companyQuery.data ?? []

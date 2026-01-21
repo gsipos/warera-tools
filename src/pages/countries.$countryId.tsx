@@ -1,4 +1,3 @@
-import { useWorkOffersByCompanies } from '@/api/warera-api'
 import { UserCard } from '@/components/organisms/UserCard'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -21,7 +20,6 @@ import { ReactNode, useMemo } from 'react'
 import { WarEra } from 'warera-api'
 import { CountryCard } from './countries/-organisms/CountryCard'
 import { CountryUserLevelChart } from '@/components/organisms/CountryUserLevelChart'
-import { C } from 'node_modules/@tanstack/query-core/build/modern/hydration-CeGZtiZv'
 
 export const Route = createFileRoute('/countries/$countryId')({
   component: CountryDetailPage,
@@ -39,8 +37,6 @@ const usecountryUserBuildDistribution = (users: WarEra.UserLite[]) => {
 }
 
 const CountryStatItem = (props: { icon: ReactNode; label: ReactNode; value: number; total: number }) => {
-  const Icon = props.icon
-
   return (
     <div className="flex flex-row items-center gap-1">
       {props.icon}

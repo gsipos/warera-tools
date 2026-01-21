@@ -28,6 +28,8 @@ declare module 'warera-api' {
       }
     }
 
+    type BatchedApiResponse<T> = ApiResponse<T>[]
+
     interface Paginated<T> {
       items: T[]
       nextCursor?: string
@@ -280,6 +282,11 @@ declare module 'warera-api' {
       | 'openCase'
       | 'craftItem'
       | 'dismantleItem'
+
+    interface PageableOptions {
+      limit?: number
+      cursor?: string
+    }
 
     interface TransactionOptions {
       limit?: number

@@ -1,9 +1,9 @@
+import { Badge } from '@/components/ui/badge'
+import { formatters, FormatType } from '@/functions/number-formats'
+import { cn } from '@/lib/utils'
 import { cva } from 'class-variance-authority'
 import { ReactNode } from 'react'
 import { WarEra } from 'warera-api'
-import { Badge } from '@/components/ui/badge'
-import { cn } from '@/lib/utils'
-import { formatters, FormatType } from '@/functions/number-formats'
 import { SimpleTooltip } from '../ui/tooltip'
 
 const badgeVariants = cva('', {

@@ -11,12 +11,6 @@ interface Props {
 
 export const HeatMapChart = (props: Props) => {
   const config = useMemo(() => {
-    const safeSeriesData = (props.seriesData || []).filter(
-      (d) => !(d as unknown[]).includes(undefined) || !(d as unknown[]).includes(null),
-    ) as [number, number, number][]
-    const values = safeSeriesData.map((d) => d[2]).filter((v) => typeof v === 'number') as number[]
-    const min = Math.min(...values)
-    const max = Math.max(...values)
     const chart: EChartsOption = {
       tooltip: {
         position: 'top',
@@ -37,11 +31,18 @@ export const HeatMapChart = (props: Props) => {
         type: 'category',
         data: props.yAxisLabels,
       },
-      visualMap: {
-        min,
-        max,
-        orient: 'horizontal',
-      },
+    }
+    return chart
+  }, [props.xAxisLabels, props.yAxisLabels])
+
+  const dataset = useMemo(() => {
+    const safeSeriesData = (props.seriesData || []).filter(
+      (d) => !(d as unknown[]).includes(undefined) || !(d as unknown[]).includes(null),
+    ) as [number, number, number][]
+    const values = safeSeriesData.map((d) => d[2]).filter((v) => typeof v === 'number') as number[]
+    const min = Math.min(...values)
+    const max = Math.max(...values)
+    return {
       series: [
         {
           name: 'Data',
@@ -58,9 +59,14 @@ export const HeatMapChart = (props: Props) => {
           },
         },
       ],
-    }
-    return chart
-  }, [props.xAxisLabels, props.yAxisLabels, props.seriesData])
-  const ref = useEcharts(config)
+      visualMap: {
+        min,
+        max,
+        orient: 'horizontal',
+      },
+    } as EChartsOption
+  }, [props.seriesData])
+
+  const ref = useEcharts(config, dataset)
   return <div ref={ref} className={props.className} />
 }

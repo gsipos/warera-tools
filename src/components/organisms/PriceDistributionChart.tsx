@@ -21,11 +21,7 @@ export const PriceDistributionChart = (props: Props) => {
       tooltip: {
         position: 'top',
       },
-
-      dataset: {
-        dimensions: ['name', 'min', 'avg', 'max'],
-        source: props.dataSet,
-      },
+      animationThreshold: 2000,
       grid: {
         height: '75%',
         top: '0%',
@@ -68,7 +64,17 @@ export const PriceDistributionChart = (props: Props) => {
       ],
     }
     return chart
+  }, [])
+
+  const dataset = useMemo(() => {
+    return {
+      dataset: {
+        dimensions: ['name', 'min', 'avg', 'max'],
+        source: props.dataSet,
+      },
+    }
   }, [props.dataSet])
-  const ref = useEcharts(config)
+
+  const ref = useEcharts(config, dataset)
   return <div ref={ref} className={props.className} />
 }
