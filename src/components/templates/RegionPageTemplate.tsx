@@ -91,7 +91,6 @@ export const RegionPageTemplate = (props: Props) => {
         <RegionCard
           region={extRegion.region}
           key={extRegion.region._id}
-          companies={extRegion.companies}
           country={extRegion.country}
           initialCountry={extRegion.initialCountry}
         />

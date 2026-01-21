@@ -11,11 +11,9 @@ import { ItemImage } from '../atoms/ItemImage'
 export const Deposit = ({
   deposit,
   productionBonus,
-  companies,
 }: {
   deposit: WarEra.Deposit | undefined
   productionBonus: number
-  companies: WarEra.Company[]
 }) => {
   const topWage = useTopWorkOfferWage()
   const depositItemProductionPoints = deposit ? itemRecipes[deposit.type ?? 'grain'].productionPoints : 0
@@ -33,8 +31,6 @@ export const Deposit = ({
 
   const bonus = productionBonus + 30
 
-  const companiesMiningDeposits = companies.filter((c) => c.itemCode === deposit.type)
-  const miningSumValue = companiesMiningDeposits.reduce((sum, c) => sum + c.estimatedValue, 0)
   return (
     <div className="flex flex-col gap-1">
       <div className="flex flex-row items-center justify-between gap-1">
@@ -52,10 +48,6 @@ export const Deposit = ({
       </div>
       <div className="text-muted-foreground text-sm">
         ({countFormat.format(deposit.quantity)} / {countFormat.format(all)}) - ({percentFormat.format(value / 100)})
-      </div>
-      <div>
-        Comanies mining this deposit: {companiesMiningDeposits.length} (Estimated Value:{' '}
-        {countFormat.format(miningSumValue)})
       </div>
       <div>
         <div>Wages: {moneyFormat.format(topWage)}</div>

@@ -280,6 +280,11 @@ declare module 'warera-api' {
       | 'openCase'
       | 'craftItem'
       | 'dismantleItem'
+    
+    interface PageableOptions {
+      limit?: number
+      cursor?: string
+    }
 
     interface TransactionOptions {
       limit?: number

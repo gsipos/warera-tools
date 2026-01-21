@@ -5,13 +5,12 @@ import { Progress } from '@/components/ui/progress'
 import { SimpleTooltip } from '@/components/ui/tooltip'
 import { countFormat } from '@/functions/number-formats'
 import { cn } from '@/lib/utils'
-import { Building2Icon, FlameIcon, LandmarkIcon, Link2Icon, Link2OffIcon } from 'lucide-react'
+import { FlameIcon, LandmarkIcon, Link2Icon, Link2OffIcon } from 'lucide-react'
 import { WarEra } from 'warera-api'
 import { Deposit } from '../molecules/Deposit'
 
 interface Props {
   region: WarEra.Region
-  companies: WarEra.Company[]
   country?: WarEra.Country | undefined
   initialCountry?: WarEra.Country | undefined
 }
@@ -25,7 +24,7 @@ const Resistance = ({ resistance }: { resistance: number }) => {
   )
 }
 
-export const RegionCard = ({ region, companies, country, initialCountry }: Props) => {
+export const RegionCard = ({ region, country, initialCountry }: Props) => {
   const initialCountryId = region.initialCountry
   const currentCountryId = region.country
 
@@ -51,7 +50,7 @@ export const RegionCard = ({ region, companies, country, initialCountry }: Props
       </CardHeader>
 
       <CardContent className="flex flex-col gap-4">
-        <Deposit deposit={region.deposit} productionBonus={prodBonus} companies={companies} />
+        <Deposit deposit={region.deposit} productionBonus={prodBonus} />
 
         {isOccupied ? <Resistance resistance={region.resistance} /> : null}
       </CardContent>
@@ -68,12 +67,6 @@ export const RegionCard = ({ region, companies, country, initialCountry }: Props
         <SimpleTooltip tooltip={region.isLinkedToCapital ? 'Linked to capital' : 'Not linked to capital'}>
           <Badge variant={region.isLinkedToCapital ? 'outline' : 'destructive'}>
             {region.isLinkedToCapital ? <Link2Icon /> : <Link2OffIcon />}
-          </Badge>
-        </SimpleTooltip>
-        <SimpleTooltip tooltip={`${companies.length} companies in this region`}>
-          <Badge variant="outline">
-            <Building2Icon />
-            {companies.length}
           </Badge>
         </SimpleTooltip>
       </CardFooter>
