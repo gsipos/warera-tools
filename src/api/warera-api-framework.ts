@@ -89,7 +89,7 @@ export const usePaginatedWarEraApiQuery = <TData, Input extends Record<string, u
       return warEraApiFetch<WarEra.Paginated<TData>>(
         getApiUrl(fragment, {
           ...input,
-          cursor: pageParam,
+          cursor: pageParam ?? '',
           limit: input?.limit ?? 50,
         }),
       )
