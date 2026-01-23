@@ -41,13 +41,6 @@ export const PriceDistributionChart = (props: Props) => {
       },
       series: [
         {
-          type: 'bar',
-
-          label: {
-            show: true,
-          },
-        },
-        {
           type: 'line',
 
           label: {
@@ -56,6 +49,13 @@ export const PriceDistributionChart = (props: Props) => {
         },
         {
           type: 'bar',
+
+          label: {
+            show: true,
+          },
+        },
+        {
+          type: 'line',
 
           label: {
             show: true,
