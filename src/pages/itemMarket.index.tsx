@@ -12,6 +12,7 @@ import { ErrorBoundary } from 'react-error-boundary'
 import z from 'zod'
 import { zodValidator, fallback } from '@tanstack/zod-adapter'
 import { PriceDistributionChart } from '@/components/organisms/PriceDistributionChart'
+import { useIsMobile } from '@/hooks/use-mobile'
 
 const itemMarketSearchSchema = z.object({
   code: fallback(z.enum(equipmentCodes).default('gun'), 'gun'),
@@ -155,6 +156,7 @@ const DualSkillTxHeatmap = ({
 }
 
 function RouteComponent() {
+  const isMobile = useIsMobile()
   const { code } = Route.useSearch()
   const eqCode = code
 
@@ -189,7 +191,7 @@ function RouteComponent() {
   return (
     <div className="flex flex-col gap-4 p-2">
       <h1 className="col-span-full mb-4 text-2xl font-bold">Item Market Transactions</h1>
-      <div className="flex flex-row items-stretch gap-8">
+      <div className="flex flex-row flex-wrap items-stretch gap-8">
         <Card>
           <CardHeader>
             <CardTitle>Transactions</CardTitle>

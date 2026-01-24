@@ -3,6 +3,7 @@ import { QueryClient } from '@tanstack/react-query'
 import { createAsyncStoragePersister } from '@tanstack/query-async-storage-persister'
 import { del, get, set } from 'idb-keyval'
 import { IDBCache } from '@instructure/idb-cache'
+import { useLoadingState } from '@/hooks/use-loading-state'
 
 export const DEFAULT_QUERY_STALE_TIME = 1 * 60 * 60 * 1000 // 1 hour
 export const LONG_QUERY_STALE_TIME = 6 * 60 * 60 * 1000 // 6 hours
@@ -24,7 +25,10 @@ export const asyncStoragePersister = createAsyncStoragePersister({
   key: 'warera-tools-query-cache',
 })
 
-const exponentialBackoff = (attemptIndex: number) => Math.min(1_000 * 2 ** attemptIndex, 30_000)
+const exponentialBackoff = (attemptIndex: number) => {
+  useLoadingState.getState().onRequestRetry()
+  return Math.min(1_000 * 2 ** attemptIndex, 30_000)
+}
 
 export const queryClient = new QueryClient({
   defaultOptions: {

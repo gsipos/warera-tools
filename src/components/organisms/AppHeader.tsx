@@ -11,7 +11,7 @@ import {
 import { useIsMobile } from '@/hooks/use-mobile'
 import { Separator } from '@radix-ui/react-separator'
 import { Link } from '@tanstack/react-router'
-import { RefreshCwIcon, ToolCaseIcon } from 'lucide-react'
+import { Network, RefreshCwIcon, ToolCaseIcon } from 'lucide-react'
 import { LoadingIndicator } from '../molecules/LoadingIndicator'
 import { Button } from '../ui/button'
 import { SimpleTooltip } from '../ui/tooltip'
@@ -19,6 +19,8 @@ import { useQueryClient } from '@tanstack/react-query'
 import { useFavouriteState } from '@/hooks/use-favourite-state'
 import { UserNavLink } from '../molecules/UserNavLink'
 import { CountryNavLink } from '../molecules/CountryNavLink'
+import { NetworkHealth } from '../molecules/NetworkHealth'
+import { cn } from '@/lib/utils'
 
 interface NavLinkk {
   title: string
@@ -188,9 +190,10 @@ export const RefreshDataButton = () => {
 }
 
 export const AppHeader = () => {
+  const isMobile = useIsMobile()
   return (
     <>
-      <div className="flex flex-row justify-between gap-4 p-2">
+      <div className={cn('flex flex-row flex-wrap justify-between gap-4 p-2', isMobile && 'flex-col justify-start')}>
         <h1 className="flex flex-row items-center gap-2 text-lg font-bold">
           <ToolCaseIcon />
           War Era Tools
@@ -198,8 +201,11 @@ export const AppHeader = () => {
 
         <AppNavigationMenu />
 
-        <LoadingIndicator />
-        <RefreshDataButton />
+        <div className="flex shrink-1 grow-1" />
+        <div className={cn('flex flex-row gap-1', isMobile && 'justify-end')}>
+          <NetworkHealth />
+          <RefreshDataButton />
+        </div>
       </div>
       <Separator className="my-2" />
     </>
