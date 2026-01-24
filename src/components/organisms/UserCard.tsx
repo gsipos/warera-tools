@@ -38,10 +38,11 @@ import HealthIcon from './../../assets/icons/health.svg?react'
 import HungerIcon from './../../assets/icons/hunger.svg?react'
 import LootChangeIcon from './../../assets/icons/lootChange.svg?react'
 import PrecisionIcon from './../../assets/icons/precision.svg?react'
+import { FavouriteButton } from '../atoms/FavouriteButton'
 
-export const UserAvatar = ({ user }: { user: WarEra.UserLite }) => {
+export const UserAvatar = ({ user, className }: { user: WarEra.UserLite; className?: string }) => {
   return (
-    <Avatar>
+    <Avatar className={className}>
       <AvatarImage src={user.avatarUrl ?? ''} alt={user.username} />
       <AvatarFallback>
         <UserIcon />
@@ -212,6 +213,7 @@ export const UserCard = ({ user }: { user: WarEra.UserLite }) => {
           {user.username}
         </CardTitle>
         <CardAction className="flex justify-between gap-2">
+          <FavouriteButton type="user" id={user._id} />
           <Button variant="outline" size="icon-sm" asChild>
             <Link to={`/users/${user._id}`}>
               <ExternalLinkIcon />

@@ -16,6 +16,9 @@ import { LoadingIndicator } from '../molecules/LoadingIndicator'
 import { Button } from '../ui/button'
 import { SimpleTooltip } from '../ui/tooltip'
 import { useQueryClient } from '@tanstack/react-query'
+import { useFavouriteState } from '@/hooks/use-favourite-state'
+import { UserNavLink } from '../molecules/UserNavLink'
+import { CountryNavLink } from '../molecules/CountryNavLink'
 
 interface NavLinkk {
   title: string
@@ -79,6 +82,37 @@ const NavLinkGroup = (props: { links: NavLinkk[]; groupTitle: string }) => {
   )
 }
 
+const NavFavouritesGroup = () => {
+  const favouriteState = useFavouriteState()
+
+  const users = favouriteState.favourites.filter((f) => f.type === 'user')
+  const countries = favouriteState.favourites.filter((f) => f.type === 'country')
+
+  return (
+    <NavigationMenuItem>
+      <NavigationMenuTrigger>Favourites</NavigationMenuTrigger>
+      <NavigationMenuContent>
+        <ul className="grid gap-2 sm:w-[400px] md:w-[500px] md:grid-cols-2 lg:w-[600px]">
+          {users.map((favourite) => (
+            <li key={favourite.id}>
+              <NavigationMenuLink asChild>
+                <UserNavLink userId={favourite.id} />
+              </NavigationMenuLink>
+            </li>
+          ))}
+          {countries.map((favourite) => (
+            <li key={favourite.id}>
+              <NavigationMenuLink asChild>
+                <CountryNavLink countryId={favourite.id} />
+              </NavigationMenuLink>
+            </li>
+          ))}
+        </ul>
+      </NavigationMenuContent>
+    </NavigationMenuItem>
+  )
+}
+
 function AppNavigationMenu() {
   const isMobile = useIsMobile()
 
@@ -118,6 +152,7 @@ function AppNavigationMenu() {
         <NavLinkGroup links={mapLinks} groupTitle="Map" />
         <NavLinkGroup links={depositLinks} groupTitle="Deposits" />
         <NavLinkGroup links={marketLinks} groupTitle="Market" />
+        <NavFavouritesGroup />
       </NavigationMenuList>
     </NavigationMenu>
   )
