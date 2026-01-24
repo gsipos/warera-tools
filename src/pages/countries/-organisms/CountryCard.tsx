@@ -9,6 +9,7 @@ import { BedIcon, FactoryIcon, MapIcon, PiggyBankIcon, SwordIcon, SwordsIcon, Us
 import { useDeferredValue } from 'react'
 import { WarEra } from 'warera-api'
 import { CountryFlagList } from './CountryFlagList'
+import { FavouriteButton } from '@/components/atoms/FavouriteButton'
 
 const CountryCardHeader = (props: { country: WarEra.Country; idx?: number | undefined }) => {
   const idx = useDeferredValue(props.idx)
@@ -18,7 +19,8 @@ const CountryCardHeader = (props: { country: WarEra.Country; idx?: number | unde
         {idx ? <div className="text-muted-foreground mr-2">#{idx}</div> : null}
         <CountryFlag code={props.country.code} className="text-4xl" /> {props.country.name}
       </CardTitle>
-      <CardAction>
+      <CardAction className="flex justify-between gap-2">
+        <FavouriteButton type="country" id={props.country._id} />
         <Button variant="link" asChild>
           <Link to={`/countries/${props.country._id}`}>View Details</Link>
         </Button>
