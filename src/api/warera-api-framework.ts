@@ -38,6 +38,7 @@ const getBatchApiUrl = (entries: TrpcBatchEntry[]) => {
 const apiFetchLimit = pThrottle({
   limit: 150,
   interval: 1000,
+  onDelay: () => useLoadingState.getState().onRequestDelay(),
 })
 
 const apiConcurrencyLimit = pLimit(10)
