@@ -40,20 +40,20 @@ export const UserItemMarketCard = ({ userId }: { userId: string }) => {
         </div>
 
         <Separator />
-        <div>Sold Items</div>
+        <div className="text-muted-foreground mb-1 text-xs uppercase">Sold Items</div>
         <ScrollArea className="max-h-120">
-          <div className="grid grid-cols-6 gap-2">
+          <div className="grid grid-cols-6 items-start gap-2">
             {soldItems.map((tx) => (
-              <ItemThumbnail key={tx.item._id} item={tx.item} />
+              <ItemThumbnail key={tx.item._id} item={tx.item} money={tx.money} />
             ))}
           </div>
         </ScrollArea>
         <Separator />
-        <div>Bought Items</div>
+        <div className="text-muted-foreground mb-1 text-xs uppercase">Bought Items</div>
         <ScrollArea className="max-h-120">
-          <div className="grid grid-cols-6 gap-2">
+          <div className="grid grid-cols-6 items-start gap-2">
             {boughtItems.map((tx) => (
-              <ItemThumbnail key={tx.item._id} item={tx.item} />
+              <ItemThumbnail key={tx.item._id} item={tx.item} money={tx.money} />
             ))}
           </div>
         </ScrollArea>

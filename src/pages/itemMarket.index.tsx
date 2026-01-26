@@ -13,6 +13,7 @@ import z from 'zod'
 import { zodValidator, fallback } from '@tanstack/zod-adapter'
 import { PriceDistributionChart } from '@/components/organisms/PriceDistributionChart'
 import { useIsMobile } from '@/hooks/use-mobile'
+import { AggregatedTx, useAggregatedTransactions, useEquipmentTransactions } from '@/hooks/use-item-market-price'
 
 const itemMarketSearchSchema = z.object({
   code: fallback(z.enum(equipmentCodes).default('gun'), 'gun'),
@@ -24,53 +25,6 @@ export const Route = createFileRoute('/itemMarket/')({
   component: RouteComponent,
   validateSearch: zodValidator(itemMarketSearchSchema),
 })
-
-const skillsToString = (skills: Record<string, number>) => {
-  return Object.entries(skills)
-    .map(([key, value]) => `${key}: ${value}`)
-    .join(', ')
-}
-
-export interface AggregatedTx {
-  skillId: string
-  skills: Record<string, number>
-  money: number[]
-  min: number
-  max: number
-  count: number
-  avg: number
-}
-
-const useAggregatedTransactions = (txList: WarEra.Transaction[]) => {
-  const txGroups: AggregatedTx[] = []
-
-  txList.forEach((tx) => {
-    const skillId = skillsToString(tx.item.skills)
-    let group = txGroups.find((g) => g.skillId === skillId)
-    if (!group) {
-      group = {
-        skillId,
-        skills: tx.item.skills,
-        money: [tx.money],
-        min: tx.money,
-        max: tx.money,
-        count: 1,
-        avg: tx.money,
-      }
-      txGroups.push(group)
-    } else {
-      group.money.push(tx.money)
-      if (tx.money < group.min) group.min = tx.money
-      if (tx.money > group.max) group.max = tx.money
-      group.count += 1
-      group.avg = Math.round(group.money.reduce((a, b) => a + b, 0) / group.money.length)
-    }
-  })
-
-  txGroups.sort((a, b) => a.skillId.localeCompare(b.skillId))
-
-  return txGroups
-}
 
 const SingleSkillChart = ({ txGroups }: { txGroups: AggregatedTx[] }) => {
   const skillNames = Object.keys(txGroups.at(0)?.skills ?? {}) || []
@@ -165,28 +119,7 @@ function RouteComponent() {
     navigate({ search: (old: ItemMarketSearch) => ({ ...old, code: newCode }) })
   }
 
-  const tqQuery = useTransactions({
-    limit: 50,
-    transactionType: 'itemMarket',
-    itemCode: eqCode,
-  })
-
-  const txList = (tqQuery.data?.pages.flatMap((p) => p.items) ?? []).filter((tx) => tx.item.state === tx.item.maxState)
-
-  const txGroups = useAggregatedTransactions(txList)
-
-  const lastTxTimeStamp = txList.at(-1)?.createdAt
-  const latestTxTimeStamp = txList.at(0)?.createdAt
-
-  useEffect(() => {
-    const canFetchMore = tqQuery.hasNextPage && !tqQuery.isFetchingNextPage
-    if (!canFetchMore) return
-    const last2Weeks = DateTime.now().minus({ weeks: 2 })
-    const isLastTxOlder = DateTime.fromISO(lastTxTimeStamp ?? '') < last2Weeks
-    if (isLastTxOlder) return
-
-    tqQuery.fetchNextPage()
-  })
+  const { txList, txGroups, lastTxTimeStamp, latestTxTimeStamp, tqQuery } = useEquipmentTransactions(eqCode)
 
   return (
     <div className="flex flex-col gap-4 p-2">

@@ -61,7 +61,7 @@ export const UserTradingCard = ({ userId }: { userId: string }) => {
         <div>Items Bought for {moneyFormat.format(boughtValue ?? 0)}</div>
 
         <Separator />
-        <div>Bought Items</div>
+        <div className="text-muted-foreground mb-1 text-xs uppercase">Bought Items</div>
         {buys.map((aggTx, idx) => (
           <div className="flex flex-row gap-2">
             {aggTx.amount}x
@@ -74,7 +74,7 @@ export const UserTradingCard = ({ userId }: { userId: string }) => {
         ))}
 
         <Separator />
-        <div>Sold Items</div>
+        <div className="text-muted-foreground mb-1 text-xs uppercase">Sold Items</div>
         {sells.map((aggTx, idx) => (
           <div className="flex flex-row gap-2" key={aggTx.itemCode}>
             {aggTx.amount}x
