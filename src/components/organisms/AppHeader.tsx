@@ -195,7 +195,7 @@ export const AppHeader = () => {
     <>
       <div className={cn('flex flex-row flex-wrap justify-between gap-4 p-2', isMobile && 'flex-col justify-start')}>
         <h1 className="flex flex-row items-center gap-2 text-lg font-bold">
-          <ToolCaseIcon />
+          <img src="/app/logo-500.png" alt="War Era Tools" className="aspect-square h-8 w-8 object-contain" />
           War Era Tools
         </h1>
 

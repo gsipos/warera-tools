@@ -137,10 +137,15 @@ const FavouritesGroup = () => {
 function Index() {
   return (
     <div className="flex flex-row flex-wrap gap-8 p-4">
-      <div className="flex w-full flex-col gap-2">
-        <h1 className="text-2xl font-bold">Welcome to WarEra tools!</h1>
-        <div className="text-muted-foreground text-lg">Dashboards and tools to help you with the game!</div>
-      </div>
+      <Item size="default" className="w-full">
+        <ItemMedia variant="image">
+          <img src="/app/logo-500.png" alt="War Era Tools" className="aspect-square object-contain" />
+        </ItemMedia>
+        <ItemContent>
+          <ItemTitle className="text-2xl font-bold">War Era Tools</ItemTitle>
+          <ItemDescription className="text-lg">Dashboards and tools to help you with the game!</ItemDescription>
+        </ItemContent>
+      </Item>
 
       <ItemGroup className="gap-2">
         <ItemGroupSubTitle>Countries</ItemGroupSubTitle>

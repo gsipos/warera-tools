@@ -88,11 +88,16 @@ export const usePaginatedWarEraApiQuery = <TData, Input extends Record<string, u
     queryKey: [fragment, input],
     queryFn: async ({ pageParam }) => {
       return warEraApiFetch<WarEra.Paginated<TData>>(
-        getApiUrl(fragment, {
-          ...input,
-          cursor: pageParam ?? '',
-          limit: input?.limit ?? 50,
-        }),
+        getApiUrl(
+          fragment,
+          pageParam
+            ? {
+                ...input,
+                cursor: pageParam ?? '',
+                limit: input?.limit ?? 50,
+              }
+            : { ...input, limit: input?.limit ?? 50 },
+        ),
       )
     },
     getNextPageParam: (lastPage) => lastPage.nextCursor,
