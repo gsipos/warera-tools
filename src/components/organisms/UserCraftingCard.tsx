@@ -6,6 +6,14 @@ import { DateTime } from 'luxon'
 import { useTimeBoxedTransactions } from '@/hooks/game/use-time-boxed-transactions'
 import { ItemThumbnail } from '../molecules/ItemThumbnail'
 import { ScrollArea } from '../ui/scroll-area'
+import { useItemMarketPrice } from '@/hooks/use-item-market-price'
+import { WarEra } from 'warera-api'
+
+const ItemThumbnailWithAvgMarketPrice = ({ item }: { item: WarEra.Item }) => {
+  const prices = useItemMarketPrice(item)
+
+  return <ItemThumbnail item={item} money={prices?.avg ?? undefined} />
+}
 
 export const UserCraftingCard = ({ userId }: { userId: string }) => {
   const craftingTxQuery = useTransactions({
@@ -14,7 +22,15 @@ export const UserCraftingCard = ({ userId }: { userId: string }) => {
   })
   const craftingTxs = useTimeBoxedTransactions(craftingTxQuery)
   const scrapsAmount = craftingTxs.reduce((acc, tx) => acc + tx.quantity, 0)
+
+  const startOfToday = DateTime.now().startOf('day')
   const craftedItems = craftingTxs.map((tx) => tx.item).toSorted()
+
+  const craftedItemsToday = craftingTxs
+    .filter((tx) => DateTime.fromISO(tx.createdAt) >= startOfToday)
+    .map((tx) => tx.item)
+    .toSorted()
+  const craftedEarlierItems = craftedItems.filter((item) => !craftedItemsToday.includes(item))
 
   const dismantledItems = useTransactions({
     userId: userId,
@@ -48,10 +64,23 @@ export const UserCraftingCard = ({ userId }: { userId: string }) => {
           {dismantledScraps}
         </div>
 
-        <div>Crafted Items:</div>
+        {craftedItemsToday.length ? (
+          <>
+            <div className="text-muted-foreground mb-1 text-xs uppercase">Crafted today</div>
+            <ScrollArea className="max-h-120">
+              <div className="grid grid-cols-6 items-start gap-2">
+                {craftedItemsToday.map((item) => (
+                  <ItemThumbnailWithAvgMarketPrice key={item._id} item={item} />
+                ))}
+              </div>
+            </ScrollArea>
+          </>
+        ) : null}
+
+        <div className="text-muted-foreground mb-1 text-xs uppercase">Crafted earlier</div>
         <ScrollArea className="max-h-120">
-          <div className="bg- grid grid-cols-6 gap-2">
-            {craftedItems.map((item) => (
+          <div className="grid grid-cols-6 items-start gap-2">
+            {craftedEarlierItems.map((item) => (
               <ItemThumbnail key={item._id} item={item} />
             ))}
           </div>

@@ -1,5 +1,5 @@
 export const moneyFormat = new Intl.NumberFormat('en-US', {
-  minimumFractionDigits: 3,
+  minimumFractionDigits: 0,
   maximumFractionDigits: 3,
   notation: 'compact',
 })
