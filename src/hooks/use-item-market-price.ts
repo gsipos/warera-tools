@@ -23,6 +23,8 @@ export const useAggregatedTransactions = (txList: WarEra.Transaction[]) => {
   const txGroups: AggregatedTx[] = []
 
   txList.forEach((tx) => {
+    if (tx.item.state !== tx.item.maxState) return // Exclude used items
+
     const skillId = skillsToString(tx.item.skills)
     let group = txGroups.find((g) => g.skillId === skillId)
     if (!group) {

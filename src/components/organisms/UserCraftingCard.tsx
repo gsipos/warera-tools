@@ -24,13 +24,22 @@ export const UserCraftingCard = ({ userId }: { userId: string }) => {
   const scrapsAmount = craftingTxs.reduce((acc, tx) => acc + tx.quantity, 0)
 
   const startOfToday = DateTime.now().startOf('day')
+  const startOfYesterday = startOfToday.minus({ days: 1 })
   const craftedItems = craftingTxs.map((tx) => tx.item).toSorted()
 
   const craftedItemsToday = craftingTxs
     .filter((tx) => DateTime.fromISO(tx.createdAt) >= startOfToday)
     .map((tx) => tx.item)
     .toSorted()
-  const craftedEarlierItems = craftedItems.filter((item) => !craftedItemsToday.includes(item))
+
+  const craftedItemsYesterday = craftingTxs
+    .filter((tx) => DateTime.fromISO(tx.createdAt) >= startOfYesterday)
+    .map((tx) => tx.item)
+    .filter((tx) => !craftedItemsToday.includes(tx))
+
+  const craftedEarlierItems = craftedItems
+    .filter((item) => !craftedItemsToday.includes(item))
+    .filter((item) => !craftedItemsYesterday.includes(item))
 
   const dismantledItems = useTransactions({
     userId: userId,
@@ -70,6 +79,19 @@ export const UserCraftingCard = ({ userId }: { userId: string }) => {
             <ScrollArea className="max-h-120">
               <div className="grid grid-cols-6 items-start gap-2">
                 {craftedItemsToday.map((item) => (
+                  <ItemThumbnailWithAvgMarketPrice key={item._id} item={item} />
+                ))}
+              </div>
+            </ScrollArea>
+          </>
+        ) : null}
+
+        {craftedItemsYesterday.length ? (
+          <>
+            <div className="text-muted-foreground mb-1 text-xs uppercase">Crafted yesterday</div>
+            <ScrollArea className="max-h-120">
+              <div className="grid grid-cols-6 items-start gap-2">
+                {craftedItemsYesterday.map((item) => (
                   <ItemThumbnailWithAvgMarketPrice key={item._id} item={item} />
                 ))}
               </div>
