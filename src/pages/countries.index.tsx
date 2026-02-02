@@ -33,7 +33,7 @@ function CountryListPage() {
   const sortedCountriesDeferred = useDeferredValue(sortedCountries)
 
   return (
-    <div className="grid grid-cols-4 gap-6 p-2">
+    <div className="grid grid-cols-[repeat(auto-fill,minmax(300px,1fr))] gap-6 p-2">
       <div className="col-span-full flex">
         <CountrySortButtonGroup value={sortBy} onChange={setSortBy} />
       </div>

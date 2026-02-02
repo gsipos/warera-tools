@@ -3,6 +3,7 @@ import { useMemo } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card'
 import { useEcharts } from '@/hooks/use-echarts'
 import { EChartsOption } from 'echarts'
+import { cn } from '@/lib/utils'
 
 interface Props {
   countryId: string
@@ -59,12 +60,12 @@ export const CountryUserLevelChart = ({ countryId, className }: Props) => {
   const ref = useEcharts(config, dataset)
 
   return (
-    <Card className={className}>
+    <Card className={cn('w-90 max-w-240 shrink-1 grow-1', className)}>
       <CardHeader>
         <CardTitle>Citizens by level</CardTitle>
       </CardHeader>
       <CardContent>
-        <div ref={ref} className="h-80 w-120" />
+        <div ref={ref} className="h-80 w-full grow-1" />
       </CardContent>
     </Card>
   )
