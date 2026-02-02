@@ -5,7 +5,16 @@ import { Button } from '@/components/ui/button'
 import { Card, CardAction, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
 import { Link } from '@tanstack/react-router'
-import { BedIcon, FactoryIcon, MapIcon, PiggyBankIcon, SwordIcon, SwordsIcon, UsersIcon } from 'lucide-react'
+import {
+  BedIcon,
+  ExternalLinkIcon,
+  FactoryIcon,
+  MapIcon,
+  PiggyBankIcon,
+  SwordIcon,
+  SwordsIcon,
+  UsersIcon,
+} from 'lucide-react'
 import { useDeferredValue } from 'react'
 import { WarEra } from 'warera-api'
 import { CountryFlagList } from './CountryFlagList'
@@ -21,8 +30,10 @@ const CountryCardHeader = (props: { country: WarEra.Country; idx?: number | unde
       </CardTitle>
       <CardAction className="flex justify-between gap-2">
         <FavouriteButton type="country" id={props.country._id} />
-        <Button variant="link" asChild>
-          <Link to={`/countries/${props.country._id}`}>View Details</Link>
+        <Button variant="outline" size="icon-sm" asChild>
+          <Link to={`/countries/${props.country._id}`}>
+            <ExternalLinkIcon />
+          </Link>
         </Button>
       </CardAction>
     </CardHeader>

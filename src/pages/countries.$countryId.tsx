@@ -1,4 +1,4 @@
-import { UserCard } from '@/components/organisms/UserCard'
+import { UserCard, UserCardContent } from '@/components/organisms/UserCard'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
@@ -12,14 +12,18 @@ import {
   CandyOffIcon,
   ChevronLeftIcon,
   FactoryIcon,
+  HeartIcon,
   PillIcon,
   SwordsIcon,
   UserRoundPenIcon,
 } from 'lucide-react'
-import { ReactNode, useMemo } from 'react'
+import { ReactNode, useMemo, useState } from 'react'
 import { WarEra } from 'warera-api'
 import { CountryCard } from './countries/-organisms/CountryCard'
 import { CountryUserLevelChart } from '@/components/organisms/CountryUserLevelChart'
+import HealthIcon from './../assets/icons/health.svg?react'
+import HungerIcon from './../assets/icons/hunger.svg?react'
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 
 export const Route = createFileRoute('/countries/$countryId')({
   component: CountryDetailPage,
@@ -40,8 +44,8 @@ const CountryStatItem = (props: { icon: ReactNode; label: ReactNode; value: numb
   return (
     <div className="flex flex-row items-center gap-1">
       {props.icon}
-      {props.label}
-      <Progress value={(props.value / props.total) * 100} className="w-48" />
+      <div className="w-16 min-w-fit shrink-0">{props.label}</div>
+      <Progress value={(props.value / props.total) * 100} className="w-32 shrink-1 grow-1" />
     </div>
   )
 }
@@ -55,6 +59,12 @@ const CountryStatsCard = ({ users }: { users: WarEra.UserLite[] }) => {
   const canPill = users.filter((u) => !u.buffs).length
   const buffed = users.filter((u) => !!u.buffs?.buffEndAt).length
   const debuffed = users.filter((u) => !!u.buffs?.debuffEndAt).length
+
+  const currentHealth = users.map((u) => u.skills.health.currentBarValue).reduce(toSum, 0)
+  const totalHealth = users.map((u) => u.skills.health.total).reduce(toSum, 0)
+
+  const currentHunger = users.map((u) => u.skills.hunger.currentBarValue).reduce(toSum, 0)
+  const totalHunger = users.map((u) => u.skills.hunger.total).reduce(toSum, 0)
 
   return (
     <Card>
@@ -80,9 +90,31 @@ const CountryStatsCard = ({ users }: { users: WarEra.UserLite[] }) => {
           <CountryStatItem icon={<CandyIcon />} label="buffed" value={buffed} total={userCount} />
           <CountryStatItem icon={<CandyOffIcon />} label="debuffed" value={debuffed} total={userCount} />
           <CountryStatItem icon={<PillIcon />} label="can pill" value={canPill} total={userCount} />
+
+          <Separator />
+
+          <CountryStatItem icon={<HealthIcon />} label="HP" value={currentHealth} total={totalHealth} />
+          <CountryStatItem icon={<HungerIcon />} label="Hunger" value={currentHunger} total={totalHunger} />
         </div>
       </CardContent>
     </Card>
+  )
+}
+
+const UserContentSelector = (props: { value: UserCardContent; onChange: (value: UserCardContent) => void }) => {
+  return (
+    <ToggleGroup
+      variant="default"
+      type="single"
+      value={props.value}
+      onValueChange={(value) => props.onChange(value as UserCardContent)}
+      className={'w-80 grow-1'}
+    >
+      <ToggleGroupItem value="all">All</ToggleGroupItem>
+      <ToggleGroupItem value="skills">Skills</ToggleGroupItem>
+      <ToggleGroupItem value="combat">Combat</ToggleGroupItem>
+      <ToggleGroupItem value="misc">Misc</ToggleGroupItem>
+    </ToggleGroup>
   )
 }
 
@@ -90,6 +122,8 @@ function CountryDetailPage() {
   const { countryId } = Route.useParams()
   const country = useCountry(countryId)
   const users = useCountryUsers(countryId).toReversed()
+
+  const [userCardContent, setUserCardContent] = useState<UserCardContent>('all')
 
   if (!country) {
     return <div>Country not found</div>
@@ -104,14 +138,16 @@ function CountryDetailPage() {
         </Link>
       </Button>
 
-      <div className="flex flex-row gap-4">
+      <div className="flex flex-row flex-wrap gap-4">
         <CountryCard country={country} />
         <CountryStatsCard users={users} />
         <CountryUserLevelChart countryId={countryId} />
       </div>
 
+      <UserContentSelector value={userCardContent} onChange={setUserCardContent} />
+
       <div className="grid w-full grid-cols-[repeat(auto-fill,minmax(250px,1fr))] gap-6 p-2">
-        {users.map((user) => (user ? <UserCard user={user} key={user._id} /> : null))}
+        {users.map((user) => (user ? <UserCard user={user} key={user._id} view={userCardContent} /> : null))}
       </div>
 
       <Separator />
