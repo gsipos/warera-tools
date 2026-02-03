@@ -8,9 +8,12 @@ import { ItemThumbnail } from '../molecules/ItemThumbnail'
 import { ScrollArea } from '../ui/scroll-area'
 import { useItemMarketPrice } from '@/hooks/use-item-market-price'
 import { WarEra } from 'warera-api'
+import { useState } from 'react'
+import { TimeRangeSelect } from '../molecules/TimeRangeSelect'
+import { Field, FieldLabel } from '../ui/field'
 
-const ItemThumbnailWithAvgMarketPrice = ({ item }: { item: WarEra.Item }) => {
-  const prices = useItemMarketPrice(item)
+const ItemThumbnailWithAvgMarketPrice = ({ item, pricingDate }: { item: WarEra.Item; pricingDate: DateTime }) => {
+  const prices = useItemMarketPrice(item, pricingDate)
 
   return <ItemThumbnail item={item} money={prices?.avg ?? undefined} />
 }
@@ -50,6 +53,8 @@ export const UserCraftingCard = ({ userId }: { userId: string }) => {
 
   const lastTxTimeStamp = craftingTxs.at(-1)?.createdAt
 
+  const [pricingDate, setPricingDate] = useState<DateTime>(DateTime.now().minus({ weeks: 1 }).startOf('day'))
+
   return (
     <Card>
       <CardHeader>
@@ -72,6 +77,13 @@ export const UserCraftingCard = ({ userId }: { userId: string }) => {
           </ItemBackground>
           {dismantledScraps}
         </div>
+        <Field>
+          <FieldLabel>Pricing range</FieldLabel>
+          <TimeRangeSelect
+            value={pricingDate.toISODate() ?? ''}
+            onChange={(dateStr) => setPricingDate(DateTime.fromISO(dateStr ?? ''))}
+          />
+        </Field>
 
         {craftedItemsToday.length ? (
           <>
@@ -79,7 +91,7 @@ export const UserCraftingCard = ({ userId }: { userId: string }) => {
             <ScrollArea className="max-h-120">
               <div className="grid grid-cols-6 items-start gap-2">
                 {craftedItemsToday.map((item) => (
-                  <ItemThumbnailWithAvgMarketPrice key={item._id} item={item} />
+                  <ItemThumbnailWithAvgMarketPrice key={item._id} item={item} pricingDate={pricingDate} />
                 ))}
               </div>
             </ScrollArea>
@@ -92,7 +104,7 @@ export const UserCraftingCard = ({ userId }: { userId: string }) => {
             <ScrollArea className="max-h-120">
               <div className="grid grid-cols-6 items-start gap-2">
                 {craftedItemsYesterday.map((item) => (
-                  <ItemThumbnailWithAvgMarketPrice key={item._id} item={item} />
+                  <ItemThumbnailWithAvgMarketPrice key={item._id} item={item} pricingDate={pricingDate} />
                 ))}
               </div>
             </ScrollArea>
