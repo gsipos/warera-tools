@@ -13,7 +13,14 @@ import z from 'zod'
 import { zodValidator, fallback } from '@tanstack/zod-adapter'
 import { PriceDistributionChart } from '@/components/organisms/PriceDistributionChart'
 import { useIsMobile } from '@/hooks/use-mobile'
-import { AggregatedTx, useAggregatedTransactions, useEquipmentTransactions } from '@/hooks/use-item-market-price'
+import {
+  AggregatedTx,
+  useAggregatedTransactions,
+  useEquipmentTransactions,
+  useTransactionTimeSeries,
+} from '@/hooks/use-item-market-price'
+import { TransactionTimeSeriesChart } from '@/components/organisms/TransactionTimeSeriesChat'
+import { TimeRangeSelect } from '@/components/molecules/TimeRangeSelect'
 
 const itemMarketSearchSchema = z.object({
   code: fallback(z.enum(equipmentCodes).default('gun'), 'gun'),
@@ -40,7 +47,7 @@ const SingleSkillChart = ({ txGroups }: { txGroups: AggregatedTx[] }) => {
     }))
     .toSorted((a, b) => (Number(a.name) || 0) - (Number(b.name) || 0))
   return (
-    <Card>
+    <Card className="w-full max-w-140">
       <CardHeader>
         <CardTitle>Prices by {firstSkill} min/avg/max</CardTitle>
       </CardHeader>
@@ -49,7 +56,7 @@ const SingleSkillChart = ({ txGroups }: { txGroups: AggregatedTx[] }) => {
           resetKeys={[dataSet]}
           fallback={<div className="text-red-500">Failed to load heatmap chart.</div>}
         >
-          <PriceDistributionChart className="h-120 w-140" dataSet={dataSet} />
+          <PriceDistributionChart className="h-120 w-full max-w-140" dataSet={dataSet} />
         </ErrorBoundary>
       </CardContent>
     </Card>
@@ -98,7 +105,7 @@ const DualSkillTxHeatmap = ({
           fallback={<div className="text-red-500">Failed to load heatmap chart.</div>}
         >
           <HeatMapChart
-            className="h-80 w-800"
+            className="h-80 w-full"
             xAxisLabels={firstSkillValues.map((x) => '' + x)}
             yAxisLabels={secondSkillValues.map((x) => '' + x)}
             seriesData={series}
@@ -119,7 +126,11 @@ function RouteComponent() {
     navigate({ search: (old: ItemMarketSearch) => ({ ...old, code: newCode }) })
   }
 
-  const { txList, txGroups, lastTxTimeStamp, latestTxTimeStamp, tqQuery } = useEquipmentTransactions(eqCode)
+  const [fromDate, setFromDate] = useState<DateTime>(DateTime.now().minus({ weeks: 1 }).startOf('day'))
+
+  const { txList, txGroups, lastTxTimeStamp, latestTxTimeStamp, tqQuery } = useEquipmentTransactions(eqCode, fromDate)
+
+  const timeSeries = useTransactionTimeSeries(txList)
 
   return (
     <div className="flex flex-col gap-4 p-2">
@@ -136,12 +147,10 @@ function RouteComponent() {
             <div>To: {DateTime.fromISO(latestTxTimeStamp ?? '').toLocaleString(DateTime.DATETIME_SHORT)}</div>
           </CardContent>
           <CardFooter>
-            <Button
-              onClick={() => tqQuery.fetchNextPage()}
-              disabled={!tqQuery.hasNextPage || tqQuery.isFetchingNextPage}
-            >
-              Load more
-            </Button>
+            <TimeRangeSelect
+              value={fromDate.toISODate() ?? ''}
+              onChange={(dateStr) => setFromDate(DateTime.fromISO(dateStr ?? ''))}
+            />
           </CardFooter>
         </Card>
 
@@ -165,6 +174,15 @@ function RouteComponent() {
           <DualSkillTxHeatmap txGroups={txGroups} type="count" />
         </div>
       )}
+
+      <Card className="flex-auto shrink-1">
+        <CardHeader>
+          <CardTitle>Price over time</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <TransactionTimeSeriesChart timeSeries={timeSeries} className="h-120 w-full max-w-240" />
+        </CardContent>
+      </Card>
     </div>
   )
 }
