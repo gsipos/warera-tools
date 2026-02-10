@@ -75,18 +75,15 @@ export const RegionPageTemplate = (props: Props) => {
 
   return (
     <div className="grid grid-cols-4 gap-6 p-2">
-      <div className="col-span-full grid grid-cols-4 items-center">
-        <h1 className="col-span-full mb-4 text-2xl font-bold">{props.pageTitle}</h1>
-      </div>
-      <div className="col-span-full flex justify-end">
-        <div></div>
-
+      <div className="col-span-full flex flex-row items-center justify-between">
+        <h1 className="shrink-0 text-2xl font-bold">{props.pageTitle}</h1>
         <RegionPagination
           currentPage={pagination.currentPage}
           totalPages={pagination.totalPages}
           onPageChange={pagination.onPageChange}
         />
       </div>
+      <div className="col-span-full flex justify-end"></div>
       {pagination.shownItems.map((extRegion) => (
         <RegionCard
           region={extRegion.region}

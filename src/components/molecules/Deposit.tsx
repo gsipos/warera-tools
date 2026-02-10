@@ -7,13 +7,19 @@ import { useTopWorkOfferWage } from '@/hooks/game/use-top-work-offer-wage'
 import { FactoryIcon, PickaxeIcon } from 'lucide-react'
 import { WarEra } from 'warera-api'
 import { ItemImage } from '../atoms/ItemImage'
+import { DateTime } from 'luxon'
+import { de } from 'date-fns/locale'
+import { Item, ItemActions, ItemContent, ItemDescription, ItemHeader, ItemMedia, ItemTitle } from '../ui/item'
+import { SimpleTooltip } from '../ui/tooltip'
 
 export const Deposit = ({
   deposit,
   productionBonus,
+  specialization,
 }: {
   deposit: WarEra.Deposit | undefined
   productionBonus: number
+  specialization: WarEra.ItemCode | undefined
 }) => {
   const topWage = useTopWorkOfferWage()
   const depositItemProductionPoints = deposit ? itemRecipes[deposit.type ?? 'grain'].productionPoints : 0
@@ -26,38 +32,38 @@ export const Deposit = ({
   const labourCost = topWage * (depositItemProductionPoints * (1 / (1 + productionBonus / 100)))
   const profit = sellPrice - labourCost
 
-  const all = deposit.quantity + deposit.consumed
-  const value = (deposit.quantity / all) * 100
-
-  const bonus = productionBonus + 30
+  const endsIn = DateTime.fromISO(deposit.endsAt)
+    .diffNow()
+    .shiftTo('days', 'hours')
+    .toHuman({ unitDisplay: 'short', maximumFractionDigits: 0 })
+  const bonus = deposit.bonusPercent + (specialization === deposit.type ? productionBonus : 0)
 
   return (
-    <div className="flex flex-col gap-1">
-      <div className="flex flex-row items-center justify-between gap-1">
-        <PickaxeIcon />
-        <div className="flex flex-row items-center capitalize">
-          <ItemImage itemCode={deposit.type} />
+    <Item>
+      <ItemMedia variant="image">
+        <ItemImage itemCode={deposit.type} />
+      </ItemMedia>
+      <ItemContent>
+        <ItemTitle className="capitalize">
           {deposit.type}
-        </div>
-        <Badge>
-          <FactoryIcon /> +{percentFormat.format(bonus / 100)}
-        </Badge>
-      </div>
-      <div>
-        <Progress value={value} className="w-full" />
-      </div>
-      <div className="text-muted-foreground text-sm">
-        ({countFormat.format(deposit.quantity)} / {countFormat.format(all)}) - ({percentFormat.format(value / 100)})
-      </div>
-      <div>
-        <div>Wages: {moneyFormat.format(topWage)}</div>
-        <div>Sell Price: {moneyFormat.format(sellPrice)}</div>
-        <div>Labour Cost: {moneyFormat.format(labourCost)}</div>
-        <div>
-          Profit:
+          <span>+{percentFormat.format(bonus / 100)}</span>
+        </ItemTitle>
+        <ItemDescription>Ends in {endsIn}</ItemDescription>
+      </ItemContent>
+      <ItemActions>
+        <SimpleTooltip
+          tooltip={
+            <>
+              <div>Wages: {moneyFormat.format(topWage)}</div>
+              <div>Sell Price: {moneyFormat.format(sellPrice)}</div>
+              <div>Labour Cost: {moneyFormat.format(labourCost)}</div>
+              <div>Profit: {moneyFormat.format(profit)}</div>
+            </>
+          }
+        >
           <Badge variant={profit > 0 ? 'secondary' : 'destructive'}>{moneyFormat.format(profit)}</Badge>
-        </div>
-      </div>
-    </div>
+        </SimpleTooltip>
+      </ItemActions>
+    </Item>
   )
 }

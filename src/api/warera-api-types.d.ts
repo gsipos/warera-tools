@@ -67,6 +67,7 @@ declare module 'warera-api' {
         countryWealth: Rank
         countryProductionBonus: Rank
       }
+      specializedItem: ItemCode
     }
 
     type ItemPrices = Record<ItemCode, number>
@@ -107,8 +108,9 @@ declare module 'warera-api' {
 
     interface Deposit {
       type: ItemCode
-      quantity: number
-      consumed: number
+      endsAt: IsoDateTime
+      startsAt: IsoDateTime
+      bonusPercent: number
     }
 
     interface Region {
