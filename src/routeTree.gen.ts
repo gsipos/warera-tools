@@ -17,6 +17,7 @@ import { Route as ItemMarketIndexRouteImport } from './pages/itemMarket.index'
 import { Route as DepositsIndexRouteImport } from './pages/deposits.index'
 import { Route as CountriesIndexRouteImport } from './pages/countries.index'
 import { Route as UsersUserIdRouteImport } from './pages/users.$userId'
+import { Route as ItemsCraftingRouteImport } from './pages/items.crafting'
 import { Route as ItemDepositsItemCodeRouteImport } from './pages/itemDeposits.$itemCode'
 import { Route as CountriesMatchupRouteImport } from './pages/countries.matchup'
 import { Route as CountriesAlliancesRouteImport } from './pages/countries.alliances'
@@ -62,6 +63,11 @@ const UsersUserIdRoute = UsersUserIdRouteImport.update({
   path: '/users/$userId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ItemsCraftingRoute = ItemsCraftingRouteImport.update({
+  id: '/items/crafting',
+  path: '/items/crafting',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ItemDepositsItemCodeRoute = ItemDepositsItemCodeRouteImport.update({
   id: '/itemDeposits/$itemCode',
   path: '/itemDeposits/$itemCode',
@@ -91,6 +97,7 @@ export interface FileRoutesByFullPath {
   '/countries/alliances': typeof CountriesAlliancesRoute
   '/countries/matchup': typeof CountriesMatchupRoute
   '/itemDeposits/$itemCode': typeof ItemDepositsItemCodeRoute
+  '/items/crafting': typeof ItemsCraftingRoute
   '/users/$userId': typeof UsersUserIdRoute
   '/countries/': typeof CountriesIndexRoute
   '/deposits': typeof DepositsIndexRoute
@@ -104,6 +111,7 @@ export interface FileRoutesByTo {
   '/countries/alliances': typeof CountriesAlliancesRoute
   '/countries/matchup': typeof CountriesMatchupRoute
   '/itemDeposits/$itemCode': typeof ItemDepositsItemCodeRoute
+  '/items/crafting': typeof ItemsCraftingRoute
   '/users/$userId': typeof UsersUserIdRoute
   '/countries': typeof CountriesIndexRoute
   '/deposits': typeof DepositsIndexRoute
@@ -119,6 +127,7 @@ export interface FileRoutesById {
   '/countries/alliances': typeof CountriesAlliancesRoute
   '/countries/matchup': typeof CountriesMatchupRoute
   '/itemDeposits/$itemCode': typeof ItemDepositsItemCodeRoute
+  '/items/crafting': typeof ItemsCraftingRoute
   '/users/$userId': typeof UsersUserIdRoute
   '/countries/': typeof CountriesIndexRoute
   '/deposits/': typeof DepositsIndexRoute
@@ -135,6 +144,7 @@ export interface FileRouteTypes {
     | '/countries/alliances'
     | '/countries/matchup'
     | '/itemDeposits/$itemCode'
+    | '/items/crafting'
     | '/users/$userId'
     | '/countries/'
     | '/deposits'
@@ -148,6 +158,7 @@ export interface FileRouteTypes {
     | '/countries/alliances'
     | '/countries/matchup'
     | '/itemDeposits/$itemCode'
+    | '/items/crafting'
     | '/users/$userId'
     | '/countries'
     | '/deposits'
@@ -162,6 +173,7 @@ export interface FileRouteTypes {
     | '/countries/alliances'
     | '/countries/matchup'
     | '/itemDeposits/$itemCode'
+    | '/items/crafting'
     | '/users/$userId'
     | '/countries/'
     | '/deposits/'
@@ -174,6 +186,7 @@ export interface RootRouteChildren {
   CountriesRouteRoute: typeof CountriesRouteRouteWithChildren
   RegionsRoute: typeof RegionsRoute
   ItemDepositsItemCodeRoute: typeof ItemDepositsItemCodeRoute
+  ItemsCraftingRoute: typeof ItemsCraftingRoute
   UsersUserIdRoute: typeof UsersUserIdRoute
   DepositsIndexRoute: typeof DepositsIndexRoute
   ItemMarketIndexRoute: typeof ItemMarketIndexRoute
@@ -238,6 +251,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof UsersUserIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/items/crafting': {
+      id: '/items/crafting'
+      path: '/items/crafting'
+      fullPath: '/items/crafting'
+      preLoaderRoute: typeof ItemsCraftingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/itemDeposits/$itemCode': {
       id: '/itemDeposits/$itemCode'
       path: '/itemDeposits/$itemCode'
@@ -292,6 +312,7 @@ const rootRouteChildren: RootRouteChildren = {
   CountriesRouteRoute: CountriesRouteRouteWithChildren,
   RegionsRoute: RegionsRoute,
   ItemDepositsItemCodeRoute: ItemDepositsItemCodeRoute,
+  ItemsCraftingRoute: ItemsCraftingRoute,
   UsersUserIdRoute: UsersUserIdRoute,
   DepositsIndexRoute: DepositsIndexRoute,
   ItemMarketIndexRoute: ItemMarketIndexRoute,

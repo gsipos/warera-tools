@@ -1,7 +1,5 @@
 import { CountryNavLink } from '@/components/molecules/CountryNavLink'
 import { UserNavLink } from '@/components/molecules/UserNavLink'
-import { Button } from '@/components/ui/button'
-import { Card, CardAction, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   Item,
   ItemActions,
@@ -12,7 +10,6 @@ import {
   ItemSeparator,
   ItemTitle,
 } from '@/components/ui/item'
-import { Separator } from '@/components/ui/separator'
 import { useFavouriteState } from '@/hooks/use-favourite-state'
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { EarthIcon, ExternalLinkIcon, FlagIcon, HandshakeIcon, PickaxeIcon, StoreIcon } from 'lucide-react'
