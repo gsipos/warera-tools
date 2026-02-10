@@ -7,9 +7,11 @@ import { formatters, percentFormat } from '@/functions/number-formats'
 import { getUserCombatSkillLevels, getUserEcoSkillLevels, getUserRespecDetails } from '@/functions/user-utils'
 import { Link } from '@tanstack/react-router'
 import {
+  ActivityIcon,
   BriefcaseMedicalIcon,
   CandyIcon,
   CandyOffIcon,
+  ClockIcon,
   ExternalLinkIcon,
   FactoryIcon,
   GaugeIcon,
@@ -41,6 +43,7 @@ import LootChangeIcon from './../../assets/icons/lootChange.svg?react'
 import PrecisionIcon from './../../assets/icons/precision.svg?react'
 import { FavouriteButton } from '../atoms/FavouriteButton'
 import { Field, FieldLabel } from '../ui/field'
+import { cn } from '@/lib/utils'
 
 export const UserAvatar = ({ user, className }: { user: WarEra.UserLite; className?: string }) => {
   return (
@@ -255,6 +258,15 @@ export const UserCard = ({ user, view }: { user: WarEra.UserLite; view?: UserCar
 
   const viewAll = !view || view === 'all'
 
+  const lastConnectionAt = DateTime.fromISO(user.dates.lastConnectionAt ?? '')
+  let lastSeen = lastConnectionAt.diffNow('minutes').negate()
+  const lastSeenInHours = lastSeen.as('hours')
+  if (lastSeen.as('minutes') > 60) {
+    lastSeen = lastSeen.shiftTo('hours')
+  }
+
+  const displayLastSeen = lastSeen.toHuman({ listStyle: 'narrow', unitDisplay: 'narrow', maximumFractionDigits: 0 })
+
   return (
     <Card>
       <CardHeader>
@@ -358,6 +370,18 @@ export const UserCard = ({ user, view }: { user: WarEra.UserLite; view?: UserCar
             type="count"
             tooltip="Cases Opened"
           />
+          <SimpleTooltip tooltip={`Last seen: ${lastConnectionAt.toLocaleString(DateTime.DATETIME_SHORT)}`}>
+            <Badge
+              variant="outline"
+              className={cn(
+                lastSeenInHours > 10 ? 'border-amber-400 text-amber-400' : '',
+                lastSeenInHours > 24 ? 'border-red-600 text-red-600' : '',
+              )}
+            >
+              <ActivityIcon />
+              {displayLastSeen} ago
+            </Badge>
+          </SimpleTooltip>
         </CardFooter>
       ) : null}
     </Card>
