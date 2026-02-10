@@ -239,9 +239,6 @@ declare module 'warera-api' {
         userTerrans: Rank
         userCasesOpened: Rank
       }
-      dates: {
-        lastSkillsResetAt: IsoDateTime
-      }
       stats: {
         damagesCount: number
       }
@@ -250,6 +247,19 @@ declare module 'warera-api' {
         debuffEndAt?: IsoDateTime
         buffCodes?: string[]
         buffEndAt?: IsoDateTime
+      }
+      dates: {
+        lastSkillsResetAt: IsoDateTime
+        lastConnectionAt: IsoDateTime
+        lastCountryMessageCheckAt: IsoDateTime
+        lastDailyRewardClaimedAt: IsoDateTime
+        lastEventsCheckAt: IsoDateTime
+        lastGlobalMessageCheckAt: IsoDateTime
+        lastHelpAskedAt: IsoDateTime
+        lastHiresAt: IsoDateTime[]
+        lastNotificationsCheckAt: IsoDateTime
+        lastWorkAt: IsoDateTime
+        lastWorkOfferApplications: IsoDateTime[]
       }
     }
 
