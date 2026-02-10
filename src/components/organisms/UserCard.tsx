@@ -245,6 +245,31 @@ const UserHungerBar = ({ user }: { user: WarEra.UserLite }) => {
   )
 }
 
+const UserLastSeenBadge = ({ lastConnectionAt }: { lastConnectionAt: string }) => {
+  const date = DateTime.fromISO(lastConnectionAt ?? '')
+  let lastSeen = date.diffNow('minutes').negate()
+  const lastSeenInHours = lastSeen.as('hours')
+  if (lastSeen.as('minutes') > 60) {
+    lastSeen = lastSeen.shiftTo('hours')
+  }
+  const displayLastSeen = lastSeen.toHuman({ listStyle: 'narrow', unitDisplay: 'narrow', maximumFractionDigits: 0 })
+
+  return (
+    <SimpleTooltip tooltip={`Last seen: ${date.toLocaleString(DateTime.DATETIME_SHORT)}`}>
+      <Badge
+        variant="outline"
+        className={cn(
+          lastSeenInHours > 10 ? 'border-amber-400 text-amber-400' : '',
+          lastSeenInHours > 24 ? 'border-red-600 text-red-600' : '',
+        )}
+      >
+        <ActivityIcon />
+        {displayLastSeen} ago
+      </Badge>
+    </SimpleTooltip>
+  )
+}
+
 export type UserCardContent = 'skills' | 'companies' | 'combat' | 'misc' | 'all'
 
 export const UserCard = ({ user, view }: { user: WarEra.UserLite; view?: UserCardContent }) => {
@@ -370,18 +395,7 @@ export const UserCard = ({ user, view }: { user: WarEra.UserLite; view?: UserCar
             type="count"
             tooltip="Cases Opened"
           />
-          <SimpleTooltip tooltip={`Last seen: ${lastConnectionAt.toLocaleString(DateTime.DATETIME_SHORT)}`}>
-            <Badge
-              variant="outline"
-              className={cn(
-                lastSeenInHours > 10 ? 'border-amber-400 text-amber-400' : '',
-                lastSeenInHours > 24 ? 'border-red-600 text-red-600' : '',
-              )}
-            >
-              <ActivityIcon />
-              {displayLastSeen} ago
-            </Badge>
-          </SimpleTooltip>
+          <UserLastSeenBadge lastConnectionAt={user.dates.lastConnectionAt ?? ''} />
         </CardFooter>
       ) : null}
     </Card>
