@@ -1,15 +1,12 @@
 import { itemRecipes } from '@/api/warera-item-recipes'
 import { Badge } from '@/components/ui/badge'
-import { Progress } from '@/components/ui/progress'
-import { countFormat, moneyFormat, percentFormat } from '@/functions/number-formats'
+import { moneyFormat, percentFormat } from '@/functions/number-formats'
 import { useItemSellPrice } from '@/hooks/game/use-item-wage-report'
 import { useTopWorkOfferWage } from '@/hooks/game/use-top-work-offer-wage'
-import { FactoryIcon, PickaxeIcon } from 'lucide-react'
+import { DateTime } from 'luxon'
 import { WarEra } from 'warera-api'
 import { ItemImage } from '../atoms/ItemImage'
-import { DateTime } from 'luxon'
-import { de } from 'date-fns/locale'
-import { Item, ItemActions, ItemContent, ItemDescription, ItemHeader, ItemMedia, ItemTitle } from '../ui/item'
+import { Item, ItemActions, ItemContent, ItemDescription, ItemMedia, ItemTitle } from '../ui/item'
 import { SimpleTooltip } from '../ui/tooltip'
 
 export const Deposit = ({
