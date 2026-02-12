@@ -7,6 +7,10 @@ import { DateTime } from 'luxon'
 import { useTimeBoxedTransactions } from '@/hooks/game/use-time-boxed-transactions'
 import { ItemThumbnail } from '../molecules/ItemThumbnail'
 import { ScrollArea } from '../ui/scroll-area'
+import { moneyFormat } from '@/functions/number-formats'
+import { CircleDollarSignIcon } from 'lucide-react'
+
+const toSum = (acc: number, val: number) => acc + val
 
 export const UserItemMarketCard = ({ userId }: { userId: string }) => {
   const itemMarketQuery = useTransactions({
@@ -18,11 +22,27 @@ export const UserItemMarketCard = ({ userId }: { userId: string }) => {
   const soldItems = tsx.filter((tx) => tx.sellerId === userId)
   const boughtItems = tsx.filter((tx) => tx.buyerId === userId)
 
-  const soldValue = soldItems.reduce((acc, tx) => acc + tx.money, 0)
-  const boughtValue = boughtItems.reduce((acc, tx) => acc + tx.money, 0)
+  const soldValue = soldItems.map((tx) => tx.money).reduce(toSum, 0)
+  const boughtValue = boughtItems.map((tx) => tx.money).reduce(toSum, 0)
 
   const lastTxTimeStamp = tsx.at(-1)?.createdAt
   const soldPerValue = soldValue / (soldItems.length || 1)
+
+  const startOfToday = DateTime.now().startOf('day')
+  const startOfYesterday = startOfToday.minus({ days: 1 })
+
+  const soldItemsToday = soldItems.filter((tx) => DateTime.fromISO(tx.createdAt) >= DateTime.now().startOf('day'))
+  const soldTodayValue = soldItemsToday.map((tx) => tx.money).reduce(toSum, 0)
+
+  const soldItemsYesterday = soldItems
+    .filter((tx) => DateTime.fromISO(tx.createdAt) >= startOfYesterday)
+    .filter((tx) => DateTime.fromISO(tx.createdAt) < startOfToday)
+  const soldYesterdayValue = soldItemsYesterday.map((tx) => tx.money).reduce(toSum, 0)
+
+  const soldItemsEarlier = soldItems
+    .filter((tx) => !soldItemsToday.includes(tx))
+    .filter((tx) => !soldItemsYesterday.includes(tx))
+  const soldEarlierValue = soldItemsEarlier.map((tx) => tx.money).reduce(toSum, 0)
 
   return (
     <Card>
@@ -40,14 +60,67 @@ export const UserItemMarketCard = ({ userId }: { userId: string }) => {
         </div>
 
         <Separator />
-        <div className="text-muted-foreground mb-1 text-xs uppercase">Sold Items</div>
-        <ScrollArea className="max-h-120">
-          <div className="grid grid-cols-6 items-start gap-2">
-            {soldItems.map((tx) => (
-              <ItemThumbnail key={tx.item._id} item={tx.item} money={tx.money} />
-            ))}
-          </div>
-        </ScrollArea>
+
+        {soldItemsToday.length ? (
+          <>
+            <div className="text-muted-foreground mb-1 text-xs uppercase">
+              Sold today
+              <span>
+                ({soldItemsToday.length},
+                <CircleDollarSignIcon className="inline-block size-3!" />
+                {moneyFormat.format(soldTodayValue)})
+              </span>
+            </div>
+            <ScrollArea className="max-h-120">
+              <div className="grid grid-cols-6 items-start gap-2">
+                {soldItemsToday.map((tx) => (
+                  <ItemThumbnail key={tx.item._id} item={tx.item} money={tx.money} />
+                ))}
+              </div>
+            </ScrollArea>
+          </>
+        ) : null}
+
+        {soldItemsYesterday.length ? (
+          <>
+            <div className="text-muted-foreground mb-1 text-xs uppercase">
+              Sold yesterday
+              <span>
+                ({soldItemsYesterday.length},
+                <CircleDollarSignIcon className="inline-block size-3!" />
+                {moneyFormat.format(soldYesterdayValue)})
+              </span>
+            </div>
+            <ScrollArea className="max-h-120">
+              <div className="grid grid-cols-6 items-start gap-2">
+                {soldItemsYesterday.map((tx) => (
+                  <ItemThumbnail key={tx.item._id} item={tx.item} money={tx.money} />
+                ))}
+              </div>
+            </ScrollArea>
+          </>
+        ) : null}
+
+        {soldItemsEarlier.length ? (
+          <>
+            <div className="text-muted-foreground mb-1 text-xs uppercase">
+              Sold earlier
+              <span>
+                (<span>{soldItemsEarlier.length},</span>
+                <CircleDollarSignIcon className="inline-block size-3!" />
+                {moneyFormat.format(soldEarlierValue)})
+              </span>
+            </div>
+            <ScrollArea className="max-h-120">
+              <div className="grid grid-cols-6 items-start gap-2">
+                {soldItemsEarlier.map((tx) => (
+                  <ItemThumbnail key={tx.item._id} item={tx.item} money={tx.money} />
+                ))}
+              </div>
+            </ScrollArea>
+          </>
+        ) : null}
+
         <Separator />
         <div className="text-muted-foreground mb-1 text-xs uppercase">Bought Items</div>
         <ScrollArea className="max-h-120">
