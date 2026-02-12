@@ -87,7 +87,9 @@ export const UserCraftingCard = ({ userId }: { userId: string }) => {
 
         {craftedItemsToday.length ? (
           <>
-            <div className="text-muted-foreground mb-1 text-xs uppercase">Crafted today</div>
+            <div className="text-muted-foreground mb-1 text-xs uppercase">
+              Crafted today <span>({craftedItemsToday.length})</span>
+            </div>
             <ScrollArea className="max-h-120">
               <div className="grid grid-cols-6 items-start gap-2">
                 {craftedItemsToday.map((item) => (
@@ -100,7 +102,9 @@ export const UserCraftingCard = ({ userId }: { userId: string }) => {
 
         {craftedItemsYesterday.length ? (
           <>
-            <div className="text-muted-foreground mb-1 text-xs uppercase">Crafted yesterday</div>
+            <div className="text-muted-foreground mb-1 text-xs uppercase">
+              Crafted yesterday <span>({craftedItemsYesterday.length})</span>
+            </div>
             <ScrollArea className="max-h-120">
               <div className="grid grid-cols-6 items-start gap-2">
                 {craftedItemsYesterday.map((item) => (
@@ -111,7 +115,9 @@ export const UserCraftingCard = ({ userId }: { userId: string }) => {
           </>
         ) : null}
 
-        <div className="text-muted-foreground mb-1 text-xs uppercase">Crafted earlier</div>
+        <div className="text-muted-foreground mb-1 text-xs uppercase">
+          Crafted earlier <span>({craftedEarlierItems.length})</span>
+        </div>
         <ScrollArea className="max-h-120">
           <div className="grid grid-cols-6 items-start gap-2">
             {craftedEarlierItems.map((item) => (
