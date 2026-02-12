@@ -1,6 +1,7 @@
 import { useUserLite } from '@/api/warera-api'
 import { AppSplashScreen } from '@/components/organisms/AppSplashScreen'
 import { UserCard } from '@/components/organisms/UserCard'
+import { UserCompaniesCard } from '@/components/organisms/UserCompaniesCard'
 import { UserCraftingCard } from '@/components/organisms/UserCraftingCard'
 import { UserItemMarketCard } from '@/components/organisms/UserItemMarketCard'
 import { UserTradingCard } from '@/components/organisms/UserTradingCard'
@@ -35,6 +36,7 @@ function RouteComponent() {
         <UserCraftingCard userId={user._id} />
         <UserItemMarketCard userId={user._id} />
         <UserTradingCard userId={user._id} />
+        <UserCompaniesCard userId={user._id} />
       </div>
     </div>
   )
