@@ -48,7 +48,7 @@ export const itemTradindPricesResponseSchema = z.object({
   }),
 })
 
-export const itemCodes = [
+export const itemCodes: WarEra.ItemCode[] = [
   'cookedFish',
   'heavyAmmo',
   'steel',

@@ -15,7 +15,7 @@ import {
 import { Separator } from '@/components/ui/separator'
 import { useFavouriteState } from '@/hooks/use-favourite-state'
 import { createFileRoute, Link } from '@tanstack/react-router'
-import { EarthIcon, ExternalLinkIcon, FlagIcon, HandshakeIcon, PickaxeIcon, StoreIcon } from 'lucide-react'
+import { EarthIcon, ExternalLinkIcon, FactoryIcon, FlagIcon, HandshakeIcon, PickaxeIcon, StoreIcon } from 'lucide-react'
 import { ReactNode } from 'react'
 
 export const Route = createFileRoute('/')({
@@ -62,6 +62,12 @@ const depositNavCards: NavCard[] = [
     title: 'Deposits',
     description: 'Explore detailed information about all deposits in WarEra.',
     link: '/deposits/',
+  },
+  {
+    icon: <FactoryIcon />,
+    title: 'Production',
+    description: 'Analyze production bonuses and optimal locations for each item.',
+    link: '/item/production/',
   },
 ]
 
