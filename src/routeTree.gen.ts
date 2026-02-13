@@ -18,6 +18,7 @@ import { Route as DepositsIndexRouteImport } from './pages/deposits.index'
 import { Route as CountriesIndexRouteImport } from './pages/countries.index'
 import { Route as UsersUserIdRouteImport } from './pages/users.$userId'
 import { Route as ItemDepositsItemCodeRouteImport } from './pages/itemDeposits.$itemCode'
+import { Route as ItemProductionRouteImport } from './pages/item.production'
 import { Route as CountriesMatchupRouteImport } from './pages/countries.matchup'
 import { Route as CountriesAlliancesRouteImport } from './pages/countries.alliances'
 import { Route as CountriesCountryIdRouteImport } from './pages/countries.$countryId'
@@ -67,6 +68,11 @@ const ItemDepositsItemCodeRoute = ItemDepositsItemCodeRouteImport.update({
   path: '/itemDeposits/$itemCode',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ItemProductionRoute = ItemProductionRouteImport.update({
+  id: '/item/production',
+  path: '/item/production',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CountriesMatchupRoute = CountriesMatchupRouteImport.update({
   id: '/matchup',
   path: '/matchup',
@@ -90,6 +96,7 @@ export interface FileRoutesByFullPath {
   '/countries/$countryId': typeof CountriesCountryIdRoute
   '/countries/alliances': typeof CountriesAlliancesRoute
   '/countries/matchup': typeof CountriesMatchupRoute
+  '/item/production': typeof ItemProductionRoute
   '/itemDeposits/$itemCode': typeof ItemDepositsItemCodeRoute
   '/users/$userId': typeof UsersUserIdRoute
   '/countries/': typeof CountriesIndexRoute
@@ -103,6 +110,7 @@ export interface FileRoutesByTo {
   '/countries/$countryId': typeof CountriesCountryIdRoute
   '/countries/alliances': typeof CountriesAlliancesRoute
   '/countries/matchup': typeof CountriesMatchupRoute
+  '/item/production': typeof ItemProductionRoute
   '/itemDeposits/$itemCode': typeof ItemDepositsItemCodeRoute
   '/users/$userId': typeof UsersUserIdRoute
   '/countries': typeof CountriesIndexRoute
@@ -118,6 +126,7 @@ export interface FileRoutesById {
   '/countries/$countryId': typeof CountriesCountryIdRoute
   '/countries/alliances': typeof CountriesAlliancesRoute
   '/countries/matchup': typeof CountriesMatchupRoute
+  '/item/production': typeof ItemProductionRoute
   '/itemDeposits/$itemCode': typeof ItemDepositsItemCodeRoute
   '/users/$userId': typeof UsersUserIdRoute
   '/countries/': typeof CountriesIndexRoute
@@ -134,6 +143,7 @@ export interface FileRouteTypes {
     | '/countries/$countryId'
     | '/countries/alliances'
     | '/countries/matchup'
+    | '/item/production'
     | '/itemDeposits/$itemCode'
     | '/users/$userId'
     | '/countries/'
@@ -147,6 +157,7 @@ export interface FileRouteTypes {
     | '/countries/$countryId'
     | '/countries/alliances'
     | '/countries/matchup'
+    | '/item/production'
     | '/itemDeposits/$itemCode'
     | '/users/$userId'
     | '/countries'
@@ -161,6 +172,7 @@ export interface FileRouteTypes {
     | '/countries/$countryId'
     | '/countries/alliances'
     | '/countries/matchup'
+    | '/item/production'
     | '/itemDeposits/$itemCode'
     | '/users/$userId'
     | '/countries/'
@@ -173,6 +185,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CountriesRouteRoute: typeof CountriesRouteRouteWithChildren
   RegionsRoute: typeof RegionsRoute
+  ItemProductionRoute: typeof ItemProductionRoute
   ItemDepositsItemCodeRoute: typeof ItemDepositsItemCodeRoute
   UsersUserIdRoute: typeof UsersUserIdRoute
   DepositsIndexRoute: typeof DepositsIndexRoute
@@ -245,6 +258,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ItemDepositsItemCodeRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/item/production': {
+      id: '/item/production'
+      path: '/item/production'
+      fullPath: '/item/production'
+      preLoaderRoute: typeof ItemProductionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/countries/matchup': {
       id: '/countries/matchup'
       path: '/matchup'
@@ -291,6 +311,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CountriesRouteRoute: CountriesRouteRouteWithChildren,
   RegionsRoute: RegionsRoute,
+  ItemProductionRoute: ItemProductionRoute,
   ItemDepositsItemCodeRoute: ItemDepositsItemCodeRoute,
   UsersUserIdRoute: UsersUserIdRoute,
   DepositsIndexRoute: DepositsIndexRoute,

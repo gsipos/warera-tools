@@ -52,6 +52,11 @@ const depositLinks: NavLinkk[] = [
     href: '/deposits',
     description: 'List of all deposits.',
   },
+  {
+    title: 'Item Production bonuses',
+    href: '/item/production',
+    description: 'Analyze production bonuses and optimal locations for each item.',
+  },
   ...depositItemCodes.map((code) => ({
     title: `Deposit: ${code}`,
     href: `/itemDeposits/${code}`,
