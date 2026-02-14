@@ -467,7 +467,6 @@ For navigation with active/pending states:
 
 ```tsx
 import { NavLink } from 'react-router'
-
 ;<NavLink to="/messages">
   {({ isActive, isPending }) => <span className={isActive ? 'active' : ''}>Messages</span>}
 </NavLink>
