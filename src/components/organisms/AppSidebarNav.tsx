@@ -60,11 +60,7 @@ export function AppSidebarNav() {
             <SidebarMenuButton asChild size="lg" onClick={handleNavClick}>
               <Link to="/">
                 <div className="bg-primary text-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
-                  <img
-                    src="/app/logo-500.png"
-                    alt="WarEra Tools"
-                    className="size-6 object-contain"
-                  />
+                  <img src="/app/logo-500.png" alt="WarEra Tools" className="size-6 object-contain" />
                 </div>
                 <div className="flex flex-col gap-0.5 leading-none">
                   <span className="font-semibold">WarEra Tools</span>

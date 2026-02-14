@@ -22,8 +22,6 @@ export const RefreshDataButton = () => {
   )
 }
 
-
-
 export const AppHeader = () => {
   return (
     <>
@@ -52,4 +50,3 @@ export const AppHeader = () => {
     </>
   )
 }
-
