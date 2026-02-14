@@ -1,14 +1,28 @@
 {
-	"servers": {
-		"context7": {
-			"command": "npx",
-			"args": [
-				"-y",
-				"@upstash/context7-mcp@latest",
-				"--api-key", "ctx7sk-14d051d8-5772-433f-bc71-b19e08cc2d00"
-			],
-			"type": "stdio"
-		}
-	},
-	"inputs": []
+  "servers": {
+    "context7": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@upstash/context7-mcp@latest",
+        "--api-key",
+        "ctx7sk-14d051d8-5772-433f-bc71-b19e08cc2d00"
+      ],
+      "type": "stdio"
+    },
+    "ESLint": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "@eslint/mcp@latest"
+      ]
+    },
+    "chrome-devtools": {
+      "command": "npx",
+      "args": [
+        "chrome-devtools-mcp@latest"
+      ]
+    }
+  },
+  "inputs": []
 }
