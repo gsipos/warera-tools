@@ -1,5 +1,6 @@
 import { useUserLite } from '@/api/warera-api'
 import { AppSplashScreen } from '@/components/organisms/AppSplashScreen'
+import { UserCashflowCard } from '@/components/organisms/UserCashflowCard'
 import { UserCard } from '@/components/organisms/UserCard'
 import { UserCompaniesCard } from '@/components/organisms/UserCompaniesCard'
 import { UserCraftingCard } from '@/components/organisms/UserCraftingCard'
@@ -33,6 +34,7 @@ function RouteComponent() {
       </div>
       <div className="grid w-full grid-cols-[repeat(auto-fill,minmax(300px,1fr))] gap-6 p-2">
         <UserCard user={user} key={user._id} />
+        <UserCashflowCard userId={user._id} />
         <UserCraftingCard userId={user._id} />
         <UserItemMarketCard userId={user._id} />
         <UserTradingCard userId={user._id} />
