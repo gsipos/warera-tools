@@ -10,15 +10,11 @@
     "ESLint": {
       "type": "stdio",
       "command": "npx",
-      "args": [
-        "@eslint/mcp@latest"
-      ]
+      "args": ["@eslint/mcp@latest"]
     },
     "chrome-devtools": {
       "command": "npx",
-      "args": [
-        "chrome-devtools-mcp@latest"
-      ]
+      "args": ["chrome-devtools-mcp@latest"]
     }
   },
   "inputs": []

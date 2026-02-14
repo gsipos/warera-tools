@@ -101,41 +101,37 @@ Server Actions marked with 'use server' — run on server, callable from client.
 
 ```typescript
 // actions/user.ts
-'use server';
+'use server'
 
-import { revalidatePath, revalidateTag } from 'next/cache';
-import { redirect } from 'next/navigation';
-import { z } from 'zod';
+import { revalidatePath, revalidateTag } from 'next/cache'
+import { redirect } from 'next/navigation'
+import { z } from 'zod'
 
 const updateUserSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
   email: z.string().email('Invalid email address'),
   bio: z.string().max(500, 'Bio must be less than 500 characters').optional(),
-});
+})
 
 type FormState = {
-  success?: boolean;
-  errors?: Record<string, string[]>;
-  message?: string;
-};
+  success?: boolean
+  errors?: Record<string, string[]>
+  message?: string
+}
 
-export async function updateUser(
-  userId: string,
-  prevState: FormState,
-  formData: FormData
-): Promise<FormState> {
+export async function updateUser(userId: string, prevState: FormState, formData: FormData): Promise<FormState> {
   // Validate
   const parsed = updateUserSchema.safeParse({
     name: formData.get('name'),
     email: formData.get('email'),
     bio: formData.get('bio'),
-  });
+  })
 
   if (!parsed.success) {
     return {
       success: false,
       errors: parsed.error.flatten().fieldErrors,
-    };
+    }
   }
 
   try {
@@ -143,25 +139,25 @@ export async function updateUser(
     await db.user.update({
       where: { id: userId },
       data: parsed.data,
-    });
+    })
 
     // Revalidate cached data
-    revalidatePath(`/users/${userId}`);
-    revalidateTag(`user-${userId}`);
+    revalidatePath(`/users/${userId}`)
+    revalidateTag(`user-${userId}`)
 
-    return { success: true, message: 'Profile updated successfully' };
+    return { success: true, message: 'Profile updated successfully' }
   } catch (error) {
     return {
       success: false,
       message: 'Failed to update profile. Please try again.',
-    };
+    }
   }
 }
 
 export async function deleteUser(userId: string) {
-  await db.user.delete({ where: { id: userId } });
-  revalidatePath('/users');
-  redirect('/users'); // Navigate after mutation
+  await db.user.delete({ where: { id: userId } })
+  revalidatePath('/users')
+  redirect('/users') // Navigate after mutation
 }
 ```
 
@@ -430,15 +426,15 @@ Ensure code never runs on client.
 
 ```typescript
 // lib/server-only-utils.ts
-import 'server-only'; // Throws if imported in client component
+import 'server-only' // Throws if imported in client component
 
 export async function getSecretKey() {
-  return process.env.SECRET_KEY; // Safe - never in client bundle
+  return process.env.SECRET_KEY // Safe - never in client bundle
 }
 
 export async function hashPassword(password: string) {
-  const bcrypt = await import('bcrypt');
-  return bcrypt.hash(password, 10);
+  const bcrypt = await import('bcrypt')
+  return bcrypt.hash(password, 10)
 }
 ```
 
@@ -448,17 +444,17 @@ Ensure code never runs on server.
 
 ```typescript
 // lib/client-only-utils.ts
-import 'client-only';
+import 'client-only'
 
 export function useLocalStorage(key: string) {
   // localStorage only available in browser
-  const [value, setValue] = useState(() => localStorage.getItem(key));
+  const [value, setValue] = useState(() => localStorage.getItem(key))
 
   useEffect(() => {
-    localStorage.setItem(key, value || '');
-  }, [key, value]);
+    localStorage.setItem(key, value || '')
+  }, [key, value])
 
-  return [value, setValue] as const;
+  return [value, setValue] as const
 }
 ```
 

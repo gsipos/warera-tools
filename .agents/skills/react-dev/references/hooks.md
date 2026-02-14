@@ -8,26 +8,26 @@ Type inference works for simple types; explicit typing needed for unions/null.
 
 ```typescript
 // Inference works
-const [count, setCount] = useState(0); // number
-const [name, setName] = useState(''); // string
-const [items, setItems] = useState<string[]>([]); // explicit for empty arrays
+const [count, setCount] = useState(0) // number
+const [name, setName] = useState('') // string
+const [items, setItems] = useState<string[]>([]) // explicit for empty arrays
 
 // Explicit for unions/null
-const [user, setUser] = useState<User | null>(null);
-const [status, setStatus] = useState<'idle' | 'loading' | 'success'>('idle');
+const [user, setUser] = useState<User | null>(null)
+const [status, setStatus] = useState<'idle' | 'loading' | 'success'>('idle')
 
 // Complex initial state
-type FormData = { name: string; email: string };
+type FormData = { name: string; email: string }
 const [formData, setFormData] = useState<FormData>({
   name: '',
   email: '',
-});
+})
 
 // Lazy initialization
 const [data, setData] = useState<Data>(() => {
-  const cached = localStorage.getItem('data');
-  return cached ? JSON.parse(cached) : defaultData;
-});
+  const cached = localStorage.getItem('data')
+  return cached ? JSON.parse(cached) : defaultData
+})
 ```
 
 ## useRef
@@ -36,38 +36,38 @@ Distinguish DOM refs (null initial) from mutable value refs (value initial).
 
 ```typescript
 // DOM element ref - null initial, readonly .current
-const inputRef = useRef<HTMLInputElement>(null);
-const buttonRef = useRef<HTMLButtonElement>(null);
-const divRef = useRef<HTMLDivElement>(null);
+const inputRef = useRef<HTMLInputElement>(null)
+const buttonRef = useRef<HTMLButtonElement>(null)
+const divRef = useRef<HTMLDivElement>(null)
 
 useEffect(() => {
-  inputRef.current?.focus(); // Optional chaining for null
-}, []);
+  inputRef.current?.focus() // Optional chaining for null
+}, [])
 
 // Mutable value ref - non-null initial, mutable .current
-const countRef = useRef<number>(0);
-countRef.current += 1; // No optional chaining
+const countRef = useRef<number>(0)
+countRef.current += 1 // No optional chaining
 
-const previousValueRef = useRef<string | undefined>(undefined);
-previousValueRef.current = currentValue;
+const previousValueRef = useRef<string | undefined>(undefined)
+previousValueRef.current = currentValue
 
 // Interval/timeout ref
-const timeoutRef = useRef<ReturnType<typeof setTimeout>>();
-const intervalRef = useRef<ReturnType<typeof setInterval>>();
+const timeoutRef = useRef<ReturnType<typeof setTimeout>>()
+const intervalRef = useRef<ReturnType<typeof setInterval>>()
 
 useEffect(() => {
-  timeoutRef.current = setTimeout(() => {}, 1000);
+  timeoutRef.current = setTimeout(() => {}, 1000)
   return () => {
-    if (timeoutRef.current) clearTimeout(timeoutRef.current);
-  };
-}, []);
+    if (timeoutRef.current) clearTimeout(timeoutRef.current)
+  }
+}, [])
 
 // Callback ref for dynamic elements
 const callbackRef = useCallback((node: HTMLDivElement | null) => {
   if (node) {
-    node.scrollIntoView({ behavior: 'smooth' });
+    node.scrollIntoView({ behavior: 'smooth' })
   }
-}, []);
+}, [])
 ```
 
 ## useReducer
@@ -76,32 +76,32 @@ Typed actions with discriminated unions.
 
 ```typescript
 type State = {
-  count: number;
-  status: 'idle' | 'loading' | 'success' | 'error';
-  error?: string;
-};
+  count: number
+  status: 'idle' | 'loading' | 'success' | 'error'
+  error?: string
+}
 
 type Action =
   | { type: 'increment' }
   | { type: 'decrement' }
   | { type: 'set'; payload: number }
   | { type: 'setStatus'; payload: State['status'] }
-  | { type: 'setError'; payload: string };
+  | { type: 'setError'; payload: string }
 
 function reducer(state: State, action: Action): State {
   switch (action.type) {
     case 'increment':
-      return { ...state, count: state.count + 1 };
+      return { ...state, count: state.count + 1 }
     case 'decrement':
-      return { ...state, count: state.count - 1 };
+      return { ...state, count: state.count - 1 }
     case 'set':
-      return { ...state, count: action.payload };
+      return { ...state, count: action.payload }
     case 'setStatus':
-      return { ...state, status: action.payload };
+      return { ...state, status: action.payload }
     case 'setError':
-      return { ...state, status: 'error', error: action.payload };
+      return { ...state, status: 'error', error: action.payload }
     default:
-      return state;
+      return state
   }
 }
 
@@ -109,11 +109,11 @@ function Component() {
   const [state, dispatch] = useReducer(reducer, {
     count: 0,
     status: 'idle',
-  });
+  })
 
-  dispatch({ type: 'set', payload: 10 }); // Type-safe
-  dispatch({ type: 'set' }); // Error: payload required
-  dispatch({ type: 'unknown' }); // Error: invalid action type
+  dispatch({ type: 'set', payload: 10 }) // Type-safe
+  dispatch({ type: 'set' }) // Error: payload required
+  dispatch({ type: 'unknown' }) // Error: invalid action type
 }
 ```
 
@@ -171,38 +171,38 @@ Typed context with and without default values.
 
 ```typescript
 // Context with default value
-type Theme = 'light' | 'dark';
-const ThemeContext = createContext<Theme>('light');
+type Theme = 'light' | 'dark'
+const ThemeContext = createContext<Theme>('light')
 
 function useTheme() {
-  return useContext(ThemeContext); // Always Theme, never null
+  return useContext(ThemeContext) // Always Theme, never null
 }
 
 // Context without default (must handle null)
-type User = { id: string; name: string };
-const UserContext = createContext<User | null>(null);
+type User = { id: string; name: string }
+const UserContext = createContext<User | null>(null)
 
 function useUser() {
-  const user = useContext(UserContext);
-  if (!user) throw new Error('useUser must be used within UserProvider');
-  return user; // Type narrowed to User
+  const user = useContext(UserContext)
+  if (!user) throw new Error('useUser must be used within UserProvider')
+  return user // Type narrowed to User
 }
 
 // Context with complex value
 type AppContextValue = {
-  theme: Theme;
-  user: User | null;
-  setTheme: (theme: Theme) => void;
-  login: (user: User) => void;
-  logout: () => void;
-};
+  theme: Theme
+  user: User | null
+  setTheme: (theme: Theme) => void
+  login: (user: User) => void
+  logout: () => void
+}
 
-const AppContext = createContext<AppContextValue | null>(null);
+const AppContext = createContext<AppContextValue | null>(null)
 
 function useApp() {
-  const context = useContext(AppContext);
-  if (!context) throw new Error('useApp must be used within AppProvider');
-  return context;
+  const context = useContext(AppContext)
+  if (!context) throw new Error('useApp must be used within AppProvider')
+  return context
 }
 ```
 
@@ -213,78 +213,78 @@ Return type patterns for simple and complex hooks.
 ```typescript
 // Object return - properties accessed by name
 function useCounter(initial: number) {
-  const [count, setCount] = useState(initial);
-  const increment = () => setCount((c) => c + 1);
-  const decrement = () => setCount((c) => c - 1);
-  const reset = () => setCount(initial);
+  const [count, setCount] = useState(initial)
+  const increment = () => setCount((c) => c + 1)
+  const decrement = () => setCount((c) => c - 1)
+  const reset = () => setCount(initial)
 
-  return { count, increment, decrement, reset };
+  return { count, increment, decrement, reset }
 }
 
 // Usage
-const { count, increment } = useCounter(0);
+const { count, increment } = useCounter(0)
 
 // Tuple return - positional destructuring
 function useToggle(initial = false): [boolean, () => void, () => void, () => void] {
-  const [value, setValue] = useState(initial);
-  const toggle = () => setValue((v) => !v);
-  const setTrue = () => setValue(true);
-  const setFalse = () => setValue(false);
+  const [value, setValue] = useState(initial)
+  const toggle = () => setValue((v) => !v)
+  const setTrue = () => setValue(true)
+  const setFalse = () => setValue(false)
 
-  return [value, toggle, setTrue, setFalse];
+  return [value, toggle, setTrue, setFalse]
 }
 
 // Usage
-const [isOpen, toggleOpen, open, close] = useToggle();
+const [isOpen, toggleOpen, open, close] = useToggle()
 
 // as const for tuple inference
 function useLocalStorage<T>(key: string, initial: T) {
   const [value, setValue] = useState<T>(() => {
-    const stored = localStorage.getItem(key);
-    return stored ? JSON.parse(stored) : initial;
-  });
+    const stored = localStorage.getItem(key)
+    return stored ? JSON.parse(stored) : initial
+  })
 
   useEffect(() => {
-    localStorage.setItem(key, JSON.stringify(value));
-  }, [key, value]);
+    localStorage.setItem(key, JSON.stringify(value))
+  }, [key, value])
 
-  return [value, setValue] as const; // readonly tuple
+  return [value, setValue] as const // readonly tuple
 }
 
 // Generic custom hook
 function useFetch<T>(url: string) {
-  const [data, setData] = useState<T | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<Error | null>(null);
+  const [data, setData] = useState<T | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<Error | null>(null)
 
   useEffect(() => {
-    let cancelled = false;
+    let cancelled = false
 
     fetch(url)
       .then((res) => res.json())
       .then((json: T) => {
         if (!cancelled) {
-          setData(json);
-          setLoading(false);
+          setData(json)
+          setLoading(false)
         }
       })
       .catch((err) => {
         if (!cancelled) {
-          setError(err);
-          setLoading(false);
+          setError(err)
+          setLoading(false)
         }
-      });
+      })
 
     return () => {
-      cancelled = true;
-    };
-  }, [url]);
+      cancelled = true
+    }
+  }, [url])
 
-  return { data, loading, error };
+  return { data, loading, error }
 }
 
 // Usage - T inferred from usage or explicit
-const { data } = useFetch<User[]>('/api/users');
+const { data } = useFetch<User[]>('/api/users')
 ```
 
 ## useCallback and useMemo
@@ -294,18 +294,18 @@ Typed callbacks and memoized values.
 ```typescript
 // useCallback with typed parameters
 const handleClick = useCallback((id: string, event: React.MouseEvent) => {
-  console.log(id, event.target);
-}, []);
+  console.log(id, event.target)
+}, [])
 
 // useCallback returning value
 const formatDate = useCallback((date: Date): string => {
-  return date.toLocaleDateString();
-}, []);
+  return date.toLocaleDateString()
+}, [])
 
 // useMemo with explicit return type
 const sortedItems = useMemo((): Item[] => {
-  return [...items].sort((a, b) => a.name.localeCompare(b.name));
-}, [items]);
+  return [...items].sort((a, b) => a.name.localeCompare(b.name))
+}, [items])
 
 // useMemo with complex computation
 const stats = useMemo(() => {
@@ -313,8 +313,8 @@ const stats = useMemo(() => {
     total: items.length,
     average: items.reduce((a, b) => a + b.value, 0) / items.length,
     max: Math.max(...items.map((i) => i.value)),
-  };
-}, [items]);
+  }
+}, [items])
 ```
 
 ## useImperativeHandle
@@ -425,32 +425,32 @@ Subscribe to external stores with SSR support.
 
 ```typescript
 type Store<T> = {
-  getState: () => T;
-  subscribe: (callback: () => void) => () => void;
-};
+  getState: () => T
+  subscribe: (callback: () => void) => () => void
+}
 
 function useStore<T>(store: Store<T>): T {
   return useSyncExternalStore(
     store.subscribe,
     store.getState,
-    store.getState // Server snapshot
-  );
+    store.getState, // Server snapshot
+  )
 }
 
 // Example: window width store
 const widthStore: Store<number> = {
   getState: () => (typeof window !== 'undefined' ? window.innerWidth : 0),
   subscribe: (callback) => {
-    window.addEventListener('resize', callback);
-    return () => window.removeEventListener('resize', callback);
+    window.addEventListener('resize', callback)
+    return () => window.removeEventListener('resize', callback)
   },
-};
+}
 
 function useWindowWidth() {
   return useSyncExternalStore(
     widthStore.subscribe,
     widthStore.getState,
-    () => 0 // Server fallback
-  );
+    () => 0, // Server fallback
+  )
 }
 ```

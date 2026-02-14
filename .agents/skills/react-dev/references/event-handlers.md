@@ -7,53 +7,53 @@ Proper event typing ensures type-safe access to event properties and target elem
 ```typescript
 // Click events
 function handleClick(event: React.MouseEvent<HTMLButtonElement>) {
-  event.preventDefault();
-  event.stopPropagation();
+  event.preventDefault()
+  event.stopPropagation()
 
   // Target element typed correctly
-  event.currentTarget.disabled = true;
-  event.currentTarget.textContent = 'Clicked';
+  event.currentTarget.disabled = true
+  event.currentTarget.textContent = 'Clicked'
 
   // Mouse position
-  console.log(event.clientX, event.clientY);
-  console.log(event.pageX, event.pageY);
+  console.log(event.clientX, event.clientY)
+  console.log(event.pageX, event.pageY)
 
   // Mouse buttons
-  console.log(event.button); // 0 = left, 1 = middle, 2 = right
-  console.log(event.buttons); // Bitmask of pressed buttons
+  console.log(event.button) // 0 = left, 1 = middle, 2 = right
+  console.log(event.buttons) // Bitmask of pressed buttons
 
   // Modifier keys
   if (event.ctrlKey || event.metaKey) {
-    console.log('Ctrl/Cmd + Click');
+    console.log('Ctrl/Cmd + Click')
   }
   if (event.shiftKey) {
-    console.log('Shift + Click');
+    console.log('Shift + Click')
   }
   if (event.altKey) {
-    console.log('Alt + Click');
+    console.log('Alt + Click')
   }
 }
 
 // Mouse movement
 function handleMouseMove(event: React.MouseEvent<HTMLDivElement>) {
-  const rect = event.currentTarget.getBoundingClientRect();
-  const x = event.clientX - rect.left;
-  const y = event.clientY - rect.top;
-  console.log(`Position in element: ${x}, ${y}`);
+  const rect = event.currentTarget.getBoundingClientRect()
+  const x = event.clientX - rect.left
+  const y = event.clientY - rect.top
+  console.log(`Position in element: ${x}, ${y}`)
 }
 
 // Hover events
 function handleMouseEnter(event: React.MouseEvent<HTMLDivElement>) {
-  event.currentTarget.style.backgroundColor = 'lightblue';
+  event.currentTarget.style.backgroundColor = 'lightblue'
 }
 
 function handleMouseLeave(event: React.MouseEvent<HTMLDivElement>) {
-  event.currentTarget.style.backgroundColor = '';
+  event.currentTarget.style.backgroundColor = ''
 }
 
 // Double click
 function handleDoubleClick(event: React.MouseEvent<HTMLElement>) {
-  console.log('Double clicked');
+  console.log('Double clicked')
 }
 ```
 
@@ -62,75 +62,75 @@ function handleDoubleClick(event: React.MouseEvent<HTMLElement>) {
 ```typescript
 // Form submission
 function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-  event.preventDefault();
+  event.preventDefault()
 
-  const form = event.currentTarget;
-  const formData = new FormData(form);
+  const form = event.currentTarget
+  const formData = new FormData(form)
 
   const data = {
     name: formData.get('name') as string,
     email: formData.get('email') as string,
-  };
+  }
 
-  console.log(data);
+  console.log(data)
 }
 
 // Input change
 function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
-  const target = event.target;
+  const target = event.target
 
   // For text inputs
   if (target.type === 'text' || target.type === 'email') {
-    console.log(target.value); // string
+    console.log(target.value) // string
   }
 
   // For checkboxes
   if (target.type === 'checkbox') {
-    console.log(target.checked); // boolean
+    console.log(target.checked) // boolean
   }
 
   // For radio buttons
   if (target.type === 'radio') {
-    console.log(target.value, target.checked);
+    console.log(target.value, target.checked)
   }
 
   // For number inputs
   if (target.type === 'number') {
-    console.log(target.valueAsNumber); // number
+    console.log(target.valueAsNumber) // number
   }
 
   // For file inputs
   if (target.type === 'file') {
-    const files = target.files; // FileList | null
+    const files = target.files // FileList | null
     if (files && files.length > 0) {
-      console.log(files[0].name);
+      console.log(files[0].name)
     }
   }
 }
 
 // Textarea change
 function handleTextareaChange(event: React.ChangeEvent<HTMLTextAreaElement>) {
-  console.log(event.target.value);
-  console.log(event.target.selectionStart); // Cursor position
+  console.log(event.target.value)
+  console.log(event.target.selectionStart) // Cursor position
 }
 
 // Select change
 function handleSelectChange(event: React.ChangeEvent<HTMLSelectElement>) {
-  const value = event.target.value;
-  const selectedIndex = event.target.selectedIndex;
-  const selectedOption = event.target.options[selectedIndex];
-  console.log(value, selectedOption.text);
+  const value = event.target.value
+  const selectedIndex = event.target.selectedIndex
+  const selectedOption = event.target.options[selectedIndex]
+  console.log(value, selectedOption.text)
 }
 
 // Input events (fires on every keystroke)
 function handleInput(event: React.FormEvent<HTMLInputElement>) {
-  console.log(event.currentTarget.value);
+  console.log(event.currentTarget.value)
 }
 
 // Reset event
 function handleReset(event: React.FormEvent<HTMLFormElement>) {
-  event.preventDefault();
-  console.log('Form reset');
+  event.preventDefault()
+  console.log('Form reset')
 }
 ```
 
@@ -139,55 +139,55 @@ function handleReset(event: React.FormEvent<HTMLFormElement>) {
 ```typescript
 function handleKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {
   // Key identification
-  console.log(event.key); // 'Enter', 'Escape', 'a', etc.
-  console.log(event.code); // 'Enter', 'Escape', 'KeyA', etc.
+  console.log(event.key) // 'Enter', 'Escape', 'a', etc.
+  console.log(event.code) // 'Enter', 'Escape', 'KeyA', etc.
 
   // Common patterns
   if (event.key === 'Enter') {
-    event.preventDefault();
-    console.log('Enter pressed');
+    event.preventDefault()
+    console.log('Enter pressed')
   }
 
   if (event.key === 'Escape') {
-    event.currentTarget.blur();
+    event.currentTarget.blur()
   }
 
   // Arrow keys
   if (event.key === 'ArrowUp') {
-    event.preventDefault();
+    event.preventDefault()
     // Navigate up
   }
 
   // Modifier keys
   if (event.ctrlKey && event.key === 's') {
-    event.preventDefault();
-    console.log('Ctrl+S - Save');
+    event.preventDefault()
+    console.log('Ctrl+S - Save')
   }
 
   if (event.metaKey && event.key === 'k') {
-    event.preventDefault();
-    console.log('Cmd+K - Search');
+    event.preventDefault()
+    console.log('Cmd+K - Search')
   }
 
   // Check multiple modifiers
   if (event.ctrlKey && event.shiftKey && event.key === 'P') {
-    event.preventDefault();
-    console.log('Ctrl+Shift+P - Command palette');
+    event.preventDefault()
+    console.log('Ctrl+Shift+P - Command palette')
   }
 
   // Key combinations
   if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') {
-    console.log('Submit with Ctrl/Cmd+Enter');
+    console.log('Submit with Ctrl/Cmd+Enter')
   }
 }
 
 function handleKeyUp(event: React.KeyboardEvent<HTMLInputElement>) {
-  console.log('Key released:', event.key);
+  console.log('Key released:', event.key)
 }
 
 function handleKeyPress(event: React.KeyboardEvent<HTMLInputElement>) {
   // Deprecated - use keyDown instead
-  console.log('Key pressed:', event.key);
+  console.log('Key pressed:', event.key)
 }
 ```
 
@@ -196,28 +196,28 @@ function handleKeyPress(event: React.KeyboardEvent<HTMLInputElement>) {
 ```typescript
 function handleFocus(event: React.FocusEvent<HTMLInputElement>) {
   // Select all text on focus
-  event.target.select();
+  event.target.select()
 
   // Add visual indicator
-  event.currentTarget.classList.add('focused');
+  event.currentTarget.classList.add('focused')
 }
 
 function handleBlur(event: React.FocusEvent<HTMLInputElement>) {
   // Validate on blur
-  const value = event.target.value;
+  const value = event.target.value
   if (value === '') {
-    event.currentTarget.classList.add('error');
+    event.currentTarget.classList.add('error')
   }
 
   // Remove visual indicator
-  event.currentTarget.classList.remove('focused');
+  event.currentTarget.classList.remove('focused')
 }
 
 // Focus within
 function handleFocusWithin(event: React.FocusEvent<HTMLDivElement>) {
   // Related target - element receiving focus
-  const relatedTarget = event.relatedTarget as HTMLElement | null;
-  console.log('Focus moved from:', relatedTarget);
+  const relatedTarget = event.relatedTarget as HTMLElement | null
+  console.log('Focus moved from:', relatedTarget)
 }
 ```
 
@@ -225,43 +225,43 @@ function handleFocusWithin(event: React.FocusEvent<HTMLDivElement>) {
 
 ```typescript
 function handleDragStart(event: React.DragEvent<HTMLDivElement>) {
-  event.dataTransfer.effectAllowed = 'move';
-  event.dataTransfer.setData('text/plain', event.currentTarget.id);
+  event.dataTransfer.effectAllowed = 'move'
+  event.dataTransfer.setData('text/plain', event.currentTarget.id)
 
   // Custom drag image
-  const dragImage = document.createElement('div');
-  dragImage.textContent = 'Dragging...';
-  event.dataTransfer.setDragImage(dragImage, 0, 0);
+  const dragImage = document.createElement('div')
+  dragImage.textContent = 'Dragging...'
+  event.dataTransfer.setDragImage(dragImage, 0, 0)
 }
 
 function handleDragOver(event: React.DragEvent<HTMLDivElement>) {
-  event.preventDefault();
-  event.dataTransfer.dropEffect = 'move';
-  event.currentTarget.classList.add('drag-over');
+  event.preventDefault()
+  event.dataTransfer.dropEffect = 'move'
+  event.currentTarget.classList.add('drag-over')
 }
 
 function handleDragLeave(event: React.DragEvent<HTMLDivElement>) {
-  event.currentTarget.classList.remove('drag-over');
+  event.currentTarget.classList.remove('drag-over')
 }
 
 function handleDrop(event: React.DragEvent<HTMLDivElement>) {
-  event.preventDefault();
-  event.currentTarget.classList.remove('drag-over');
+  event.preventDefault()
+  event.currentTarget.classList.remove('drag-over')
 
-  const data = event.dataTransfer.getData('text/plain');
-  console.log('Dropped:', data);
+  const data = event.dataTransfer.getData('text/plain')
+  console.log('Dropped:', data)
 
   // Handle files
-  const files = event.dataTransfer.files;
+  const files = event.dataTransfer.files
   if (files.length > 0) {
     Array.from(files).forEach((file) => {
-      console.log(file.name, file.type, file.size);
-    });
+      console.log(file.name, file.type, file.size)
+    })
   }
 }
 
 function handleDragEnd(event: React.DragEvent<HTMLDivElement>) {
-  console.log('Drag ended');
+  console.log('Drag ended')
 }
 ```
 
@@ -269,29 +269,29 @@ function handleDragEnd(event: React.DragEvent<HTMLDivElement>) {
 
 ```typescript
 function handleCopy(event: React.ClipboardEvent<HTMLDivElement>) {
-  event.preventDefault();
+  event.preventDefault()
 
   // Custom copy behavior
-  const selection = window.getSelection();
+  const selection = window.getSelection()
   if (selection) {
-    const text = `Copied from app: ${selection.toString()}`;
-    event.clipboardData.setData('text/plain', text);
+    const text = `Copied from app: ${selection.toString()}`
+    event.clipboardData.setData('text/plain', text)
   }
 }
 
 function handleCut(event: React.ClipboardEvent<HTMLInputElement>) {
-  console.log('Cut:', event.currentTarget.value);
+  console.log('Cut:', event.currentTarget.value)
 }
 
 function handlePaste(event: React.ClipboardEvent<HTMLInputElement>) {
-  event.preventDefault();
+  event.preventDefault()
 
-  const pastedText = event.clipboardData.getData('text/plain');
-  console.log('Pasted:', pastedText);
+  const pastedText = event.clipboardData.getData('text/plain')
+  console.log('Pasted:', pastedText)
 
   // Validate pasted content
-  const sanitized = pastedText.replace(/[^a-zA-Z0-9]/g, '');
-  event.currentTarget.value = sanitized;
+  const sanitized = pastedText.replace(/[^a-zA-Z0-9]/g, '')
+  event.currentTarget.value = sanitized
 }
 ```
 
@@ -300,15 +300,15 @@ function handlePaste(event: React.ClipboardEvent<HTMLInputElement>) {
 ```typescript
 // For international input methods (Chinese, Japanese, etc.)
 function handleCompositionStart(event: React.CompositionEvent<HTMLInputElement>) {
-  console.log('Composition started');
+  console.log('Composition started')
 }
 
 function handleCompositionUpdate(event: React.CompositionEvent<HTMLInputElement>) {
-  console.log('Composing:', event.data);
+  console.log('Composing:', event.data)
 }
 
 function handleCompositionEnd(event: React.CompositionEvent<HTMLInputElement>) {
-  console.log('Composition ended:', event.data);
+  console.log('Composition ended:', event.data)
 }
 ```
 
@@ -316,32 +316,29 @@ function handleCompositionEnd(event: React.CompositionEvent<HTMLInputElement>) {
 
 ```typescript
 function handleTouchStart(event: React.TouchEvent<HTMLDivElement>) {
-  const touch = event.touches[0];
-  console.log('Touch start:', touch.clientX, touch.clientY);
+  const touch = event.touches[0]
+  console.log('Touch start:', touch.clientX, touch.clientY)
 }
 
 function handleTouchMove(event: React.TouchEvent<HTMLDivElement>) {
-  event.preventDefault(); // Prevent scrolling
+  event.preventDefault() // Prevent scrolling
 
-  const touch = event.touches[0];
-  console.log('Touch move:', touch.clientX, touch.clientY);
+  const touch = event.touches[0]
+  console.log('Touch move:', touch.clientX, touch.clientY)
 }
 
 function handleTouchEnd(event: React.TouchEvent<HTMLDivElement>) {
-  console.log('Touch ended');
+  console.log('Touch ended')
 }
 
 // Multi-touch
 function handleMultiTouch(event: React.TouchEvent<HTMLDivElement>) {
   if (event.touches.length === 2) {
-    const [touch1, touch2] = event.touches;
+    const [touch1, touch2] = event.touches
 
-    const distance = Math.hypot(
-      touch2.clientX - touch1.clientX,
-      touch2.clientY - touch1.clientY
-    );
+    const distance = Math.hypot(touch2.clientX - touch1.clientX, touch2.clientY - touch1.clientY)
 
-    console.log('Pinch distance:', distance);
+    console.log('Pinch distance:', distance)
   }
 }
 ```
@@ -351,20 +348,20 @@ function handleMultiTouch(event: React.TouchEvent<HTMLDivElement>) {
 ```typescript
 function handleWheel(event: React.WheelEvent<HTMLDivElement>) {
   // Prevent default scroll
-  event.preventDefault();
+  event.preventDefault()
 
   // Scroll delta
-  console.log('Delta X:', event.deltaX);
-  console.log('Delta Y:', event.deltaY);
-  console.log('Delta Z:', event.deltaZ);
+  console.log('Delta X:', event.deltaX)
+  console.log('Delta Y:', event.deltaY)
+  console.log('Delta Z:', event.deltaZ)
 
   // Delta mode (0 = pixels, 1 = lines, 2 = pages)
-  console.log('Delta mode:', event.deltaMode);
+  console.log('Delta mode:', event.deltaMode)
 
   // Zoom with Ctrl+Wheel
   if (event.ctrlKey) {
-    const zoomDelta = event.deltaY > 0 ? -0.1 : 0.1;
-    console.log('Zoom:', zoomDelta);
+    const zoomDelta = event.deltaY > 0 ? -0.1 : 0.1
+    console.log('Zoom:', zoomDelta)
   }
 }
 ```
@@ -375,79 +372,70 @@ Reusable handlers with proper typing.
 
 ```typescript
 // Generic change handler
-function createChangeHandler<T extends HTMLElement>(
-  callback: (value: string) => void
-) {
+function createChangeHandler<T extends HTMLElement>(callback: (value: string) => void) {
   return (event: React.ChangeEvent<T>) => {
     if ('value' in event.target) {
-      callback(event.target.value);
+      callback(event.target.value)
     }
-  };
+  }
 }
 
 // Usage
 const handleNameChange = createChangeHandler<HTMLInputElement>((value) => {
-  setName(value);
-});
+  setName(value)
+})
 
 const handleBioChange = createChangeHandler<HTMLTextAreaElement>((value) => {
-  setBio(value);
-});
+  setBio(value)
+})
 
 // Generic click handler with target validation
-function createClickHandler<T extends HTMLElement>(
-  selector: string,
-  callback: (element: T) => void
-) {
+function createClickHandler<T extends HTMLElement>(selector: string, callback: (element: T) => void) {
   return (event: React.MouseEvent<HTMLElement>) => {
-    const target = event.target as HTMLElement;
-    const match = target.closest(selector);
+    const target = event.target as HTMLElement
+    const match = target.closest(selector)
 
     if (match) {
-      callback(match as T);
+      callback(match as T)
     }
-  };
+  }
 }
 
 // Usage
 const handleItemClick = createClickHandler<HTMLLIElement>('li[data-id]', (item) => {
-  const id = item.dataset.id;
-  console.log('Clicked item:', id);
-});
+  const id = item.dataset.id
+  console.log('Clicked item:', id)
+})
 ```
 
 ## Event Handler Type Aliases
 
 ```typescript
 // Create reusable type aliases
-type InputChangeHandler = React.ChangeEventHandler<HTMLInputElement>;
-type ButtonClickHandler = React.MouseEventHandler<HTMLButtonElement>;
-type FormSubmitHandler = React.FormEventHandler<HTMLFormElement>;
+type InputChangeHandler = React.ChangeEventHandler<HTMLInputElement>
+type ButtonClickHandler = React.MouseEventHandler<HTMLButtonElement>
+type FormSubmitHandler = React.FormEventHandler<HTMLFormElement>
 
 // Usage
 const handleChange: InputChangeHandler = (event) => {
-  console.log(event.target.value);
-};
+  console.log(event.target.value)
+}
 
 const handleClick: ButtonClickHandler = (event) => {
-  event.currentTarget.disabled = true;
-};
+  event.currentTarget.disabled = true
+}
 
 const handleSubmit: FormSubmitHandler = (event) => {
-  event.preventDefault();
-};
+  event.preventDefault()
+}
 
 // Generic handler type
-type EventHandler<E extends HTMLElement, Evt extends React.SyntheticEvent> = (
-  event: Evt & { currentTarget: E }
-) => void;
+type EventHandler<E extends HTMLElement, Evt extends React.SyntheticEvent> = (event: Evt & { currentTarget: E }) => void
 
 // Usage
-const handleInput: EventHandler<HTMLInputElement, React.ChangeEvent<HTMLInputElement>> = (
-  event
-) => {
-  console.log(event.currentTarget.value);
-};
+const handleInput: EventHandler<HTMLInputElement, React.ChangeEvent<HTMLInputElement>> = (event) => {
+  console.log(event.currentTarget.value)
+}
 ```
 
 ## Delegated Event Handlers

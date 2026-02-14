@@ -8,16 +8,16 @@
 
 ```typescript
 // ❌ ANTI-PATTERN
-const [firstName, setFirstName] = useState('Taylor');
-const [lastName, setLastName] = useState('Swift');
-const [fullName, setFullName] = useState('');
+const [firstName, setFirstName] = useState('Taylor')
+const [lastName, setLastName] = useState('Swift')
+const [fullName, setFullName] = useState('')
 
 useEffect(() => {
-  setFullName(firstName + ' ' + lastName); // Extra render!
-}, [firstName, lastName]);
+  setFullName(firstName + ' ' + lastName) // Extra render!
+}, [firstName, lastName])
 
 // ✅ CORRECT: Calculate during render
-const fullName = firstName + ' ' + lastName;
+const fullName = firstName + ' ' + lastName
 ```
 
 **Detection:** `useEffect` that only calls `setState` with computed values from dependencies.
@@ -30,14 +30,14 @@ const fullName = firstName + ' ' + lastName;
 // ❌ ANTI-PATTERN: Notification shows on page reload too
 useEffect(() => {
   if (product.isInCart) {
-    showNotification(`Added ${product.name}!`);
+    showNotification(`Added ${product.name}!`)
   }
-}, [product]);
+}, [product])
 
 // ✅ CORRECT: Logic in event handler
 function handleBuyClick() {
-  addToCart(product);
-  showNotification(`Added ${product.name}!`);
+  addToCart(product)
+  showNotification(`Added ${product.name}!`)
 }
 ```
 
@@ -51,7 +51,7 @@ function handleBuyClick() {
 // ❌ ANTI-PATTERN
 function ProfilePage({ userId }: { userId: string }) {
   const [comment, setComment] = useState('');
-  
+
   useEffect(() => {
     setComment(''); // Reset on user change
   }, [userId]);
@@ -73,29 +73,29 @@ function ProfilePage({ userId }: { userId: string }) {
 // ❌ ANTI-PATTERN: No cleanup
 useEffect(() => {
   fetch(`/api/user/${userId}`)
-    .then(res => res.json())
-    .then(data => setUser(data)); // May set state after unmount
-}, [userId]);
+    .then((res) => res.json())
+    .then((data) => setUser(data)) // May set state after unmount
+}, [userId])
 
 // ✅ CORRECT: AbortController for cleanup
 useEffect(() => {
-  const controller = new AbortController();
-  
+  const controller = new AbortController()
+
   fetch(`/api/user/${userId}`, { signal: controller.signal })
-    .then(res => res.json())
-    .then(data => setUser(data))
-    .catch(err => {
-      if (err.name !== 'AbortError') setError(err);
-    });
-  
-  return () => controller.abort();
-}, [userId]);
+    .then((res) => res.json())
+    .then((data) => setUser(data))
+    .catch((err) => {
+      if (err.name !== 'AbortError') setError(err)
+    })
+
+  return () => controller.abort()
+}, [userId])
 
 // ✅ BETTER: Use TanStack Query
 const { data: user } = useQuery({
   queryKey: ['user', userId],
-  queryFn: () => fetch(`/api/user/${userId}`).then(r => r.json()),
-});
+  queryFn: () => fetch(`/api/user/${userId}`).then((r) => r.json()),
+})
 ```
 
 ### 5. Missing Cleanup for Subscriptions
@@ -105,14 +105,14 @@ const { data: user } = useQuery({
 ```typescript
 // ❌ ANTI-PATTERN: No cleanup
 useEffect(() => {
-  window.addEventListener('resize', handleResize);
-}, []);
+  window.addEventListener('resize', handleResize)
+}, [])
 
 // ✅ CORRECT
 useEffect(() => {
-  window.addEventListener('resize', handleResize);
-  return () => window.removeEventListener('resize', handleResize);
-}, []);
+  window.addEventListener('resize', handleResize)
+  return () => window.removeEventListener('resize', handleResize)
+}, [])
 ```
 
 ## Dependency Array Anti-Patterns
@@ -123,36 +123,36 @@ useEffect(() => {
 // ❌ ANTI-PATTERN: count is stale
 useEffect(() => {
   const id = setInterval(() => {
-    setCount(count + increment); // Uses stale count!
-  }, 1000);
-  return () => clearInterval(id);
-}, []); // Missing count and increment
+    setCount(count + increment) // Uses stale count!
+  }, 1000)
+  return () => clearInterval(id)
+}, []) // Missing count and increment
 
 // ✅ CORRECT: Functional update removes count dependency
 useEffect(() => {
   const id = setInterval(() => {
-    setCount(c => c + increment);
-  }, 1000);
-  return () => clearInterval(id);
-}, [increment]);
+    setCount((c) => c + increment)
+  }, 1000)
+  return () => clearInterval(id)
+}, [increment])
 ```
 
 ### 2. Object/Array Dependencies (Infinite Loops)
 
 ```typescript
 // ❌ ANTI-PATTERN: New object every render = infinite loop
-const options = { userId, page: 1 };
+const options = { userId, page: 1 }
 useEffect(() => {
-  fetchData(options);
-}, [options]); // options is new object every render!
+  fetchData(options)
+}, [options]) // options is new object every render!
 
 // ✅ CORRECT: Use primitives
 useEffect(() => {
-  fetchData({ userId, page: 1 });
-}, [userId]);
+  fetchData({ userId, page: 1 })
+}, [userId])
 
 // ✅ ALTERNATIVE: Memoize if object is needed
-const options = useMemo(() => ({ userId, page: 1 }), [userId]);
+const options = useMemo(() => ({ userId, page: 1 }), [userId])
 ```
 
 ### 3. eslint-disable for Dependencies
@@ -162,14 +162,14 @@ const options = useMemo(() => ({ userId, page: 1 }), [userId]);
 ```typescript
 // ❌ ANTI-PATTERN: Hiding the bug
 useEffect(() => {
-  doSomething(value);
+  doSomething(value)
   // eslint-disable-next-line react-hooks/exhaustive-deps
-}, []); // value will be stale!
+}, []) // value will be stale!
 
 // ✅ CORRECT: Fix the actual issue
 useEffect(() => {
-  doSomething(value);
-}, [value]);
+  doSomething(value)
+}, [value])
 
 // Or if you truly want "mount only", question why:
 // - Is this initialization that should be in useState initializer?
@@ -183,14 +183,14 @@ useEffect(() => {
 ```typescript
 // ❌ ANTI-PATTERN: Same reference, no re-render
 const addItem = (item: Item) => {
-  items.push(item);
-  setItems(items); // React sees same reference, skips update
-};
+  items.push(item)
+  setItems(items) // React sees same reference, skips update
+}
 
 // ✅ CORRECT
 const addItem = (item: Item) => {
-  setItems([...items, item]);
-};
+  setItems([...items, item])
+}
 ```
 
 ### Direct Object Mutation
@@ -198,26 +198,26 @@ const addItem = (item: Item) => {
 ```typescript
 // ❌ ANTI-PATTERN
 const updateUser = (name: string) => {
-  user.name = name;
-  setUser(user); // Same reference
-};
+  user.name = name
+  setUser(user) // Same reference
+}
 
 // ✅ CORRECT
 const updateUser = (name: string) => {
-  setUser({ ...user, name });
-};
+  setUser({ ...user, name })
+}
 ```
 
 ### Immutable Operations Reference
 
-| Operation | ❌ Mutating | ✅ Immutable |
-|-----------|------------|-------------|
-| Add | `arr.push(item)` | `[...arr, item]` |
-| Add at start | `arr.unshift(item)` | `[item, ...arr]` |
-| Remove | `arr.splice(i, 1)` | `arr.filter((_, idx) => idx !== i)` |
-| Update | `arr[i] = newItem` | `arr.map((x, idx) => idx === i ? newItem : x)` |
-| Sort | `arr.sort()` | `[...arr].sort()` |
-| Reverse | `arr.reverse()` | `[...arr].reverse()` |
+| Operation    | ❌ Mutating         | ✅ Immutable                                   |
+| ------------ | ------------------- | ---------------------------------------------- |
+| Add          | `arr.push(item)`    | `[...arr, item]`                               |
+| Add at start | `arr.unshift(item)` | `[item, ...arr]`                               |
+| Remove       | `arr.splice(i, 1)`  | `arr.filter((_, idx) => idx !== i)`            |
+| Update       | `arr[i] = newItem`  | `arr.map((x, idx) => idx === i ? newItem : x)` |
+| Sort         | `arr.sort()`        | `[...arr].sort()`                              |
+| Reverse      | `arr.reverse()`     | `[...arr].reverse()`                           |
 
 ## Memoization Anti-Patterns
 
@@ -225,13 +225,10 @@ const updateUser = (name: string) => {
 
 ```typescript
 // ❌ ANTI-PATTERN: Overhead > benefit
-const fullName = useMemo(
-  () => `${firstName} ${lastName}`,
-  [firstName, lastName]
-);
+const fullName = useMemo(() => `${firstName} ${lastName}`, [firstName, lastName])
 
 // ✅ CORRECT: Just compute it
-const fullName = `${firstName} ${lastName}`;
+const fullName = `${firstName} ${lastName}`
 ```
 
 **Rule:** Only use `useMemo` for genuinely expensive calculations (>1ms) OR to maintain referential equality for `React.memo` children.
@@ -244,7 +241,7 @@ function Parent() {
   const handleClick = useCallback(() => {
     console.log('clicked');
   }, []);
-  
+
   return <Child onClick={handleClick} />; // Child still re-renders!
 }
 
@@ -257,7 +254,7 @@ function Parent() {
   const handleClick = useCallback(() => {
     console.log('clicked');
   }, []);
-  
+
   return <Child onClick={handleClick} />; // Now Child skips re-render
 }
 ```
@@ -270,7 +267,7 @@ const MemoizedList = React.memo(List);
 
 function Parent() {
   return (
-    <MemoizedList 
+    <MemoizedList
       style={{ color: 'red' }} // New object every render!
       onClick={() => handleClick()} // New function every render!
     />
@@ -282,7 +279,7 @@ const style = { color: 'red' }; // Or useMemo if dynamic
 
 function Parent() {
   const handleClick = useCallback(() => { /* ... */ }, []);
-  
+
   return <MemoizedList style={style} onClick={handleClick} />;
 }
 ```
@@ -293,15 +290,15 @@ function Parent() {
 
 ```typescript
 // ❌ ANTI-PATTERN
-const data: any = await response.json();
-console.log(data.user.name); // No type safety
+const data: any = await response.json()
+console.log(data.user.name) // No type safety
 
 // ✅ CORRECT
 interface ApiResponse {
-  user: { name: string; email: string };
+  user: { name: string; email: string }
 }
-const data: ApiResponse = await response.json();
-console.log(data.user.name); // Type safe
+const data: ApiResponse = await response.json()
+console.log(data.user.name) // Type safe
 ```
 
 ### 2. React.FC for Components
@@ -325,27 +322,27 @@ const App = ({ message }: AppProps) => {
 ```typescript
 // ❌ ANTI-PATTERN: Can have value without onChange
 interface InputProps {
-  value?: string;
-  onChange?: (value: string) => void;
+  value?: string
+  onChange?: (value: string) => void
 }
 
 // ✅ CORRECT: Discriminated union
-type ControlledProps = { value: string; onChange: (v: string) => void };
-type UncontrolledProps = { value?: never; onChange?: never; defaultValue?: string };
-type InputProps = { label: string } & (ControlledProps | UncontrolledProps);
+type ControlledProps = { value: string; onChange: (v: string) => void }
+type UncontrolledProps = { value?: never; onChange?: never; defaultValue?: string }
+type InputProps = { label: string } & (ControlledProps | UncontrolledProps)
 ```
 
 ### 4. Array Access Without Undefined Check
 
 ```typescript
 // ❌ ANTI-PATTERN (without noUncheckedIndexedAccess)
-const arr: string[] = ['a', 'b'];
-console.log(arr[10].toUpperCase()); // Runtime error!
+const arr: string[] = ['a', 'b']
+console.log(arr[10].toUpperCase()) // Runtime error!
 
 // ✅ CORRECT
-const item = arr[10];
+const item = arr[10]
 if (item) {
-  console.log(item.toUpperCase());
+  console.log(item.toUpperCase())
 }
 ```
 
@@ -391,6 +388,7 @@ function Parent() {
 ### 3. God Components (Too Much Responsibility)
 
 **Symptoms:**
+
 - Component > 300 lines
 - 10+ pieces of state
 - Multiple unrelated concerns
@@ -439,15 +437,15 @@ function GrandParent({ user }: { user: User }) {
 
 ```typescript
 // ❌ ANTI-PATTERN: Creates stale data
-const { data } = useQuery({ queryKey: ['todos'], queryFn: fetchTodos });
-const [todos, setTodos] = useState<Todo[]>([]);
+const { data } = useQuery({ queryKey: ['todos'], queryFn: fetchTodos })
+const [todos, setTodos] = useState<Todo[]>([])
 
 useEffect(() => {
-  if (data) setTodos(data);
-}, [data]);
+  if (data) setTodos(data)
+}, [data])
 
 // ✅ CORRECT: Query is the source of truth
-const { data: todos } = useQuery({ queryKey: ['todos'], queryFn: fetchTodos });
+const { data: todos } = useQuery({ queryKey: ['todos'], queryFn: fetchTodos })
 ```
 
 ### 2. Global State for Local Concerns
@@ -475,11 +473,11 @@ function FeatureWithModal() {
 
 ```typescript
 // ❌ ANTI-PATTERN: Re-renders on ANY store change
-const { bears, fish } = useStore();
+const { bears, fish } = useStore()
 
 // ✅ CORRECT: Select only what you need
-const bears = useStore((state) => state.bears);
-const fish = useStore((state) => state.fish);
+const bears = useStore((state) => state.bears)
+const fish = useStore((state) => state.fish)
 ```
 
 ## File Structure Anti-Patterns
@@ -489,19 +487,20 @@ const fish = useStore((state) => state.fish);
 ```typescript
 // ❌ ANTI-PATTERN: index.ts that re-exports everything
 // src/components/index.ts
-export * from './Button';
-export * from './Input';
-export * from './Modal';
+export * from './Button'
+export * from './Input'
+export * from './Modal'
 // ... 50 more exports
 
 // Importing one thing loads everything!
-import { Button } from '@/components';
+import { Button } from '@/components'
 
 // ✅ CORRECT: Direct imports
-import { Button } from '@/components/Button';
+import { Button } from '@/components/Button'
 ```
 
 **Problems with barrel files:**
+
 - Loads all exports even when importing one
 - Circular dependency risks
 - Tree-shaking breaks

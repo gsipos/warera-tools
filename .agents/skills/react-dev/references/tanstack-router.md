@@ -5,28 +5,28 @@ TanStack Router provides full type safety for routes, params, search params, and
 ## Basic Route Definition
 
 ```typescript
-import { createRoute, createRootRoute } from '@tanstack/react-router';
+import { createRoute, createRootRoute } from '@tanstack/react-router'
 
 // Root route
 const rootRoute = createRootRoute({
   component: RootLayout,
-});
+})
 
 // Basic route
 const indexRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/',
   component: HomePage,
-});
+})
 
 // Route tree
-const routeTree = rootRoute.addChildren([indexRoute]);
+const routeTree = rootRoute.addChildren([indexRoute])
 
 // Router
-const router = createRouter({ routeTree });
+const router = createRouter({ routeTree })
 
 // Type for router - use in app
-type Router = typeof router;
+type Router = typeof router
 ```
 
 ## Route with Params
@@ -387,13 +387,13 @@ Share data across all routes.
 
 ```typescript
 type RouterContext = {
-  auth: { user: User | null };
-  queryClient: QueryClient;
-};
+  auth: { user: User | null }
+  queryClient: QueryClient
+}
 
 const rootRoute = createRootRoute<RouterContext>({
   component: RootLayout,
-});
+})
 
 const router = createRouter({
   routeTree,
@@ -401,7 +401,7 @@ const router = createRouter({
     auth: { user: null },
     queryClient: new QueryClient(),
   },
-});
+})
 
 // Access in route
 const userRoute = createRoute({
@@ -409,9 +409,9 @@ const userRoute = createRoute({
   path: '/users/$userId',
   beforeLoad: ({ context }) => {
     // context typed as RouterContext
-    console.log(context.auth.user);
+    console.log(context.auth.user)
   },
-});
+})
 ```
 
 ## Route Masks
@@ -422,7 +422,7 @@ Hide actual URL structure.
 const userRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/users/$userId',
-});
+})
 
 // Navigate with mask
 navigate({
@@ -431,7 +431,7 @@ navigate({
   mask: {
     to: '/profile',
   },
-});
+})
 
 // URL shows /profile but renders /users/123
 ```
@@ -449,10 +449,10 @@ const productsRoute = createRoute({
   }),
   loaderDeps: ({ search }) => ({ tags: search.tags }),
   loader: async ({ deps }) => {
-    const products = await fetchProducts({ tags: deps.tags });
-    return { products };
+    const products = await fetchProducts({ tags: deps.tags })
+    return { products }
   },
-});
+})
 
 // URL: /products?tags=electronics&tags=sale
 // search.tags = ['electronics', 'sale']
@@ -461,19 +461,19 @@ const productsRoute = createRoute({
 ## Type Helpers
 
 ```typescript
-import type { RouteIds, RouteById } from '@tanstack/react-router';
+import type { RouteIds, RouteById } from '@tanstack/react-router'
 
 // Get all route IDs
-type AllRouteIds = RouteIds<typeof router>;
+type AllRouteIds = RouteIds<typeof router>
 
 // Get specific route type
-type UserRoute = RouteById<typeof router, '/users/$userId'>;
+type UserRoute = RouteById<typeof router, '/users/$userId'>
 
 // Extract params type
-type UserParams = UserRoute['types']['allParams'];
+type UserParams = UserRoute['types']['allParams']
 
 // Extract search type
-type UserSearch = UserRoute['types']['fullSearchSchema'];
+type UserSearch = UserRoute['types']['fullSearchSchema']
 ```
 
 ## Preloading Routes
@@ -531,28 +531,28 @@ function Navigation() {
 // routes/__root.tsx
 export const Route = createRootRoute({
   component: RootLayout,
-});
+})
 
 // routes/index.tsx
 export const Route = createFileRoute('/')({
   component: HomePage,
-});
+})
 
 // routes/users/$userId.tsx
 export const Route = createFileRoute('/users/$userId')({
   component: UserPage,
   loader: async ({ params }) => {
-    const user = await fetchUser(params.userId);
-    return { user };
+    const user = await fetchUser(params.userId)
+    return { user }
   },
-});
+})
 
 // Generate route tree with CLI
 // npm run generate-routes
 
 // Import generated routes
-import { routeTree } from './routeTree.gen';
-const router = createRouter({ routeTree });
+import { routeTree } from './routeTree.gen'
+const router = createRouter({ routeTree })
 ```
 
 ## Integration with React Query
