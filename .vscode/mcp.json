@@ -1,14 +1,11 @@
 {
   "servers": {
     "context7": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "@upstash/context7-mcp@latest",
-        "--api-key",
-        "ctx7sk-14d051d8-5772-433f-bc71-b19e08cc2d00"
-      ],
-      "type": "stdio"
+      "type": "http",
+      "url": "https://mcp.context7.com/mcp",
+      "headers": {
+        "CONTEXT7_API_KEY": "YOUR_API_KEY"
+      }
     },
     "ESLint": {
       "type": "stdio",
