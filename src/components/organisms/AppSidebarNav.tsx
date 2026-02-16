@@ -170,6 +170,19 @@ export function AppSidebarNav() {
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild onClick={handleNavClick}>
+                  <Link
+                    to="/crafting"
+                    activeProps={{
+                      className: 'bg-sidebar-accent text-sidebar-accent-foreground font-medium',
+                    }}
+                  >
+                    <FactoryIcon />
+                    <span>Crafting</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>

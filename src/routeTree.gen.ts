@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './pages/__root'
 import { Route as RegionsRouteImport } from './pages/regions'
+import { Route as CraftingRouteImport } from './pages/crafting'
 import { Route as CountriesRouteRouteImport } from './pages/countries.route'
 import { Route as IndexRouteImport } from './pages/index'
 import { Route as ItemsIndexRouteImport } from './pages/items.index'
@@ -26,6 +27,11 @@ import { Route as CountriesCountryIdRouteImport } from './pages/countries.$count
 const RegionsRoute = RegionsRouteImport.update({
   id: '/regions',
   path: '/regions',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CraftingRoute = CraftingRouteImport.update({
+  id: '/crafting',
+  path: '/crafting',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CountriesRouteRoute = CountriesRouteRouteImport.update({
@@ -92,6 +98,7 @@ const CountriesCountryIdRoute = CountriesCountryIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/countries': typeof CountriesRouteRouteWithChildren
+  '/crafting': typeof CraftingRoute
   '/regions': typeof RegionsRoute
   '/countries/$countryId': typeof CountriesCountryIdRoute
   '/countries/alliances': typeof CountriesAlliancesRoute
@@ -106,6 +113,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/crafting': typeof CraftingRoute
   '/regions': typeof RegionsRoute
   '/countries/$countryId': typeof CountriesCountryIdRoute
   '/countries/alliances': typeof CountriesAlliancesRoute
@@ -122,6 +130,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/countries': typeof CountriesRouteRouteWithChildren
+  '/crafting': typeof CraftingRoute
   '/regions': typeof RegionsRoute
   '/countries/$countryId': typeof CountriesCountryIdRoute
   '/countries/alliances': typeof CountriesAlliancesRoute
@@ -139,6 +148,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/countries'
+    | '/crafting'
     | '/regions'
     | '/countries/$countryId'
     | '/countries/alliances'
@@ -153,6 +163,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/crafting'
     | '/regions'
     | '/countries/$countryId'
     | '/countries/alliances'
@@ -168,6 +179,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/countries'
+    | '/crafting'
     | '/regions'
     | '/countries/$countryId'
     | '/countries/alliances'
@@ -184,6 +196,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CountriesRouteRoute: typeof CountriesRouteRouteWithChildren
+  CraftingRoute: typeof CraftingRoute
   RegionsRoute: typeof RegionsRoute
   ItemProductionRoute: typeof ItemProductionRoute
   ItemDepositsItemCodeRoute: typeof ItemDepositsItemCodeRoute
@@ -200,6 +213,13 @@ declare module '@tanstack/react-router' {
       path: '/regions'
       fullPath: '/regions'
       preLoaderRoute: typeof RegionsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/crafting': {
+      id: '/crafting'
+      path: '/crafting'
+      fullPath: '/crafting'
+      preLoaderRoute: typeof CraftingRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/countries': {
@@ -310,6 +330,7 @@ const CountriesRouteRouteWithChildren = CountriesRouteRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CountriesRouteRoute: CountriesRouteRouteWithChildren,
+  CraftingRoute: CraftingRoute,
   RegionsRoute: RegionsRoute,
   ItemProductionRoute: ItemProductionRoute,
   ItemDepositsItemCodeRoute: ItemDepositsItemCodeRoute,

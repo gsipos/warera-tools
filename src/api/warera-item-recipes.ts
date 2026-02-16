@@ -43,3 +43,30 @@ export const depositItemCodes: WarEra.ItemCode[] = [
   'livestock',
   'fish',
 ]
+
+interface CraftingRecipe {
+  type: 'fixed' | 'random'
+  level: WarEra.ArmorLevel
+  scrap: number
+  steel: number
+}
+
+export const crafingRecipes: CraftingRecipe[] = [
+  { type: 'fixed', level: 1, scrap: 6, steel: 1 },
+  { type: 'random', level: 1, scrap: 6, steel: 2 },
+
+  { type: 'fixed', level: 2, scrap: 18, steel: 2 },
+  { type: 'random', level: 2, scrap: 18, steel: 4 },
+
+  { type: 'fixed', level: 3, scrap: 54, steel: 4 },
+  { type: 'random', level: 3, scrap: 54, steel: 8 },
+
+  { type: 'fixed', level: 4, scrap: 162, steel: 8 },
+  { type: 'random', level: 4, scrap: 162, steel: 16 },
+
+  { type: 'fixed', level: 5, scrap: 486, steel: 16 },
+  { type: 'random', level: 5, scrap: 486, steel: 32 },
+
+  { type: 'fixed', level: 6, scrap: 1458, steel: 32 },
+  { type: 'random', level: 6, scrap: 1458, steel: 64 },
+]
