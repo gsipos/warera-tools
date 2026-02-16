@@ -23,6 +23,12 @@ export interface UseUserCashflowInput {
 export interface UseUserCashflowResult {
   totals: UserCashflowTotals
   daily: UserCashflowDailyPoint[]
+  byType: {
+    [transactionType: string]: {
+      income: number
+      spending: number
+    }
+  }
 }
 
 const normalizeMoney = (value: unknown): number | null => {
@@ -66,6 +72,8 @@ export const useUserCashflow = ({ userId, transactions }: UseUserCashflowInput):
       dailyByDate.set(date, { income: 0, spending: 0, net: 0 })
     })
 
+    const byTypeMap = new Map<string, { income: number; spending: number }>()
+
     transactions.forEach((tx) => {
       const direction = getCashflowDirection(tx, userId)
       if (!direction) return
@@ -88,6 +96,22 @@ export const useUserCashflow = ({ userId, transactions }: UseUserCashflowInput):
       bucket.income = safeIncome
       bucket.spending = safeSpending
       bucket.net = safeIncome - safeSpending
+
+      // Aggregate by transaction type
+      const transactionType = tx.transactionType ?? 'unknown'
+      let typeBucket = byTypeMap.get(transactionType)
+      if (!typeBucket) {
+        typeBucket = { income: 0, spending: 0 }
+        byTypeMap.set(transactionType, typeBucket)
+      }
+
+      if (direction === 'income') typeBucket.income += money
+      else typeBucket.spending += money
+
+      const safeTypeIncome = Number.isFinite(typeBucket.income) ? typeBucket.income : 0
+      const safeTypeSpending = Number.isFinite(typeBucket.spending) ? typeBucket.spending : 0
+      typeBucket.income = safeTypeIncome
+      typeBucket.spending = safeTypeSpending
     })
 
     const daily: UserCashflowDailyPoint[] = dayKeys.map((date) => {
@@ -99,9 +123,15 @@ export const useUserCashflow = ({ userId, transactions }: UseUserCashflowInput):
     const spendingTotal = daily.reduce((sum, d) => sum + (Number.isFinite(d.spending) ? d.spending : 0), 0)
     const netTotal = incomeTotal - spendingTotal
 
+    const byType: { [transactionType: string]: { income: number; spending: number } } = {}
+    byTypeMap.forEach((value, key) => {
+      byType[key] = value
+    })
+
     return {
       totals: { incomeTotal, spendingTotal, netTotal },
       daily,
+      byType,
     }
   }, [transactions, userId])
 }
