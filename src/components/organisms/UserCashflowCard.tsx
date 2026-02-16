@@ -100,9 +100,7 @@ export const UserCashflowCard = ({ userId }: { userId: string }) => {
                     <span className="tabular-nums">{moneyFormat.format(amount)}</span>
                   </div>
                 ))}
-                {incomeByType.length === 0 ? (
-                  <div className="text-muted-foreground text-xs">No income</div>
-                ) : null}
+                {incomeByType.length === 0 ? <div className="text-muted-foreground text-xs">No income</div> : null}
               </div>
             </div>
             <div>
@@ -114,9 +112,7 @@ export const UserCashflowCard = ({ userId }: { userId: string }) => {
                     <span className="tabular-nums">{moneyFormat.format(amount)}</span>
                   </div>
                 ))}
-                {spendingByType.length === 0 ? (
-                  <div className="text-muted-foreground text-xs">No spending</div>
-                ) : null}
+                {spendingByType.length === 0 ? <div className="text-muted-foreground text-xs">No spending</div> : null}
               </div>
             </div>
           </div>
