@@ -175,14 +175,28 @@ function RouteComponent() {
         </div>
       )}
 
-      <Card className="flex-auto shrink-1">
-        <CardHeader>
-          <CardTitle>Price over time</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <TransactionTimeSeriesChart timeSeries={timeSeries} className="h-120 w-full max-w-240" />
-        </CardContent>
-      </Card>
+      <div className="flex flex-row flex-wrap gap-4">
+        <Card className="max-w-200 flex-auto shrink-1">
+          <CardHeader>
+            <CardTitle>Price over time</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <TransactionTimeSeriesChart timeSeries={timeSeries} className="h-120 w-full max-w-240" />
+          </CardContent>
+        </Card>
+        <Card className="max-w-200 flex-auto shrink-1">
+          <CardHeader>
+            <CardTitle>Transaction count over time</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <TransactionTimeSeriesChart
+              timeSeries={timeSeries}
+              dimensions={['date', 'count']}
+              className="h-120 w-full max-w-240"
+            />
+          </CardContent>
+        </Card>
+      </div>
     </div>
   )
 }

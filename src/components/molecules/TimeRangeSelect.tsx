@@ -19,6 +19,8 @@ export const TimeRangeSelect = ({ className, value, onChange }: Props) => {
         <SelectItem value={DateTime.now().minus({ day: 1 }).startOf('day').toISODate()}>Yesterday</SelectItem>
         <SelectItem value={DateTime.now().minus({ day: 7 }).startOf('day').toISODate()}>Last 7 days</SelectItem>
         <SelectItem value={DateTime.now().minus({ day: 14 }).startOf('day').toISODate()}>Last 14 days</SelectItem>
+        <SelectItem value={DateTime.now().minus({ day: 30 }).startOf('day').toISODate()}>Last 30 days</SelectItem>
+        <SelectItem value={DateTime.now().minus({ day: 60 }).startOf('day').toISODate()}>Last 60 days</SelectItem>
         <SelectItem value={DateTime.now().startOf('week').startOf('day').toISODate()}>This week</SelectItem>
         <SelectItem value={DateTime.now().startOf('month').startOf('day').toISODate()}>This month</SelectItem>
       </SelectContent>

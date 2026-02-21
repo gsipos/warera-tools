@@ -43,7 +43,7 @@ export const useAggregatedTransactions = (txList: WarEra.Transaction[]) => {
       if (tx.money < group.min) group.min = tx.money
       if (tx.money > group.max) group.max = tx.money
       group.count += 1
-      group.avg = Math.round(group.money.reduce((a, b) => a + b, 0) / group.money.length)
+      group.avg = Math.round(group.money.reduce((a, b) => a + b, 0) / (group.money.length / 10)) / 10
     }
   })
 

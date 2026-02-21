@@ -3,8 +3,11 @@ import { DailyTransactionSummary } from '@/hooks/use-item-market-price'
 import { EChartsOption } from 'echarts'
 import { useMemo } from 'react'
 
+type DataSetDimensions = 'date' | 'min' | 'avg' | 'max' | 'count'
+
 interface Props {
-  timeSeries: Pick<DailyTransactionSummary, 'date' | 'min' | 'avg' | 'max' | 'count'>[]
+  timeSeries: Pick<DailyTransactionSummary, DataSetDimensions>[]
+  dimensions?: DataSetDimensions[]
   className?: string
 }
 
@@ -53,7 +56,7 @@ export const TransactionTimeSeriesChart = (props: Props) => {
   const dataset = useMemo(() => {
     return {
       dataset: {
-        dimensions: ['date', 'min', 'avg', 'max', 'count'],
+        dimensions: props.dimensions || ['date', 'min', 'avg', 'max', 'count'],
         source: props.timeSeries,
       },
     }
