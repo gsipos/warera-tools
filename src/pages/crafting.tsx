@@ -1,7 +1,7 @@
 import { crafingRecipes } from '@/api/warera-item-recipes'
 import { useTradingTopOrders } from '@/api/warera-api'
 import { useWarEraApiBatchQuery } from '@/api/warera-api-framework'
-import { armorTypes, weaponsCodes } from '@/api/warera-api-schema'
+import { armorLevels, armorTypes, weaponsCodes } from '@/api/warera-api-schema'
 import { ItemImage } from '@/components/atoms/ItemImage'
 import { Money } from '@/components/molecules/Money'
 import { Button } from '@/components/ui/button'
@@ -16,30 +16,24 @@ export const Route = createFileRoute('/crafting')({
   component: CraftingPage,
 })
 
-const LEVELS = [6, 5, 4, 3, 2, 1] as const
-type Level = (typeof LEVELS)[number]
+const LEVELS = armorLevels.toReversed()
+type Level = WarEra.ArmorLevel
 
 const FIXED_SLOTS = ['helmet', 'chest', 'gloves', 'pants', 'weapon', 'boots'] as const
 type FixedSlot = (typeof FIXED_SLOTS)[number]
 
 type RecipeKey = `random-${Level}` | `fixed-${Level}-${FixedSlot}`
 
-const rarityLabel = (level: Level) => {
-  switch (level) {
-    case 1:
-      return 'Common'
-    case 2:
-      return 'Uncommon'
-    case 3:
-      return 'Rare'
-    case 4:
-      return 'Epic'
-    case 5:
-      return 'Legendary'
-    case 6:
-      return 'Mythic'
-  }
+const rarytyLabel: Record<Level, string> = {
+  1: 'Common',
+  2: 'Uncommon',
+  3: 'Rare',
+  4: 'Epic',
+  5: 'Legendary',
+  6: 'Mythic',
 }
+
+const rarityLabel = (level: Level) => rarytyLabel[level]
 
 const titleCase = (value: string) => value.slice(0, 1).toUpperCase() + value.slice(1)
 
@@ -63,6 +57,19 @@ const getEquipmentCodeForFixedCraft = (level: Level, slot: FixedSlot): WarEra.Eq
 
 const getEquipmentCodesForRandomCraft = (level: Level): WarEra.EquipmentCode[] => {
   return FIXED_SLOTS.map((slot) => getEquipmentCodeForFixedCraft(level, slot))
+}
+
+const useCraftCost = (scrapQty: number, steelQty: number) => {
+  const scrapOrdersQuery = useTradingTopOrders('scraps')
+  const steelOrdersQuery = useTradingTopOrders('steel')
+
+  const scrapTopSellPrice = scrapOrdersQuery.data?.sellOrders?.[0]?.price
+  const steelTopSellPrice = steelOrdersQuery.data?.sellOrders?.[0]?.price
+
+  const scrapCost = scrapQty * (scrapTopSellPrice ?? 0)
+  const steelCost = steelQty * (steelTopSellPrice ?? 0)
+
+  return scrapCost + steelCost
 }
 
 function CraftingPage() {
@@ -223,7 +230,31 @@ function CraftingPage() {
         <CardHeader>
           <CardTitle>Totals</CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="flex flex-col">
+          <div className="flex flex-row flex-wrap items-center gap-3">
+            <div className="flex flex-row items-center gap-2">
+              <span className="text-muted-foreground inline-flex items-center gap-1 text-sm">
+                <ItemImage itemCode="scraps" className="h-4 w-4" />
+                <span>Scraps:</span>
+              </span>
+              {typeof scrapTopSellPrice === 'number' ? (
+                <Money amount={scrapTopSellPrice} />
+              ) : (
+                <Badge variant="outline">—</Badge>
+              )}
+            </div>
+            <div className="flex flex-row items-center gap-2">
+              <span className="text-muted-foreground inline-flex items-center gap-1 text-sm">
+                <ItemImage itemCode="steel" className="h-4 w-4" />
+                <span>Steel:</span>
+              </span>
+              {typeof steelTopSellPrice === 'number' ? (
+                <Money amount={steelTopSellPrice} />
+              ) : (
+                <Badge variant="outline">—</Badge>
+              )}
+            </div>
+          </div>
           <div className="flex flex-row flex-wrap items-center gap-3">
             <Badge variant="outline">Crafts: {totals.totalCrafts}</Badge>
             {totals.totalScrap > 0 ? (
@@ -238,28 +269,7 @@ function CraftingPage() {
                 <span>{totals.totalSteel}</span>
               </Badge>
             ) : null}
-            <div className="flex flex-row items-center gap-2">
-              <span className="text-muted-foreground inline-flex items-center gap-1 text-sm">
-                <ItemImage itemCode="scraps" className="h-4 w-4" />
-                <span>Unit:</span>
-              </span>
-              {typeof scrapTopSellPrice === 'number' ? (
-                <Money amount={scrapTopSellPrice} />
-              ) : (
-                <Badge variant="outline">—</Badge>
-              )}
-            </div>
-            <div className="flex flex-row items-center gap-2">
-              <span className="text-muted-foreground inline-flex items-center gap-1 text-sm">
-                <ItemImage itemCode="steel" className="h-4 w-4" />
-                <span>Unit:</span>
-              </span>
-              {typeof steelTopSellPrice === 'number' ? (
-                <Money amount={steelTopSellPrice} />
-              ) : (
-                <Badge variant="outline">—</Badge>
-              )}
-            </div>
+
             <div className="flex flex-row items-center gap-2">
               <span className="text-muted-foreground text-sm">Cost to me:</span>
               {typeof costToMe === 'number' ? <Money amount={costToMe} /> : <Badge variant="outline">—</Badge>}
