@@ -76,3 +76,17 @@ export const useUserCompanies = (userId: string) => {
   const companies = useCompanies(companyIds)
   return companies
 }
+
+export const useRecommendedRegionsForCompany = (companyId: string, includeDeposit: boolean) =>
+  useWarEraApiQuery<WarEra.RecommendedRegionForCompany[]>('company.getRecommendedRegionIds', {
+    companyId,
+    includeDeposit,
+  })
+
+export const useRecommendedRegionsForCompaniesBatch = (companyIds: string[], includeDeposit: boolean) =>
+  useWarEraApiBatchQuery<WarEra.RecommendedRegionForCompany[]>(
+    companyIds.map((companyId) => ({
+      endpoint: 'company.getRecommendedRegionIds',
+      input: { companyId, includeDeposit },
+    })),
+  )
