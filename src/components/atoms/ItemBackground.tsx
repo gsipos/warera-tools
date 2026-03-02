@@ -10,7 +10,7 @@ interface Props {
   className?: string
 }
 
-const backgroundVariants = cva('flex flex-col items-center justify-start rounded-md text-xs gap-0.25', {
+export const backgroundVariants = cva('flex flex-col items-center justify-start rounded-md text-xs gap-0.25', {
   variants: {
     level: {
       1: 'bg-linerar-to-tr from-zinc-600/30 to-zinc-800/10 text-zinc-200',

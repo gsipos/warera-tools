@@ -19,7 +19,7 @@ const skillsToString = (skills: Record<string, number>) => {
     .join(', ')
 }
 
-export const useAggregatedTransactions = (txList: WarEra.Transaction[]) => {
+export const aggregateTransactions = (txList: WarEra.Transaction[]) => {
   const txGroups: AggregatedTx[] = []
 
   txList.forEach((tx) => {
@@ -50,6 +50,10 @@ export const useAggregatedTransactions = (txList: WarEra.Transaction[]) => {
   txGroups.sort((a, b) => a.skillId.localeCompare(b.skillId))
 
   return txGroups
+}
+
+export const useAggregatedTransactions = (txList: WarEra.Transaction[]) => {
+  return aggregateTransactions(txList)
 }
 
 const useTransactionsFromDate = (eqCode: WarEra.EquipmentCode, fromDate: DateTime) => {
