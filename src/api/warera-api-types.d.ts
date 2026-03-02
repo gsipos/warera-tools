@@ -327,5 +327,15 @@ declare module 'warera-api' {
       item: Item
       itemCode?: ItemCode | EquipmentCode
     }
+
+    interface RecommendedRegionForCompany {
+      bonus: number
+      depositBonus: number
+      regionId: string
+      strategicBonus: number
+      taxPercent: number
+      ethicDepositBonus: number
+      ethicSpecializationBonus: number
+    }
   }
 }
