@@ -7,10 +7,15 @@ import { Money } from '@/components/molecules/Money'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { aggregateTransactions } from '@/hooks/use-item-market-price'
+import { aggregateTransactions, useEquipmentTransactions } from '@/hooks/use-item-market-price'
 import { createFileRoute } from '@tanstack/react-router'
 import { useMemo, useState } from 'react'
 import { WarEra } from 'warera-api'
+import { DateTime } from 'luxon'
+import { moneyFormat, percentFormat } from '@/functions/number-formats'
+import { cn } from '@/lib/utils'
+import { Separator } from '@/components/ui/separator'
+import { backgroundVariants, ItemBackground } from '@/components/atoms/ItemBackground'
 
 export const Route = createFileRoute('/crafting')({
   component: CraftingPage,
@@ -72,6 +77,251 @@ const useCraftCost = (scrapQty: number, steelQty: number) => {
   return scrapCost + steelCost
 }
 
+const toSum = (a: number, b: number) => a + b
+
+const useProfitability = (eqCode: WarEra.EquipmentCode, craftCost: number) => {
+  const [fromDate, setFromDate] = useState<DateTime>(DateTime.now().minus({ weeks: 1 }).startOf('day'))
+  const { txGroups, txList } = useEquipmentTransactions(eqCode, fromDate)
+
+  const profitabilityGroups = txGroups.map((g) => ({
+    avg: g.avg - craftCost,
+    min: g.min - craftCost,
+    max: g.max - craftCost,
+  }))
+
+  const avgProfitability = profitabilityGroups.filter((p) => p.avg > 0).length / profitabilityGroups.length
+  const minProfitability = profitabilityGroups.filter((p) => p.min > 0).length / profitabilityGroups.length
+  const maxProfitability = profitabilityGroups.filter((p) => p.max > 0).length / profitabilityGroups.length
+
+  const avgProfit = profitabilityGroups.map((p) => p.avg).reduce(toSum, 0) / profitabilityGroups.length
+  const minProfit = profitabilityGroups.map((p) => p.min).reduce(toSum, 0) / profitabilityGroups.length
+  const maxProfit = profitabilityGroups.map((p) => p.max).reduce(toSum, 0) / profitabilityGroups.length
+
+  return {
+    avgProfitability,
+    minProfitability,
+    maxProfitability,
+    avgProfit,
+    minProfit,
+    maxProfit,
+    count: txList?.length ?? 0,
+  }
+}
+
+type Profitability = ReturnType<typeof useProfitability>
+
+const useProfitabilitySummary = (profits: Profitability[]): Profitability => {
+  return {
+    avgProfitability: profits.map((p) => p.avgProfitability).reduce(toSum, 0) / profits.length,
+    minProfitability: profits.map((p) => p.minProfitability).reduce(toSum, 0) / profits.length,
+    maxProfitability: profits.map((p) => p.maxProfitability).reduce(toSum, 0) / profits.length,
+    avgProfit: profits.map((p) => p.avgProfit).reduce(toSum, 0) / profits.length,
+    minProfit: profits.map((p) => p.minProfit).reduce(toSum, 0) / profits.length,
+    maxProfit: profits.map((p) => p.maxProfit).reduce(toSum, 0) / profits.length,
+    count: profits.map((p) => p.count).reduce(toSum, 0),
+  }
+}
+
+const useRandomProfitability = (level: Level, craftCost: number) => {
+  const weapon = useProfitability(weaponsCodes[level - 1] as WarEra.EquipmentCode, craftCost)
+  const helmet = useProfitability(getEquipmentCodeForFixedCraft(level, 'helmet'), craftCost)
+  const chest = useProfitability(getEquipmentCodeForFixedCraft(level, 'chest'), craftCost)
+  const gloves = useProfitability(getEquipmentCodeForFixedCraft(level, 'gloves'), craftCost)
+  const pants = useProfitability(getEquipmentCodeForFixedCraft(level, 'pants'), craftCost)
+  const boots = useProfitability(getEquipmentCodeForFixedCraft(level, 'boots'), craftCost)
+
+  return useProfitabilitySummary([weapon, helmet, chest, gloves, pants, boots])
+}
+
+interface FixedRecipeCardProps {
+  count: number
+  onCountChange: (newCount: number) => void
+
+  level: Level
+  slot: FixedSlot
+
+  scrapQty: number
+  steelQty: number
+}
+
+const ProfitLabel = ({ value }: { value: number }) => (
+  <span className={cn(value > 0 ? 'text-green-500' : 'text-red-500')}>{moneyFormat.format(value)}</span>
+)
+
+const FixedRecipeCard = (props: FixedRecipeCardProps) => {
+  const craftCost = useCraftCost(props.scrapQty, props.steelQty)
+
+  const count = props.count ?? 0
+  const rarity = rarityLabel(props.level)
+  const slotLabel = titleCase(props.slot)
+
+  const outcomeCode = getEquipmentCodeForFixedCraft(props.level, props.slot)
+
+  const profit = useProfitability(outcomeCode, craftCost)
+
+  return (
+    <Card className={cn(backgroundVariants({ level: props.level }))}>
+      <CardHeader className="flex flex-col items-center justify-between space-y-0">
+        <ItemBackground level={props.level} className="size-12 shrink-0">
+          <ItemImage itemCode={outcomeCode} className="size-12" />
+        </ItemBackground>
+
+        <CardTitle className="text-sm font-medium">
+          {rarity} {slotLabel}
+        </CardTitle>
+
+        <div className="flex items-center gap-2">
+          <Button
+            type="button"
+            variant="outline"
+            size="icon-sm"
+            className="h-6 w-6"
+            onClick={() => props.onCountChange(props.count - 1)}
+          >
+            -
+          </Button>
+
+          <Badge variant="outline" className="w-10 justify-center tabular-nums">
+            {count}
+          </Badge>
+
+          <Button
+            type="button"
+            variant="outline"
+            size="icon-sm"
+            className="h-6 w-6"
+            onClick={() => props.onCountChange(props.count + 1)}
+          >
+            +
+          </Button>
+        </div>
+      </CardHeader>
+      <CardContent>
+        <div className="text-muted-foreground flex flex-row flex-wrap items-center justify-between gap-1 text-sm">
+          <span className="inline-flex items-center gap-1">
+            <ItemImage itemCode="scraps" className="h-4 w-4" />
+            <span>{props.scrapQty}</span>
+          </span>
+
+          <span className="inline-flex items-center gap-1">
+            <ItemImage itemCode="steel" className="h-4 w-4" />
+            <span>{props.steelQty}</span>
+          </span>
+
+          <Money amount={craftCost} />
+        </div>
+
+        <Separator className="my-1" />
+        <span className="text-muted-foreground w-full text-center text-sm">Profitability ({profit.count} tx)</span>
+        <div className="text-muted-foreground flex w-full flex-row justify-between text-sm">
+          <span> worst</span>
+          <span> avg</span>
+          <span> best</span>
+        </div>
+
+        <div className="text-muted-foreground flex w-full flex-row justify-between text-sm">
+          <span>{percentFormat.format(profit.minProfitability)}</span>
+          <span>{percentFormat.format(profit.avgProfitability)}</span>
+          <span>{percentFormat.format(profit.maxProfitability)}</span>
+        </div>
+
+        <div className="flex w-full flex-row justify-between">
+          <ProfitLabel value={profit.minProfit} />
+          <ProfitLabel value={profit.avgProfit} />
+          <ProfitLabel value={profit.maxProfit} />
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
+
+interface RandomRecipeCardProps {
+  level: Level
+
+  count: number
+  onCountChange: (newCount: number) => void
+
+  scrapQty: number
+  steelQty: number
+}
+const RandomRecipeCard = (props: RandomRecipeCardProps) => {
+  const craftCost = useCraftCost(props.scrapQty, props.steelQty)
+
+  const count = props.count ?? 0
+  const rarity = rarityLabel(props.level)
+
+  const profit = useRandomProfitability(props.level, craftCost)
+
+  return (
+    <Card className={cn(backgroundVariants({ level: props.level }))}>
+      <CardHeader className="flex flex-col items-center justify-between space-y-0">
+        <CardTitle className="text-sm font-medium">Random {rarity}</CardTitle>
+
+        <div className="flex items-center gap-2">
+          <Button
+            type="button"
+            variant="outline"
+            size="icon-sm"
+            className="h-6 w-6"
+            onClick={() => props.onCountChange(props.count - 1)}
+          >
+            -
+          </Button>
+
+          <Badge variant="outline" className="w-10 justify-center tabular-nums">
+            {count}
+          </Badge>
+
+          <Button
+            type="button"
+            variant="outline"
+            size="icon-sm"
+            className="h-6 w-6"
+            onClick={() => props.onCountChange(props.count + 1)}
+          >
+            +
+          </Button>
+        </div>
+      </CardHeader>
+      <CardContent>
+        <div className="text-muted-foreground flex flex-row flex-wrap items-center justify-between gap-1 text-sm">
+          <span className="inline-flex items-center gap-1">
+            <ItemImage itemCode="scraps" className="h-4 w-4" />
+            <span>{props.scrapQty}</span>
+          </span>
+
+          <span className="inline-flex items-center gap-1">
+            <ItemImage itemCode="steel" className="h-4 w-4" />
+            <span>{props.steelQty}</span>
+          </span>
+
+          <Money amount={craftCost} />
+        </div>
+
+        <Separator className="my-1" />
+        <span className="text-muted-foreground w-full text-center text-sm">Profitability ({profit.count} tx)</span>
+        <div className="text-muted-foreground flex w-full flex-row justify-between text-sm">
+          <span> worst</span>
+          <span> avg</span>
+          <span> best</span>
+        </div>
+
+        <div className="text-muted-foreground flex w-full flex-row justify-between text-sm">
+          <span>{percentFormat.format(profit.minProfitability)}</span>
+          <span>{percentFormat.format(profit.avgProfitability)}</span>
+          <span>{percentFormat.format(profit.maxProfitability)}</span>
+        </div>
+
+        <div className="flex w-full flex-row justify-between">
+          <ProfitLabel value={profit.minProfit} />
+          <ProfitLabel value={profit.avgProfit} />
+          <ProfitLabel value={profit.maxProfit} />
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
+
 function CraftingPage() {
   const [selectedCounts, setSelectedCounts] = useState<Record<string, number>>({})
 
@@ -80,18 +330,6 @@ function CraftingPage() {
 
   const scrapTopSellPrice = scrapOrdersQuery.data?.sellOrders?.[0]?.price
   const steelTopSellPrice = steelOrdersQuery.data?.sellOrders?.[0]?.price
-
-  const perCraftCost = (scrapQty: number, steelQty: number) => {
-    if (scrapQty === 0 && steelQty === 0) return 0
-
-    if (scrapQty > 0 && typeof scrapTopSellPrice !== 'number') return undefined
-    if (steelQty > 0 && typeof steelTopSellPrice !== 'number') return undefined
-
-    const scrapCost = scrapQty * (scrapTopSellPrice ?? 0)
-    const steelCost = steelQty * (steelTopSellPrice ?? 0)
-
-    return scrapCost + steelCost
-  }
 
   const fixedRecipeByLevel = useMemo(() => {
     const map = new Map<Level, { scrap: number; steel: number }>()
@@ -128,50 +366,6 @@ function CraftingPage() {
       return { key, level, cost }
     })
   }, [randomRecipeByLevel])
-
-  const outcomeEquipmentCodes = useMemo(() => {
-    const codes = new Set<WarEra.EquipmentCode>()
-    for (const level of LEVELS) {
-      for (const slot of FIXED_SLOTS) {
-        codes.add(getEquipmentCodeForFixedCraft(level, slot))
-      }
-    }
-    return Array.from(codes)
-  }, [])
-
-  const outcomeTransactionsFirstPage = useWarEraApiBatchQuery<WarEra.Paginated<WarEra.Transaction>>(
-    useMemo(
-      () =>
-        outcomeEquipmentCodes.map((itemCode) => ({
-          endpoint: 'transaction.getPaginatedTransactions',
-          input: {
-            limit: 50,
-            transactionType: 'itemMarket',
-            itemCode,
-          } satisfies WarEra.TransactionOptions,
-        })),
-      [outcomeEquipmentCodes],
-    ),
-  )
-
-  const marketStatsByEquipmentCode = useMemo(() => {
-    const byCode = new Map<WarEra.EquipmentCode, { avgPrice?: number; txCount: number }>()
-    const pages = outcomeTransactionsFirstPage.data
-
-    outcomeEquipmentCodes.forEach((code, i) => {
-      const page = pages[i]
-      const txList = page?.items ?? []
-      const groups = aggregateTransactions(txList)
-
-      const txCount = groups.reduce((sum, g) => sum + g.count, 0)
-      const weightedSum = groups.reduce((sum, g) => sum + g.avg * g.count, 0)
-      const avgPrice = txCount > 0 ? Math.round(weightedSum / txCount) : undefined
-      const stats = avgPrice === undefined ? { txCount } : { avgPrice, txCount }
-      byCode.set(code, stats)
-    })
-
-    return byCode
-  }, [outcomeEquipmentCodes, outcomeTransactionsFirstPage.data])
 
   const totals = useMemo(() => {
     let totalCrafts = 0
@@ -248,11 +442,8 @@ function CraftingPage() {
                 <ItemImage itemCode="steel" className="h-4 w-4" />
                 <span>Steel:</span>
               </span>
-              {typeof steelTopSellPrice === 'number' ? (
-                <Money amount={steelTopSellPrice} />
-              ) : (
-                <Badge variant="outline">—</Badge>
-              )}
+
+              <Money amount={steelTopSellPrice ?? 0} />
             </div>
           </div>
           <div className="flex flex-row flex-wrap items-center gap-3">
@@ -281,178 +472,33 @@ function CraftingPage() {
       <div className="flex flex-col gap-2">
         <h2 className="text-lg font-semibold">Random</h2>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
-          {randomCards.map((card) => {
-            const count = selectedCounts[card.key] ?? 0
-            const rarity = rarityLabel(card.level)
-            const rollLine = 'Rolls any: Helmet, Chest, Gloves, Pants, Weapon, Boots'
-            const craftCost = perCraftCost(card.cost.scrap, card.cost.steel)
-
-            const randomOutcomeCodes = getEquipmentCodesForRandomCraft(card.level)
-            const randomOutcomeAvgs = randomOutcomeCodes.map((code) => marketStatsByEquipmentCode.get(code)?.avgPrice)
-            const hasAllAvgs = randomOutcomeAvgs.every((v) => typeof v === 'number')
-
-            const profitability =
-              typeof craftCost === 'number' && hasAllAvgs
-                ? (() => {
-                    const profits = (randomOutcomeAvgs as number[]).map((avg) => avg - craftCost)
-                    const profitableCount = profits.filter((p) => p > 0).length
-                    const expectedProfit = Math.round(profits.reduce((a, b) => a + b, 0) / profits.length)
-                    const profitablePct = Math.round((profitableCount / profits.length) * 100)
-                    return { profitableCount, profitablePct, expectedProfit }
-                  })()
-                : undefined
-
-            return (
-              <Card key={card.key}>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0">
-                  <CardTitle className="text-sm font-medium">{rarity} Random</CardTitle>
-
-                  <div className="flex items-center gap-2">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="icon-sm"
-                      className="h-6 w-6"
-                      onClick={() => changeCount(card.key, -1)}
-                      aria-label={`Remove random level ${card.level}`}
-                    >
-                      -
-                    </Button>
-
-                    <Badge variant="outline" className="w-10 justify-center tabular-nums">
-                      {count}
-                    </Badge>
-
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="icon-sm"
-                      className="h-6 w-6"
-                      onClick={() => changeCount(card.key, +1)}
-                      aria-label={`Add random level ${card.level}`}
-                    >
-                      +
-                    </Button>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-muted-foreground mb-2 text-xs leading-tight">{rollLine}</div>
-                  <div className="text-muted-foreground flex flex-row flex-wrap items-center gap-2 text-sm">
-                    {card.cost.scrap > 0 ? (
-                      <span className="inline-flex items-center gap-1">
-                        <ItemImage itemCode="scraps" className="h-4 w-4" />
-                        <span>{card.cost.scrap}</span>
-                      </span>
-                    ) : null}
-                    {card.cost.steel > 0 ? (
-                      <span className="inline-flex items-center gap-1">
-                        <ItemImage itemCode="steel" className="h-4 w-4" />
-                        <span>{card.cost.steel}</span>
-                      </span>
-                    ) : null}
-                  </div>
-                  <div className="mt-2 flex flex-row items-center gap-2">
-                    <span className="text-muted-foreground text-sm">Cost:</span>
-                    {typeof craftCost === 'number' ? <Money amount={craftCost} /> : <Badge variant="outline">—</Badge>}
-                  </div>
-                  <div className="text-muted-foreground mt-1 text-xs">
-                    Profitable:{' '}
-                    {profitability ? (
-                      <>
-                        {profitability.profitableCount}/6 ({profitability.profitablePct}%) • E[profit]:{' '}
-                        <Money amount={profitability.expectedProfit} /> (equal odds)
-                      </>
-                    ) : (
-                      <>
-                        — • E[profit]: <Badge variant="outline">—</Badge> (equal odds)
-                      </>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-            )
-          })}
+          {randomCards.map((c) => (
+            <RandomRecipeCard
+              key={c.key}
+              level={c.level}
+              count={selectedCounts[c.key] ?? 0}
+              onCountChange={(newCount) => changeCount(c.key, newCount - (selectedCounts[c.key] ?? 0))}
+              scrapQty={c.cost.scrap}
+              steelQty={c.cost.steel}
+            />
+          ))}
         </div>
       </div>
 
       <div className="flex flex-col gap-2">
         <h2 className="text-lg font-semibold">Fixed</h2>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
-          {fixedCards.map((card) => {
-            const count = selectedCounts[card.key] ?? 0
-            const rarity = rarityLabel(card.level)
-            const slotLabel = titleCase(card.slot)
-            const craftCost = perCraftCost(card.cost.scrap, card.cost.steel)
-
-            const outcomeCode = getEquipmentCodeForFixedCraft(card.level, card.slot)
-            const avgPrice = marketStatsByEquipmentCode.get(outcomeCode)?.avgPrice
-            const profit =
-              typeof avgPrice === 'number' && typeof craftCost === 'number' ? avgPrice - craftCost : undefined
-
-            return (
-              <Card key={card.key}>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0">
-                  <CardTitle className="text-sm font-medium">
-                    {rarity} {slotLabel}
-                  </CardTitle>
-
-                  <div className="flex items-center gap-2">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="icon-sm"
-                      className="h-6 w-6"
-                      onClick={() => changeCount(card.key, -1)}
-                      aria-label={`Remove fixed ${slotLabel} level ${card.level}`}
-                    >
-                      -
-                    </Button>
-
-                    <Badge variant="outline" className="w-10 justify-center tabular-nums">
-                      {count}
-                    </Badge>
-
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="icon-sm"
-                      className="h-6 w-6"
-                      onClick={() => changeCount(card.key, +1)}
-                      aria-label={`Add fixed ${slotLabel} level ${card.level}`}
-                    >
-                      +
-                    </Button>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-muted-foreground flex flex-row flex-wrap items-center gap-2 text-sm">
-                    {card.cost.scrap > 0 ? (
-                      <span className="inline-flex items-center gap-1">
-                        <ItemImage itemCode="scraps" className="h-4 w-4" />
-                        <span>{card.cost.scrap}</span>
-                      </span>
-                    ) : null}
-                    {card.cost.steel > 0 ? (
-                      <span className="inline-flex items-center gap-1">
-                        <ItemImage itemCode="steel" className="h-4 w-4" />
-                        <span>{card.cost.steel}</span>
-                      </span>
-                    ) : null}
-                  </div>
-                  <div className="mt-2 flex flex-row items-center gap-2">
-                    <span className="text-muted-foreground text-sm">Cost:</span>
-                    {typeof craftCost === 'number' ? <Money amount={craftCost} /> : <Badge variant="outline">—</Badge>}
-                  </div>
-                  <div className="mt-1 flex flex-row flex-wrap items-center gap-2">
-                    <span className="text-muted-foreground text-sm">Avg:</span>
-                    {typeof avgPrice === 'number' ? <Money amount={avgPrice} /> : <Badge variant="outline">—</Badge>}
-                    <span className="text-muted-foreground text-sm">Profit:</span>
-                    {typeof profit === 'number' ? <Money amount={profit} /> : <Badge variant="outline">—</Badge>}
-                  </div>
-                </CardContent>
-              </Card>
-            )
-          })}
+          {fixedCards.map((c) => (
+            <FixedRecipeCard
+              key={c.key}
+              count={selectedCounts[c.key] ?? 0}
+              onCountChange={(newCount) => changeCount(c.key, newCount - (selectedCounts[c.key] ?? 0))}
+              level={c.level}
+              slot={c.slot}
+              scrapQty={c.cost.scrap}
+              steelQty={c.cost.steel}
+            />
+          ))}
         </div>
       </div>
     </div>
