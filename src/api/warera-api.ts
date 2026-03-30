@@ -39,6 +39,9 @@ export const useUsersByCountry = (countryId: WarEra.CountryId, limit = 50) => {
 
 export const useUserLite = (userId: string) => useWarEraApiQuery<WarEra.UserLite>('user.getUserLite', { userId })
 
+export const useUserCurrentEquipment = (userId: string) =>
+  useWarEraApiQuery<WarEra.UserCurrentEquipment>('inventory.fetchCurrentEquipment', { userId })
+
 export const useAllUsersLite = (userIds: string[]) => {
   return useWarEraApiBatchQuery<WarEra.UserLite>(
     userIds.map((userId) => ({ endpoint: 'user.getUserLite', input: { userId } })),

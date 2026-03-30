@@ -44,6 +44,7 @@ import PrecisionIcon from './../../assets/icons/precision.svg?react'
 import { FavouriteButton } from '../atoms/FavouriteButton'
 import { Field, FieldLabel } from '../ui/field'
 import { cn } from '@/lib/utils'
+import { UserCurrentEquipment } from './UserCurrentEquipment'
 
 export const UserAvatar = ({ user, className }: { user: WarEra.UserLite; className?: string }) => {
   return (
@@ -346,6 +347,8 @@ export const UserCard = ({ user, view }: { user: WarEra.UserLite; view?: UserCar
             <UserHealthBar user={user} />
             <UserHungerBar user={user} />
             <UserCombatSummary user={user} />
+
+            <UserCurrentEquipment userId={user._id} />
 
             <div className="flex flex-wrap gap-2">
               <RankingBadge
