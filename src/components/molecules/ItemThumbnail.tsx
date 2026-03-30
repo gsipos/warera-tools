@@ -4,6 +4,7 @@ import { ItemImage } from '../atoms/ItemImage'
 import { CombarSkillIcon } from '../atoms/CombatSKillIcon'
 import { CircleDollarSignIcon } from 'lucide-react'
 import { formatters } from '@/functions/number-formats'
+import { Progress } from '../ui/progress'
 
 interface Props {
   item: WarEra.Item
@@ -12,6 +13,9 @@ interface Props {
 
 export const ItemThumbnail = (props: Props) => {
   const { item } = props
+
+  const isUsed = item.state < item.maxState
+
   return (
     <ItemBackground code={item.code} className="pb-0.5">
       <ItemImage itemCode={item.code} className="h-auto w-full" />
@@ -28,6 +32,7 @@ export const ItemThumbnail = (props: Props) => {
           <CircleDollarSignIcon className="inline-block size-3!" /> {formatters.money.format(props.money)}
         </div>
       ) : null}
+      {isUsed && <Progress value={item.state} max={item.maxState} className="h-1" />}
     </ItemBackground>
   )
 }

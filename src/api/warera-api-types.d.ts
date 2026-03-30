@@ -337,5 +337,16 @@ declare module 'warera-api' {
       ethicDepositBonus: number
       ethicSpecializationBonus: number
     }
+
+    interface UserCurrentEquipment {
+      weapon: Item | null
+      ammo: 'lightAmmo' | 'heavyAmmo' | 'ammo' | null
+      ammoQuantity: number | null
+      helmet: Item | null
+      chest: Item | null
+      pants: Item | null
+      boots: Item | null
+      gloves: Item | null
+    }
   }
 }
