@@ -21,6 +21,7 @@ import {
 } from '@/hooks/use-item-market-price'
 import { TransactionTimeSeriesChart } from '@/components/organisms/TransactionTimeSeriesChat'
 import { TimeRangeSelect } from '@/components/molecules/TimeRangeSelect'
+import { useDateRangeStore } from '@/stores/date-range-store'
 
 const itemMarketSearchSchema = z.object({
   code: fallback(z.enum(equipmentCodes).default('gun'), 'gun'),
@@ -126,7 +127,7 @@ function RouteComponent() {
     navigate({ search: (old: ItemMarketSearch) => ({ ...old, code: newCode }) })
   }
 
-  const [fromDate, setFromDate] = useState<DateTime>(DateTime.now().minus({ weeks: 1 }).startOf('day'))
+  const fromDate = useDateRangeStore((s) => s.startDate)
 
   const { txList, txGroups, lastTxTimeStamp, latestTxTimeStamp, tqQuery } = useEquipmentTransactions(eqCode, fromDate)
 
@@ -147,10 +148,7 @@ function RouteComponent() {
             <div>To: {DateTime.fromISO(latestTxTimeStamp ?? '').toLocaleString(DateTime.DATETIME_SHORT)}</div>
           </CardContent>
           <CardFooter>
-            <TimeRangeSelect
-              value={fromDate.toISODate() ?? ''}
-              onChange={(dateStr) => setFromDate(DateTime.fromISO(dateStr ?? ''))}
-            />
+            <TimeRangeSelect />
           </CardFooter>
         </Card>
 

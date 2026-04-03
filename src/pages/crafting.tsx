@@ -16,6 +16,8 @@ import { moneyFormat, percentFormat } from '@/functions/number-formats'
 import { cn } from '@/lib/utils'
 import { Separator } from '@/components/ui/separator'
 import { backgroundVariants, ItemBackground } from '@/components/atoms/ItemBackground'
+import { TimeRangeSelect } from '@/components/molecules/TimeRangeSelect'
+import { useDateRangeStore } from '@/stores/date-range-store'
 
 export const Route = createFileRoute('/crafting')({
   component: CraftingPage,
@@ -80,7 +82,7 @@ const useCraftCost = (scrapQty: number, steelQty: number) => {
 const toSum = (a: number, b: number) => a + b
 
 const useProfitability = (eqCode: WarEra.EquipmentCode, craftCost: number) => {
-  const [fromDate, setFromDate] = useState<DateTime>(DateTime.now().minus({ weeks: 1 }).startOf('day'))
+  const fromDate = useDateRangeStore((state) => state.startDate)
   const { txGroups, txList } = useEquipmentTransactions(eqCode, fromDate)
 
   const profitabilityGroups = txGroups.map((g) => ({
@@ -425,7 +427,8 @@ function CraftingPage() {
           <CardTitle>Totals</CardTitle>
         </CardHeader>
         <CardContent className="flex flex-col">
-          <div className="flex flex-row flex-wrap items-center gap-3">
+          <div className="flex flex-row flex-wrap items-center justify-start gap-3">
+            <TimeRangeSelect />
             <div className="flex flex-row items-center gap-2">
               <span className="text-muted-foreground inline-flex items-center gap-1 text-sm">
                 <ItemImage itemCode="scraps" className="h-4 w-4" />
@@ -445,25 +448,25 @@ function CraftingPage() {
 
               <Money amount={steelTopSellPrice ?? 0} />
             </div>
-          </div>
-          <div className="flex flex-row flex-wrap items-center gap-3">
             <Badge variant="outline">Crafts: {totals.totalCrafts}</Badge>
-            {totals.totalScrap > 0 ? (
-              <Badge variant="outline" className="flex flex-row items-center gap-1">
-                <ItemImage itemCode="scraps" className="h-4 w-4" />
-                <span>{totals.totalScrap}</span>
-              </Badge>
-            ) : null}
-            {totals.totalSteel > 0 ? (
-              <Badge variant="outline" className="flex flex-row items-center gap-1">
-                <ItemImage itemCode="steel" className="h-4 w-4" />
-                <span>{totals.totalSteel}</span>
-              </Badge>
-            ) : null}
+            <div className="flex flex-row flex-wrap items-start gap-2">
+              {totals.totalScrap > 0 ? (
+                <Badge variant="outline" className="flex flex-row items-center gap-1">
+                  <ItemImage itemCode="scraps" className="h-4 w-4" />
+                  <span>{totals.totalScrap}</span>
+                </Badge>
+              ) : null}
+              {totals.totalSteel > 0 ? (
+                <Badge variant="outline" className="flex flex-row items-center gap-1">
+                  <ItemImage itemCode="steel" className="h-4 w-4" />
+                  <span>{totals.totalSteel}</span>
+                </Badge>
+              ) : null}
 
-            <div className="flex flex-row items-center gap-2">
-              <span className="text-muted-foreground text-sm">Cost to me:</span>
-              {typeof costToMe === 'number' ? <Money amount={costToMe} /> : <Badge variant="outline">—</Badge>}
+              <div className="flex flex-row items-center gap-2">
+                <span className="text-muted-foreground text-sm">Cost to me:</span>
+                {typeof costToMe === 'number' ? <Money amount={costToMe} /> : <Badge variant="outline">—</Badge>}
+              </div>
             </div>
           </div>
         </CardContent>

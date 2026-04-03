@@ -11,6 +11,7 @@ import { WarEra } from 'warera-api'
 import { useState } from 'react'
 import { TimeRangeSelect } from '../molecules/TimeRangeSelect'
 import { Field, FieldLabel } from '../ui/field'
+import { useDateRangeStore } from '@/stores/date-range-store'
 
 const ItemThumbnailWithAvgMarketPrice = ({ item, pricingDate }: { item: WarEra.Item; pricingDate: DateTime }) => {
   const prices = useItemMarketPrice(item, pricingDate)
@@ -53,7 +54,7 @@ export const UserCraftingCard = ({ userId }: { userId: string }) => {
 
   const lastTxTimeStamp = craftingTxs.at(-1)?.createdAt
 
-  const [pricingDate, setPricingDate] = useState<DateTime>(DateTime.now().minus({ weeks: 1 }).startOf('day'))
+  const pricingDate = useDateRangeStore((state) => state.startDate)
 
   return (
     <Card>
@@ -79,10 +80,7 @@ export const UserCraftingCard = ({ userId }: { userId: string }) => {
         </div>
         <Field>
           <FieldLabel>Pricing range</FieldLabel>
-          <TimeRangeSelect
-            value={pricingDate.toISODate() ?? ''}
-            onChange={(dateStr) => setPricingDate(DateTime.fromISO(dateStr ?? ''))}
-          />
+          <TimeRangeSelect />
         </Field>
 
         {craftedItemsToday.length ? (
