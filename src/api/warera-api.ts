@@ -6,8 +6,9 @@ import { DateTime } from 'luxon'
 const TRPC_BASE_URL = 'https://api2.warera.io/trpc/'
 
 /**
- * Raw tRPC fetch for endpoints not yet available on the typed client.
- * Used as a stopgap until the API client package exposes all endpoints.
+ * TEMPORARY STOPGAP: Raw tRPC fetch for endpoints not yet available on the typed client.
+ * This bypasses the official tRPC client and lacks its retry/rate-limiting features.
+ * Remove this function once the API client package exposes all needed endpoints.
  */
 async function rawTrpcFetch<TData>(endpoint: string, input: Record<string, unknown>): Promise<TData> {
   const url = new URL(endpoint, TRPC_BASE_URL)
@@ -15,7 +16,34 @@ async function rawTrpcFetch<TData>(endpoint: string, input: Record<string, unkno
   const response = await fetch(url.toString(), {
     headers: { 'X-API-Key': import.meta.env.VITE_WARERA_DEFAULT_API_KEY },
   })
-  const json = (await response.json()) as { result: { data: TData } }
+
+  if (!response.ok) {
+    // Attempt to extract a tRPC error message from the response body
+    let errorMessage = `rawTrpcFetch ${endpoint} failed: HTTP ${response.status} ${response.statusText}`
+    try {
+      const errorBody = (await response.json()) as {
+        error?: { message?: string; code?: string; data?: unknown }
+      }
+      if (errorBody.error?.message) {
+        errorMessage += ` — ${errorBody.error.code ?? 'UNKNOWN'}: ${errorBody.error.message}`
+      }
+    } catch {
+      // Body wasn't JSON; use the status-only message
+    }
+    throw new Error(errorMessage)
+  }
+
+  const json = (await response.json()) as
+    | { result: { data: TData } }
+    | { error: { message?: string; code?: string; data?: unknown } }
+
+  // tRPC can return 200 with an error envelope in some configurations
+  if ('error' in json) {
+    const code = json.error.code ?? 'UNKNOWN'
+    const msg = json.error.message ?? 'Unknown tRPC error'
+    throw new Error(`rawTrpcFetch ${endpoint} returned tRPC error — ${code}: ${msg}`)
+  }
+
   return json.result.data
 }
 
@@ -25,11 +53,31 @@ async function rawTrpcFetch<TData>(endpoint: string, input: Record<string, unkno
 type Cast<T> = Promise<T>
 const cast = <T>(p: Promise<unknown>): Cast<T> => p as Cast<T>
 
-/** Drain an async iterable of pages into a flat array. */
-async function collectPages<T>(iter: AsyncIterableIterator<{ items: T[]; cursor: string }>): Promise<T[]> {
+/**
+ * Drain an async iterable of pages into a flat array.
+ *
+ * @param iter - The async iterable of paginated results.
+ * @param maxPages - Maximum number of pages to fetch before stopping. Prevents
+ *   unbounded pagination from draining memory or stalling the UI for large datasets.
+ *   Defaults to 100. Pass `Infinity` to disable the limit (use with caution).
+ */
+async function collectPages<T>(
+  iter: AsyncIterableIterator<{ items: T[]; cursor: string }>,
+  maxPages: number = 100,
+): Promise<T[]> {
   const result: T[] = []
+  let pageCount = 0
   for await (const page of iter) {
     result.push(...page.items)
+    pageCount++
+    if (pageCount >= maxPages) {
+      console.warn(
+        `[collectPages] Reached maxPages limit (${maxPages}). ` +
+          `Returning ${result.length} items collected so far. ` +
+          `Increase maxPages if more results are needed.`,
+      )
+      break
+    }
   }
   return result
 }
@@ -114,24 +162,29 @@ export const useCompanies = (companyIds: string[]) =>
 
 // --- Paginated endpoints (tRPC client with autoPaginate) ---
 
-export const useWorkOffers = (limit: number = 10) =>
+// Work offers can be a large dataset; cap at 50 pages to avoid memory pressure.
+export const useWorkOffers = (limit: number = 10, maxPages: number = 50) =>
   useAsyncResource(
-    ['workOffer.getWorkOffersPaginated', { limit }],
-    () => collectPages(apiClient.workOffer.getWorkOffersPaginated({ limit, autoPaginate: true })) as unknown as Cast<WarEra.WorkOffer[]>,
+    ['workOffer.getWorkOffersPaginated', { limit, maxPages }],
+    () => collectPages(apiClient.workOffer.getWorkOffersPaginated({ limit, autoPaginate: true }), maxPages) as unknown as Cast<WarEra.WorkOffer[]>,
   )
 
-export const useUsersByCountry = (countryId: WarEra.CountryId, limit = 50) =>
+// Users per country can be very large; cap at 20 pages (20 * limit items).
+export const useUsersByCountry = (countryId: WarEra.CountryId, limit = 50, maxPages: number = 20) =>
   useAsyncResource(
-    ['user.getUsersByCountry', { countryId, limit }],
-    () => collectPages(apiClient.user.getUsersByCountry({ countryId, limit, autoPaginate: true })) as Cast<WarEra.UserReference[]>,
+    ['user.getUsersByCountry', { countryId, limit, maxPages }],
+    () => collectPages(apiClient.user.getUsersByCountry({ countryId, limit, autoPaginate: true }), maxPages) as Cast<WarEra.UserReference[]>,
   )
 
+// A single user's companies is typically a small set; default limit is generous.
 export const useCompanyIdsByUserId = (userId: string) =>
   useAsyncResource(
     ['company.getCompanies', { userId }],
-    () => collectPages(apiClient.company.getCompanies({ userId, autoPaginate: true })) as Cast<string[]>,
+    () => collectPages(apiClient.company.getCompanies({ userId, autoPaginate: true }), 100) as Cast<string[]>,
   )
 
+// Transactions are naturally bounded by cursorEnd (date range), but we still
+// apply a safeguard of 100 pages to prevent runaway pagination.
 export const useTransactions = (options: WarEra.TransactionOptions & { from?: DateTime }) => {
   const { from, ...apiOptions } = options
   const cursorEnd = from?.toJSDate()
@@ -144,6 +197,7 @@ export const useTransactions = (options: WarEra.TransactionOptions & { from?: Da
           ...(cursorEnd ? { cursorEnd } : {}),
           autoPaginate: true,
         }),
+        100,
       ) as unknown as Cast<WarEra.Transaction[]>,
   )
 }

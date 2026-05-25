@@ -1,5 +1,6 @@
 import { useQueries, useQuery } from '@tanstack/react-query'
 import { useLoadingState } from '@/hooks/use-loading-state'
+import { useRefreshStore } from '@/stores/refresh-store'
 import { chunkArray } from '@/functions/arrays'
 
 /**
@@ -8,10 +9,15 @@ import { chunkArray } from '@/functions/arrays'
  *
  * Loading state is tracked symmetrically in the queryFn:
  * addItems on start, finishItems on completion (success or error).
+ *
+ * The refresh epoch from the global RefreshStore is included in the query key
+ * so that incrementing the epoch causes all queries to refetch.
  */
 export function useAsyncResource<TData>(queryKey: unknown[], queryFn: () => Promise<TData>) {
+  const epoch = useRefreshStore((s) => s.epoch)
+
   return useQuery<TData>({
-    queryKey,
+    queryKey: [...queryKey, { refreshEpoch: epoch }],
     queryFn: async () => {
       useLoadingState.getState().addItems()
       try {
@@ -29,6 +35,9 @@ export function useAsyncResource<TData>(queryKey: unknown[], queryFn: () => Prom
  * Chunks items (default 50 per chunk), runs each chunk in parallel via useQueries,
  * and combines results into a flat array.
  *
+ * The refresh epoch is included in each chunk's query key so that
+ * incrementing the epoch causes all batch queries to refetch.
+ *
  * Returns { data: TData[], queries, isLoading, error }.
  */
 export function useBatchAsyncResource<TItem, TData>(
@@ -37,12 +46,13 @@ export function useBatchAsyncResource<TItem, TData>(
   queryFn: (item: TItem) => Promise<TData>,
   options?: { chunkSize?: number },
 ) {
+  const epoch = useRefreshStore((s) => s.epoch)
   const chunkSize = options?.chunkSize ?? 50
   const chunks = chunkArray(items, chunkSize)
 
   const results = useQueries({
     queries: chunks.map((chunk, chunkIndex) => ({
-      queryKey: [...queryKey, 'chunk', chunkIndex, chunk],
+      queryKey: [...queryKey, 'chunk', chunkIndex, chunk, { refreshEpoch: epoch }],
       queryFn: async () => {
         useLoadingState.getState().addItems()
         try {

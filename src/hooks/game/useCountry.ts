@@ -7,5 +7,5 @@ export const useCountry = (id: WarEra.CountryId) => {
 
   const country = allCountries.find((country) => country._id === id)
 
-  return country
+  return { country, isLoading: countryQuery.isLoading }
 }

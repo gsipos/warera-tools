@@ -63,6 +63,5 @@ export const useRegionProdBonus = () => {
     bonusesByItemCode.set(item, affectedRegions)
   })
 
-  console.log('Bonuses by item code:', bonusesByItemCode)
   return bonusesByItemCode
 }
