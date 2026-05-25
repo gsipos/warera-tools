@@ -7,7 +7,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/componen
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { DateTime } from 'luxon'
 import { useEffect, useState } from 'react'
-import { WarEra } from 'warera-api'
+import { WarEra } from '@/api/types'
 import { ErrorBoundary } from 'react-error-boundary'
 import z from 'zod'
 import { zodValidator, fallback } from '@tanstack/zod-adapter'

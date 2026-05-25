@@ -6,7 +6,7 @@ import { SimpleTooltip } from '@/components/ui/tooltip'
 import { countFormat, percentFormat } from '@/functions/number-formats'
 import { cn } from '@/lib/utils'
 import { FlameIcon, LandmarkIcon, Link2Icon, Link2OffIcon } from 'lucide-react'
-import { WarEra } from 'warera-api'
+import { WarEra } from '@/api/types'
 import { Deposit } from '../molecules/Deposit'
 import { ItemImage } from '../atoms/ItemImage'
 

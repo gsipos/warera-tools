@@ -1,6 +1,6 @@
 import { cn } from '@/lib/utils'
 import emojiFlags from 'emoji-flags'
-import { WarEra } from 'warera-api'
+import { WarEra } from '@/api/types'
 
 interface Props {
   code: WarEra.Country['code']

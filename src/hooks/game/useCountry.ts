@@ -1,5 +1,5 @@
 import { useCountries } from '@/api/warera-api'
-import { WarEra } from 'warera-api'
+import { WarEra } from '@/api/types'
 
 export const useCountry = (id: WarEra.CountryId) => {
   const countryQuery = useCountries()

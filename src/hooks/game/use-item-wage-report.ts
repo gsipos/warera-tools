@@ -1,5 +1,5 @@
 import { useTradingTopOrders } from '@/api/warera-api'
-import { WarEra } from 'warera-api'
+import { WarEra } from '@/api/types'
 
 export const useItemSellPrice = (item: WarEra.ItemCode) => {
   const topOrdersQuery = useTradingTopOrders(item)

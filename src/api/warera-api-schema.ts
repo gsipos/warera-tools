@@ -1,4 +1,4 @@
-import { WarEra } from 'warera-api'
+import { WarEra } from '@/api/types'
 import { z } from 'zod'
 
 const countryTaxSchema = z.object({

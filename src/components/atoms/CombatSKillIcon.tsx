@@ -8,7 +8,7 @@ import HealthIcon from './../../assets/icons/health.svg?react'
 import HungerIcon from './../../assets/icons/hunger.svg?react'
 import LootChangeIcon from './../../assets/icons/lootChange.svg?react'
 import PrecisionIcon from './../../assets/icons/precision.svg?react'
-import { WarEra } from 'warera-api'
+import { WarEra } from '@/api/types'
 import { cn } from '@/lib/utils'
 
 const combarSkillIcons = {

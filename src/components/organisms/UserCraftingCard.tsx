@@ -6,7 +6,7 @@ import { useTimeBoxedTransactions } from '@/hooks/game/use-time-boxed-transactio
 import { ItemThumbnail } from '../molecules/ItemThumbnail'
 import { ScrollArea } from '../ui/scroll-area'
 import { useItemMarketPrice } from '@/hooks/use-item-market-price'
-import { WarEra } from 'warera-api'
+import { WarEra } from '@/api/types'
 import { TimeRangeSelect } from '../molecules/TimeRangeSelect'
 import { Field, FieldLabel } from '../ui/field'
 import { useDateRangeStore } from '@/stores/date-range-store'

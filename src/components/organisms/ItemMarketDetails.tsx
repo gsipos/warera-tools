@@ -1,6 +1,6 @@
 import { useItemTradingPrices, useTradingTopOrders } from '@/api/warera-api'
 import { itemRecipes } from '@/api/warera-item-recipes'
-import { WarEra } from 'warera-api'
+import { WarEra } from '@/api/types'
 import { Separator } from '../ui/separator'
 
 interface Props {

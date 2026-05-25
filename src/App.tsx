@@ -1,6 +1,6 @@
 import { QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
-import { WarEra } from 'warera-api'
+import { WarEra } from '@/api/types'
 import { useTradingTopOrders } from './api/warera-api'
 import { Money } from './components/molecules/Money'
 import { queryClient } from './functions/react-query-setup'

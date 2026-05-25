@@ -1,4 +1,4 @@
-import { WarEra } from 'warera-api'
+import { WarEra } from '@/api/types'
 import { useExtendedRegions } from './game/use-extended-region'
 
 interface RegionProdBonus {

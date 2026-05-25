@@ -3,7 +3,7 @@ import { formatters, FormatType } from '@/functions/number-formats'
 import { cn } from '@/lib/utils'
 import { cva } from 'class-variance-authority'
 import { ReactNode } from 'react'
-import { WarEra } from 'warera-api'
+import { WarEra } from '@/api/types'
 import { SimpleTooltip } from '../ui/tooltip'
 
 const badgeVariants = cva('', {
@@ -36,7 +36,7 @@ export const RankingBadge = (props: Props) => {
   const value = props.type === 'percent' ? props.rank.value / 100 : props.rank.value
   return (
     <SimpleTooltip tooltip={props.tooltip ?? `Rank #${props.rank.rank} (${props.rank.tier.toUpperCase()})`}>
-      <Badge variant="outline" className={cn(badgeVariants({ tier: props.rank.tier }))}>
+      <Badge variant="outline" className={cn(badgeVariants({ tier: props.rank.tier as WarEra.RankTier }))}>
         {props.icon}
         {formatter.format(value ?? 0)}
       </Badge>

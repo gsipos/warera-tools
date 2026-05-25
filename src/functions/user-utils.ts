@@ -1,7 +1,7 @@
 import { DateTime } from 'luxon'
-import { WarEra } from 'warera-api'
+import { WarEra } from '@/api/types'
 
-export const ecoSkills: WarEra.SkillKey[] = ['companies', 'enterpreneurship', 'energy', 'production', 'management']
+export const ecoSkills: WarEra.SkillKey[] = ['companies', 'entrepreneurship', 'energy', 'production', 'management']
 
 const toSum = (a: number, b: number) => a + b
 export const getUserEcoSkillLevels = (user: WarEra.UserLite) =>

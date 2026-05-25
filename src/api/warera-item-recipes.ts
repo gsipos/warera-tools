@@ -1,4 +1,4 @@
-import { WarEra } from 'warera-api'
+import { WarEra } from '@/api/types'
 
 const onlyProduction = (pp: number): WarEra.ItemRecipe => ({ productionPoints: pp ?? 1 })
 

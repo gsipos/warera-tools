@@ -1,6 +1,6 @@
 import { useTransactions } from '@/api/warera-api'
 import { DateTime, Interval } from 'luxon'
-import { WarEra } from 'warera-api'
+import { WarEra } from '@/api/types'
 
 export interface AggregatedTx {
   skillId: string
@@ -82,7 +82,7 @@ export const useEquipmentTransactions = (eqCode: WarEra.EquipmentCode, fromDate?
 }
 
 export const useItemMarketPrice = (item: WarEra.Item, fromDate?: DateTime) => {
-  const { txList } = useTransactionsFromDate(item.code, fromDate ?? DateTime.now().minus({ weeks: 2 }))
+  const { txList } = useTransactionsFromDate(item.code as WarEra.EquipmentCode, fromDate ?? DateTime.now().minus({ weeks: 2 }))
 
   const itemSkillId = skillsToString(item.skills)
   const filteredTxList = txList.filter(

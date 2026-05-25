@@ -1,7 +1,7 @@
 import { useCountries } from '@/api/warera-api'
 import { CountryFlag } from '@/components/molecules/CountryFlag'
 import { useDeferredValue } from 'react'
-import { WarEra } from 'warera-api'
+import { WarEra } from '@/api/types'
 
 export const CountryFlagList = (props: { cId: WarEra.CountryId[] }) => {
   const countryQuery = useCountries()

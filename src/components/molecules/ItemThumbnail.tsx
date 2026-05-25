@@ -1,4 +1,4 @@
-import { WarEra } from 'warera-api'
+import { WarEra } from '@/api/types'
 import { ItemBackground } from '../atoms/ItemBackground'
 import { ItemImage } from '../atoms/ItemImage'
 import { CombarSkillIcon } from '../atoms/CombatSKillIcon'

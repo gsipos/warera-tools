@@ -1,7 +1,7 @@
 import { useCountries } from '@/api/warera-api'
 import { createFileRoute } from '@tanstack/react-router'
 import { Suspense, useDeferredValue, useState } from 'react'
-import { WarEra } from 'warera-api'
+import { WarEra } from '@/api/types'
 import { CountrySortButtonGroup, CountrySortValue } from './countries/-molecules/CountrySortBToggleGroup'
 import { CountryCard } from './countries/-organisms/CountryCard'
 

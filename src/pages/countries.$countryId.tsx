@@ -18,7 +18,7 @@ import {
   UserRoundPenIcon,
 } from 'lucide-react'
 import { ReactNode, useMemo, useState } from 'react'
-import { WarEra } from 'warera-api'
+import { WarEra } from '@/api/types'
 import { CountryCard } from './countries/-organisms/CountryCard'
 import { CountryUserLevelChart } from '@/components/organisms/CountryUserLevelChart'
 import HealthIcon from './../assets/icons/health.svg?react'

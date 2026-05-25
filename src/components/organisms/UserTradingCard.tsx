@@ -1,6 +1,6 @@
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '../ui/card'
 import { DateTime } from 'luxon'
-import { WarEra } from 'warera-api'
+import { WarEra } from '@/api/types'
 import { Separator } from '@radix-ui/react-separator'
 import { ItemBackground } from '../atoms/ItemBackground'
 import { ItemImage } from '../atoms/ItemImage'
@@ -8,7 +8,7 @@ import { moneyFormat } from '@/functions/number-formats'
 import { useTimeBoxedTransactions } from '@/hooks/game/use-time-boxed-transactions'
 
 interface AggregatedTx {
-  itemCode: WarEra.ItemCode
+  itemCode: string
   amount: number
   money: number
   txs: WarEra.Transaction[]

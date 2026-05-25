@@ -1,8 +1,23 @@
-import { WarEra } from 'warera-api'
-import { useWarEraApiQuery, useWarEraApiBatchQuery } from './warera-api-framework'
+import { WarEra } from '@/api/types'
 import { apiClient } from './client'
 import { useAsyncResource, useBatchAsyncResource } from '@/hooks/use-async-resource'
 import { DateTime } from 'luxon'
+
+const TRPC_BASE_URL = 'https://api2.warera.io/trpc/'
+
+/**
+ * Raw tRPC fetch for endpoints not yet available on the typed client.
+ * Used as a stopgap until the API client package exposes all endpoints.
+ */
+async function rawTrpcFetch<TData>(endpoint: string, input: Record<string, unknown>): Promise<TData> {
+  const url = new URL(endpoint, TRPC_BASE_URL)
+  url.searchParams.set('input', JSON.stringify(input))
+  const response = await fetch(url.toString(), {
+    headers: { 'X-API-Key': import.meta.env.VITE_WARERA_DEFAULT_API_KEY },
+  })
+  const json = (await response.json()) as { result: { data: TData } }
+  return json.result.data
+}
 
 // Type bridge: the tRPC client returns structurally compatible types that differ
 // only in minor strictness (e.g. string vs string-literal unions). We cast through
@@ -67,12 +82,12 @@ export const useWorkOffersByCompanyId = (companyId: string) =>
   )
 
 // Note: company.getRecommendedRegionIds is not exposed on the typed client.
-// Keeping on legacy raw framework until the API client package adds it.
+// Using raw tRPC fetch until the API client package adds it.
 export const useRecommendedRegionsForCompany = (companyId: string, includeDeposit: boolean) =>
-  useWarEraApiQuery<WarEra.RecommendedRegionForCompany[]>('company.getRecommendedRegionIds', {
-    companyId,
-    includeDeposit,
-  })
+  useAsyncResource(
+    ['company.getRecommendedRegionIds', { companyId, includeDeposit }],
+    () => rawTrpcFetch<WarEra.RecommendedRegionForCompany[]>('company.getRecommendedRegionIds', { companyId, includeDeposit }),
+  )
 
 // --- Batch endpoints (tRPC client with chunking) ---
 
@@ -95,15 +110,6 @@ export const useCompanies = (companyIds: string[]) =>
     ['company.getById', 'batch'],
     companyIds,
     (companyId) => cast<WarEra.Company>(apiClient.company.getById({ companyId })),
-  )
-
-// Note: company.getRecommendedRegionIds not on typed client; using legacy batch framework.
-export const useRecommendedRegionsForCompaniesBatch = (companyIds: string[], includeDeposit: boolean) =>
-  useWarEraApiBatchQuery<WarEra.RecommendedRegionForCompany[]>(
-    companyIds.map((companyId) => ({
-      endpoint: 'company.getRecommendedRegionIds',
-      input: { companyId, includeDeposit },
-    })),
   )
 
 // --- Paginated endpoints (tRPC client with autoPaginate) ---

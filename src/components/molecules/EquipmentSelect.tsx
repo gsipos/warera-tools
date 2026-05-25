@@ -1,7 +1,7 @@
 import { armorCodes, weaponsCodes } from '@/api/warera-api-schema'
 import { Select, SelectContent, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { SelectGroup } from '@radix-ui/react-select'
-import { WarEra } from 'warera-api'
+import { WarEra } from '@/api/types'
 
 interface Props {
   className?: string

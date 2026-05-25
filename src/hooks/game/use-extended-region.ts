@@ -1,5 +1,5 @@
 import { useCountries, useRegionObject } from '@/api/warera-api'
-import { WarEra } from 'warera-api'
+import { WarEra } from '@/api/types'
 
 export interface ExtendedRegion {
   region: WarEra.Region
