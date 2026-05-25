@@ -1,8 +1,7 @@
 import { chunkArray } from '@/functions/arrays'
 import { useLoadingState } from '@/hooks/use-loading-state'
-import { InfiniteData, useInfiniteQuery, UseInfiniteQueryResult, useQueries, useQuery } from '@tanstack/react-query'
+import { useQueries, useQuery } from '@tanstack/react-query'
 import pThrottle from 'p-throttle'
-import { useEffect } from 'react'
 import { WarEra } from 'warera-api'
 import pLimit from 'p-limit'
 
@@ -80,31 +79,6 @@ export const useWarEraApiQuery = <TData, Input extends Record<string, unknown> =
   })
 }
 
-export const usePaginatedWarEraApiQuery = <TData, Input extends Record<string, unknown> = {}>(
-  fragment: string,
-  input?: Input & WarEra.PageableOptions,
-) => {
-  return useInfiniteQuery<WarEra.Paginated<TData>>({
-    queryKey: [fragment, input],
-    queryFn: async ({ pageParam }) => {
-      return warEraApiFetch<WarEra.Paginated<TData>>(
-        getApiUrl(
-          fragment,
-          pageParam
-            ? {
-                ...input,
-                cursor: pageParam ?? '',
-                limit: input?.limit ?? 50,
-              }
-            : { ...input, limit: input?.limit ?? 50 },
-        ),
-      )
-    },
-    getNextPageParam: (lastPage) => lastPage.nextCursor,
-    initialPageParam: undefined,
-  })
-}
-
 export const useWarEraApiBatchQuery = <TData>(entries: TrpcBatchEntry[]) => {
   const chunks = chunkArray(entries, 50)
   const loadingState = useLoadingState()
@@ -129,24 +103,4 @@ export const useWarEraApiBatchQuery = <TData>(entries: TrpcBatchEntry[]) => {
       queries: results,
     }),
   })
-}
-
-export const useAllPages = <T>(query: UseInfiniteQueryResult<InfiniteData<WarEra.Paginated<T>>>) => {
-  useEffect(() => {
-    let isMounted = true
-
-    const loadAllPages = async () => {
-      while (query.hasNextPage && isMounted && !query.isFetchingNextPage) {
-        await query.fetchNextPage({ cancelRefetch: false })
-      }
-    }
-
-    if (!query.isLoading && !query.error) {
-      loadAllPages()
-    }
-
-    return () => {
-      isMounted = false
-    }
-  }, [query])
 }

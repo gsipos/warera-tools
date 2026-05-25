@@ -1,4 +1,3 @@
-import { useTransactions } from '@/api/warera-api'
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '../ui/card'
 import { Separator } from '../ui/separator'
 import { ItemBackground } from '../atoms/ItemBackground'
@@ -13,11 +12,7 @@ import { CircleDollarSignIcon } from 'lucide-react'
 const toSum = (acc: number, val: number) => acc + val
 
 export const UserItemMarketCard = ({ userId }: { userId: string }) => {
-  const itemMarketQuery = useTransactions({
-    userId: userId,
-    transactionType: 'itemMarket',
-  })
-  const tsx = useTimeBoxedTransactions(itemMarketQuery)
+  const tsx = useTimeBoxedTransactions({ userId, transactionType: 'itemMarket' })
 
   const soldItems = tsx.filter((tx) => tx.sellerId === userId)
   const boughtItems = tsx.filter((tx) => tx.buyerId === userId)

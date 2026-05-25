@@ -1,26 +1,19 @@
 import { useTransactions } from '@/api/warera-api'
 import { DateTime } from 'luxon'
-import { useEffect } from 'react'
 
-type TxQuery = ReturnType<typeof useTransactions>
-
+/**
+ * Fetches transactions up to `from` date using tRPC autoPaginate with cursorEnd,
+ * then filters to only include transactions from that date onwards.
+ *
+ * The cursorEnd on the API stops pagination when items are older than the date,
+ * but may include some items slightly before the boundary in the last fetched page.
+ * This filter ensures exact date boundary.
+ */
 export const useTimeBoxedTransactions = (
-  txQuery: TxQuery,
-  options: {
-    from: DateTime
-  } = { from: DateTime.now().startOf('day').minus({ weeks: 1 }) },
+  options: Parameters<typeof useTransactions>[0],
+  timeOptions: { from: DateTime } = { from: DateTime.now().startOf('day').minus({ weeks: 1 }) },
 ) => {
-  const txList = txQuery.data?.pages.flatMap((p) => p.items) ?? []
-
-  useEffect(() => {
-    const lastTxTimeStamp = txList.at(-1)?.createdAt
-    const canFetchMore = txQuery.hasNextPage && !txQuery.isFetchingNextPage
-    if (!canFetchMore) return
-    const isLastTxOlder = DateTime.fromISO(lastTxTimeStamp ?? '') < options.from
-    if (isLastTxOlder) return
-
-    txQuery.fetchNextPage()
-  }, [txList, txQuery, options.from])
-
-  return txList.filter((tx) => DateTime.fromISO(tx.createdAt) >= options.from)
+  const txQuery = useTransactions({ ...options, from: timeOptions.from })
+  const txList = txQuery.data ?? []
+  return txList.filter((tx) => DateTime.fromISO(tx.createdAt) >= timeOptions.from)
 }

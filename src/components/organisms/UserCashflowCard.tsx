@@ -1,4 +1,3 @@
-import { useTransactions } from '@/api/warera-api'
 import { moneyFormat } from '@/functions/number-formats'
 import { useTimeBoxedTransactions } from '@/hooks/game/use-time-boxed-transactions'
 import { useUserCashflow } from '@/hooks/game/use-user-cashflow'
@@ -8,13 +7,11 @@ import { CashflowTimeSeriesChart, type CashflowDataPoint } from './CashflowTimeS
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card'
 
 export const UserCashflowCard = ({ userId }: { userId: string }) => {
-  const txQuery = useTransactions({ userId })
-
   const from = useMemo(() => {
     return DateTime.now().startOf('day').minus({ days: 6 })
   }, [])
 
-  const transactions = useTimeBoxedTransactions(txQuery, { from })
+  const transactions = useTimeBoxedTransactions({ userId }, { from })
 
   const { totals, daily, byType } = useUserCashflow({
     userId,

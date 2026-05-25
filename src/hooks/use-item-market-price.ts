@@ -1,6 +1,5 @@
 import { useTransactions } from '@/api/warera-api'
 import { DateTime, Interval } from 'luxon'
-import { useEffect } from 'react'
 import { WarEra } from 'warera-api'
 
 export interface AggregatedTx {
@@ -61,22 +60,15 @@ const useTransactionsFromDate = (eqCode: WarEra.EquipmentCode, fromDate: DateTim
     limit: 50,
     transactionType: 'itemMarket',
     itemCode: eqCode,
+    from: fromDate,
   })
-  const txList = (tqQuery.data?.pages.flatMap((p) => p.items) ?? []).filter((tx) => tx.item.state === tx.item.maxState)
+  const txList = (tqQuery.data ?? [])
+    .filter((tx) => tx.item.state === tx.item.maxState)
+    .filter((tx) => DateTime.fromISO(tx.createdAt ?? '') >= fromDate)
 
-  useEffect(() => {
-    const canFetchMore = tqQuery.hasNextPage && !tqQuery.isFetchingNextPage
-    if (!canFetchMore) return
-    const isLastTxOlder = DateTime.fromISO(txList.at(-1)?.createdAt ?? '') < fromDate
-    if (isLastTxOlder) return
+  const lastTxTimeStamp = txList.at(-1)?.createdAt
 
-    tqQuery.fetchNextPage()
-  })
-
-  const filteredTxList = txList.filter((tx) => DateTime.fromISO(tx.createdAt ?? '') >= fromDate)
-  const lastTxTimeStamp = filteredTxList.at(-1)?.createdAt
-
-  return { tqQuery, txList: filteredTxList, lastTxTimeStamp }
+  return { tqQuery, txList, lastTxTimeStamp }
 }
 
 export const useEquipmentTransactions = (eqCode: WarEra.EquipmentCode, fromDate?: DateTime) => {
