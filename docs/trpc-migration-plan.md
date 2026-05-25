@@ -1,4 +1,4 @@
-# Migration Plan: Replace custom API layer with @wareraprojects/api (TRPC client)
+# Migration Plan: Replace custom API layer with @wareraprojects/api (tRPC client)
 
 ## Summary
 
@@ -38,7 +38,7 @@ The tRPC client provides:
 - ✅ Retry with exponential backoff on 408/429/5xx
 - ✅ Auto-pagination via `autoPaginate: true` returning `AsyncIterableIterator`
 - ✅ Dot-notation procedure calls (`client.country.getAllCountries()`)
-- ✅ API key support via `x-api-key` header
+- ✅ API key support via `X-API-Key` header
 
 ---
 
@@ -78,7 +78,7 @@ The tRPC client provides:
 ### Phase 3: Create opt-in persistence utility for historical data
 
 - [ ] Create a small utility (e.g. `src/functions/persisted-query.ts`) that:
-  - Provides a scoped `QueryClient` with IndexedDB persistence (using `idb-keyval` or `idb-cache`)
+  - Provides a scoped `QueryClient` with IndexedDB persistence (using `idb-keyval` or `@instructure/idb-cache`)
   - Exposes a hook like `usePersistedQuery(key, fetcher)` for opt-in usage
   - Sets aggressive `staleTime` (infinite or very long) + `gcTime` for immutable data
 - [ ] Identify which data truly benefits from persistence:
