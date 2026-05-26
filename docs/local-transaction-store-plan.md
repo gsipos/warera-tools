@@ -81,15 +81,21 @@ A **Dexie.js** database stores individual transaction records with indexed field
 
 3. **Deduplication:** Dexie's `bulkPut` with `_id` as primary key naturally deduplicates — upserting existing records.
 
-4. **Scoped sync:** Sync can be triggered per-filter (e.g., "sync all `itemMarket` transactions for item `rifle`") or globally. The metadata table tracks what's been synced per scope.
+4. **Global sync:** All transactions are synced regardless of type or filter. The metadata table tracks the overall sync cursors (newest/oldest timestamps synced). This keeps implementation simple and ensures any page can query any dimension of the data without triggering scope-specific syncs.
 
 ### Sync Lifecycle
 
 ```
-App starts → Forward sync (fetch newest since last sync)
-User requests historical data → Check local coverage → Backward sync if gap exists
-Background (optional) → Periodic forward sync every N minutes
+App loads → Forward sync (fetch newest since last sync)
+Tab gains focus (visibilitychange) → Forward sync if last sync > 1-2 hours ago
+User on transaction page → Check local coverage → Backward sync if gap exists
+Optional → Manual "Sync" button when data staleness > 1-2 hours
 ```
+
+Key constraints:
+- No sync while tab is hidden/background
+- Each page of results is stored immediately (progressive availability)
+- UI renders whatever is locally available and reactively updates as new records arrive
 
 ### Rate Limiting & Batching
 - Reuse the existing tRPC client (inherits rate limiting, retries)
@@ -166,30 +172,39 @@ const useHybridTransactions = (options, dateRange) => {
 }
 ```
 
-### Pages to update:
-- `itemMarket.index.tsx` — Equipment price analysis (primary beneficiary)
-- `users.$userId.tsx` — User cashflow (currently limited to 7 days; could expand with local store)
-- Any page using `useTimeBoxedTransactions` or `useEquipmentTransactions`
+### Initial integration: Crafting page (`src/pages/crafting.tsx`)
 
-### UI additions:
-- Sync status indicator (last synced, records count, sync progress)
-- "Load more history" button for on-demand backfill
-- Offline badge when serving from local store without network
+The crafting page is the pilot for local store integration because:
+- It currently fires 12+ parallel API calls (one per equipment code for random craft analysis)
+- It benefits most from longer date ranges (profitability analysis improves with more historical data)
+- It's a self-contained page with no shared state dependencies
+
+**Changes:**
+- Replace `useEquipmentTransactions` calls with local Dexie queries
+- Allow date range to extend beyond the current 2-week default (since local queries are free)
+- Charts render progressively — show available data immediately, expand as sync completes
+- No blocking loading states; partial data is acceptable and expected
+
+### Future pages (follow-up work):
+- `itemMarket.index.tsx` — Equipment price analysis
+- `users.$userId.tsx` — User cashflow
+- User trading/item market cards
 
 ---
 
 ## Phase 5: Migration & Cleanup
 
 ### Goals
-- Deprecate the current `PersistedDataProvider` approach for transactions
-- Remove redundant TanStack Query persistence for transaction data
+- Gradually migrate remaining pages from remote-fetch hooks to local-query hooks
+- Deprecate the `PersistedDataProvider` approach for transaction data once all consumers are migrated
 - Keep remote API hooks available for non-transaction or real-time data
 
 ### Migration path:
-1. Add feature flag (`VITE_USE_LOCAL_TX_STORE`) to toggle between old and new system
-2. Run both systems in parallel during validation period
-3. Once stable, remove the `PersistedDataProvider` wrapping from transaction pages
-4. Remove `@instructure/idb-cache` and `@tanstack/query-async-storage-persister` if no other consumers remain
+1. Crafting page uses local store (Phase 4 — initial pilot)
+2. Migrate itemMarket page as second consumer
+3. Migrate user profile cards (cashflow, trading, item market cards)
+4. Once all transaction consumers are migrated, remove `PersistedDataProvider` wrapping
+5. Remove `@instructure/idb-cache` and `@tanstack/query-async-storage-persister` if no other consumers remain
 
 ---
 
@@ -203,14 +218,18 @@ const useHybridTransactions = (options, dateRange) => {
 
 ---
 
-## Key Decisions Needed
+## Decisions (Finalized)
 
-1. **Sync trigger:** Automatic on app load + periodic, or purely on-demand when user visits a transaction page?
-2. **Backfill depth:** How far back should historical sync go? (e.g., 90 days, 1 year, unlimited)
-3. **Storage budget:** IndexedDB has browser-specific quotas (typically 50%+ of disk). Should we implement a cap/LRU purge?
-4. **Granularity of sync scopes:** Sync all transactions globally, or per-user / per-item / per-type independently?
-5. **Conflict resolution:** Transactions are immutable (write-once), so no conflicts expected. But what about API-side deletions (if any)?
-6. **Feature flag:** Ship behind a flag and gradually roll out, or replace wholesale?
+| # | Question | Decision |
+|---|---|---|
+| 1 | **Sync trigger** | Background sync on app load; periodic refresh every 1-2 hours; re-sync on tab focus (visibilitychange). No sync while tab is hidden. Show a manual "Sync" button in UI when data is older than 1-2 hours. |
+| 2 | **Backfill depth** | 30 days (defined as a constant, tunable later based on performance testing) |
+| 3 | **Storage budget** | Cap at 100MB if implementation is straightforward; skip cap if complex to implement |
+| 4 | **Sync scope** | Global — sync all transactions regardless of type/user/item. The app uses transactions across many dimensions and will expand usage over time. |
+| 5 | **Conflict resolution** | None needed. Transactions are immutable. API is the single source of truth. If a game reset/backup occurs, user can clear local store. No engineering effort on reconciliation. |
+| 6 | **Rollout strategy** | No feature flag. Implement on the **crafting page first** as the pilot. Other pages continue using existing hooks until migrated in follow-up work. |
+| 7 | **UX philosophy** | Never block the UI behind a loading/progress bar. Show partial data immediately and let charts/tables expand progressively as more data syncs in (e.g., first show 3 days, then 2 weeks, then full range). Leverage Dexie's `useLiveQuery` reactivity for this naturally. |
+| 8 | **Crafting page scope** | Improve the UX while migrating (progressive data display, longer date ranges now "free") but keep the page functional throughout — no breaking changes. |
 
 ---
 
