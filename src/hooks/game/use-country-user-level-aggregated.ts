@@ -5,7 +5,8 @@ export const useCountryUsersLevelAggregated = (countryId: string) => {
   const users = useCountryUsers(countryId)
   const deferredUsers = useDeferredValue(users, [])
 
-  const maxLevel = Math.max(...deferredUsers.map((u) => u.leveling.level))
+  const levels = deferredUsers.map((u) => u.leveling.level)
+  const maxLevel = levels.length > 0 ? Math.max(...levels) : 0
 
   const levelData: { level: number; count: number }[] = []
   for (let level = 1; level <= maxLevel; level++) {

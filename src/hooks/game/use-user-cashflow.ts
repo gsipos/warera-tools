@@ -1,6 +1,6 @@
 import { DateTime } from 'luxon'
 import { useMemo } from 'react'
-import type { WarEra } from 'warera-api'
+import type { WarEra } from '@/api/types'
 
 export interface UserCashflowDailyPoint {
   date: string

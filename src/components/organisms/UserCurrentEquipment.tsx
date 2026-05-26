@@ -1,4 +1,5 @@
 import { useUserCurrentEquipment } from '@/api/warera-api'
+import { WarEra } from '@/api/types'
 import { CircleDashedIcon } from 'lucide-react'
 import { ItemBackground } from '../atoms/ItemBackground'
 import { ItemImage } from '../atoms/ItemImage'
@@ -17,11 +18,11 @@ export const UserCurrentEquipment = ({ userId }: { userId: string }) => {
 
   return (
     <div className="flex flex-row items-center gap-2">
-      {eq?.weapon ? <ItemThumbnail item={eq.weapon} /> : null}
+      {eq?.weapon ? <ItemThumbnail item={eq.weapon as unknown as WarEra.Item} /> : null}
       {eq?.ammo ? (
         <div className="flex flex-col items-center gap-1">
-          <ItemBackground code={eq.ammo} className="pb-0.5">
-            <ItemImage itemCode={eq.ammo} className="h-auto w-full" />
+          <ItemBackground code={eq.ammo as WarEra.EquipmentCode} className="pb-0.5">
+            <ItemImage itemCode={eq.ammo as WarEra.ItemCode} className="h-auto w-full" />
             <div className="text-foreground/60 flex flex-row items-center justify-center gap-0.5 text-[10px] text-shadow-sm">
               {eq.ammoQuantity}
             </div>
@@ -30,11 +31,11 @@ export const UserCurrentEquipment = ({ userId }: { userId: string }) => {
       ) : (
         <EmptySlot />
       )}
-      {eq?.helmet ? <ItemThumbnail item={eq.helmet} /> : <EmptySlot />}
-      {eq?.chest ? <ItemThumbnail item={eq.chest} /> : <EmptySlot />}
-      {eq?.pants ? <ItemThumbnail item={eq.pants} /> : <EmptySlot />}
-      {eq?.boots ? <ItemThumbnail item={eq.boots} /> : <EmptySlot />}
-      {eq?.gloves ? <ItemThumbnail item={eq.gloves} /> : <EmptySlot />}
+      {eq?.helmet ? <ItemThumbnail item={eq.helmet as unknown as WarEra.Item} /> : <EmptySlot />}
+      {eq?.chest ? <ItemThumbnail item={eq.chest as unknown as WarEra.Item} /> : <EmptySlot />}
+      {eq?.pants ? <ItemThumbnail item={eq.pants as unknown as WarEra.Item} /> : <EmptySlot />}
+      {eq?.boots ? <ItemThumbnail item={eq.boots as unknown as WarEra.Item} /> : <EmptySlot />}
+      {eq?.gloves ? <ItemThumbnail item={eq.gloves as unknown as WarEra.Item} /> : <EmptySlot />}
     </div>
   )
 }

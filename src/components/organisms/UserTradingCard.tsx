@@ -1,7 +1,6 @@
-import { useTransactions } from '@/api/warera-api'
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '../ui/card'
 import { DateTime } from 'luxon'
-import { WarEra } from 'warera-api'
+import { WarEra } from '@/api/types'
 import { Separator } from '@radix-ui/react-separator'
 import { ItemBackground } from '../atoms/ItemBackground'
 import { ItemImage } from '../atoms/ItemImage'
@@ -9,7 +8,7 @@ import { moneyFormat } from '@/functions/number-formats'
 import { useTimeBoxedTransactions } from '@/hooks/game/use-time-boxed-transactions'
 
 interface AggregatedTx {
-  itemCode: WarEra.ItemCode
+  itemCode: string
   amount: number
   money: number
   txs: WarEra.Transaction[]
@@ -33,11 +32,7 @@ const aggregateTransactionsByItem = (txList: WarEra.Transaction[]): AggregatedTx
 }
 
 export const UserTradingCard = ({ userId }: { userId: string }) => {
-  const tradeQuery = useTransactions({
-    userId: userId,
-    transactionType: 'trading',
-  })
-  const tsx = useTimeBoxedTransactions(tradeQuery)
+  const tsx = useTimeBoxedTransactions({ userId, transactionType: 'trading' })
 
   const soldItems = tsx.filter((tx) => tx.sellerId === userId)
   const boughtItems = tsx.filter((tx) => tx.buyerId === userId)

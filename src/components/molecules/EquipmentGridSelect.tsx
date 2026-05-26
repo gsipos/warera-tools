@@ -1,6 +1,6 @@
 import { armorCodes, armorLevels, armorTypes, weaponsCodes } from '@/api/warera-api-schema'
 import { cn } from '@/lib/utils'
-import { WarEra } from 'warera-api'
+import { WarEra } from '@/api/types'
 import { Button } from '../ui/button'
 import { Fragment } from 'react/jsx-runtime'
 import { ItemImage } from '../atoms/ItemImage'

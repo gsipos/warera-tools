@@ -1,4 +1,4 @@
-import { WarEra } from 'warera-api'
+import { WarEra } from '@/api/types'
 
 const onlyProduction = (pp: number): WarEra.ItemRecipe => ({ productionPoints: pp ?? 1 })
 
@@ -29,8 +29,8 @@ export const itemRecipes: Record<WarEra.ItemCode, WarEra.ItemRecipe> = {
   heavyAmmo: withIngredients(16, 'lead', 16),
   cocain: withIngredients(200, 'coca', 200),
 
-  case1: onlyProduction(1), // TODO: remove this
-  scraps: onlyProduction(1), // TODO: remove this
+  case1: onlyProduction(1),
+  scraps: onlyProduction(1),
 }
 
 export const depositItemCodes: WarEra.ItemCode[] = [
@@ -51,7 +51,7 @@ interface CraftingRecipe {
   steel: number
 }
 
-export const crafingRecipes: CraftingRecipe[] = [
+export const craftingRecipes: CraftingRecipe[] = [
   { type: 'fixed', level: 1, scrap: 6, steel: 2 },
   { type: 'random', level: 1, scrap: 6, steel: 1 },
 

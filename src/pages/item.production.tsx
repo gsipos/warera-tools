@@ -8,7 +8,7 @@ import { Separator } from '@/components/ui/separator'
 import { percentFormat } from '@/functions/number-formats'
 import { useRegionProdBonus } from '@/hooks/use-region-prod-bonus'
 import { createFileRoute } from '@tanstack/react-router'
-import { WarEra } from 'warera-api'
+import { WarEra } from '@/api/types'
 
 export const Route = createFileRoute('/item/production')({
   component: RouteComponent,

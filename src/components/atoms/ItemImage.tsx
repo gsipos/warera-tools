@@ -1,8 +1,8 @@
 import { cn } from '@/lib/utils'
-import { WarEra } from 'warera-api'
+import { WarEra } from '@/api/types'
 
 interface Props {
-  itemCode: WarEra.ItemCode | WarEra.EquipmentCode
+  itemCode: string
   className?: string
 }
 

@@ -8,7 +8,9 @@ const DepositsPage = () => {
   let diplayedRegions = regions
     .filter((r) => r.region.deposit)
     .toSorted(
-      (a, b) => b.country?.rankings.countryProductionBonus.value! - a.country?.rankings.countryProductionBonus.value!,
+      (a, b) =>
+        (b.country?.rankings.countryProductionBonus.value ?? 0) -
+        (a.country?.rankings.countryProductionBonus.value ?? 0),
     )
 
   return <RegionPageTemplate regions={diplayedRegions} pageTitle={'All Deposits'} />

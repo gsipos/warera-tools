@@ -16,7 +16,7 @@ import {
   UsersIcon,
 } from 'lucide-react'
 import { useDeferredValue } from 'react'
-import { WarEra } from 'warera-api'
+import { WarEra } from '@/api/types'
 import { CountryFlagList } from './CountryFlagList'
 import { FavouriteButton } from '@/components/atoms/FavouriteButton'
 

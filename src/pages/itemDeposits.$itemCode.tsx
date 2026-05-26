@@ -12,7 +12,7 @@ function ItemDepositsPage() {
 
   let diplayedRegions = regions
     .filter((r) => r.region.deposit)
-    .filter((r) => r.region.deposit.type === itemCode)
+    .filter((r) => r.region.deposit!.type === itemCode)
     .toSorted(
       (a, b) => b.country?.rankings.countryProductionBonus.value! - a.country?.rankings.countryProductionBonus.value!,
     )

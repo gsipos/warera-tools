@@ -18,7 +18,7 @@ import {
   UserRoundPenIcon,
 } from 'lucide-react'
 import { ReactNode, useMemo, useState } from 'react'
-import { WarEra } from 'warera-api'
+import { WarEra } from '@/api/types'
 import { CountryCard } from './countries/-organisms/CountryCard'
 import { CountryUserLevelChart } from '@/components/organisms/CountryUserLevelChart'
 import HealthIcon from './../assets/icons/health.svg?react'
@@ -120,10 +120,14 @@ const UserContentSelector = (props: { value: UserCardContent; onChange: (value: 
 
 function CountryDetailPage() {
   const { countryId } = Route.useParams()
-  const country = useCountry(countryId)
+  const { country, isLoading } = useCountry(countryId)
   const users = useCountryUsers(countryId).toReversed()
 
   const [userCardContent, setUserCardContent] = useState<UserCardContent>('all')
+
+  if (isLoading) {
+    return <div>Loading...</div>
+  }
 
   if (!country) {
     return <div>Country not found</div>

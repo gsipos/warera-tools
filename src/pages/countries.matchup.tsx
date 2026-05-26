@@ -5,7 +5,7 @@ import { Separator } from '@/components/ui/separator'
 import { countFormat, damageFormat, moneyFormat } from '@/functions/number-formats'
 import { createFileRoute } from '@tanstack/react-router'
 import { useState } from 'react'
-import { WarEra } from 'warera-api'
+import { WarEra } from '@/api/types'
 
 export const Route = createFileRoute('/countries/matchup')({
   component: RouteComponent,

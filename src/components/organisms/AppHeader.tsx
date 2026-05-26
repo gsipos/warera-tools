@@ -2,15 +2,15 @@ import { Separator } from '@radix-ui/react-separator'
 import { RefreshCwIcon } from 'lucide-react'
 import { Button } from '../ui/button'
 import { SimpleTooltip } from '../ui/tooltip'
-import { useQueryClient } from '@tanstack/react-query'
+import { useRefreshStore } from '@/stores/refresh-store'
 import { NetworkHealth } from '../molecules/NetworkHealth'
 import { SidebarTrigger } from '../ui/sidebar'
 
 export const RefreshDataButton = () => {
-  const queryClient = useQueryClient()
+  const refresh = useRefreshStore((s) => s.refresh)
 
-  const handleRefresh = async () => {
-    await queryClient.invalidateQueries()
+  const handleRefresh = () => {
+    refresh()
   }
 
   return (

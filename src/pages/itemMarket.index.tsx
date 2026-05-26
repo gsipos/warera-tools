@@ -7,7 +7,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/componen
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { DateTime } from 'luxon'
 import { useEffect, useState } from 'react'
-import { WarEra } from 'warera-api'
+import { WarEra } from '@/api/types'
 import { ErrorBoundary } from 'react-error-boundary'
 import z from 'zod'
 import { zodValidator, fallback } from '@tanstack/zod-adapter'
@@ -22,6 +22,7 @@ import {
 import { TransactionTimeSeriesChart } from '@/components/organisms/TransactionTimeSeriesChat'
 import { TimeRangeSelect } from '@/components/molecules/TimeRangeSelect'
 import { useDateRangeStore } from '@/stores/date-range-store'
+import { PersistedDataProvider } from '@/persistence'
 
 const itemMarketSearchSchema = z.object({
   code: fallback(z.enum(equipmentCodes).default('gun'), 'gun'),
@@ -30,7 +31,11 @@ const itemMarketSearchSchema = z.object({
 type ItemMarketSearch = z.infer<typeof itemMarketSearchSchema>
 
 export const Route = createFileRoute('/itemMarket/')({
-  component: RouteComponent,
+  component: () => (
+    <PersistedDataProvider>
+      <RouteComponent />
+    </PersistedDataProvider>
+  ),
   validateSearch: zodValidator(itemMarketSearchSchema),
 })
 

@@ -9,9 +9,14 @@ import { UserTradingCard } from '@/components/organisms/UserTradingCard'
 import { Button } from '@/components/ui/button'
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { ChevronLeftIcon } from 'lucide-react'
+import { PersistedDataProvider } from '@/persistence'
 
 export const Route = createFileRoute('/users/$userId')({
-  component: RouteComponent,
+  component: () => (
+    <PersistedDataProvider>
+      <RouteComponent />
+    </PersistedDataProvider>
+  ),
 })
 
 function RouteComponent() {

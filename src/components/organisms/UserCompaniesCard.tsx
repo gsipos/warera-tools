@@ -2,7 +2,7 @@ import { useRecommendedRegionsForCompany, useUserCompanies } from '@/api/warera-
 import { percentFormat } from '@/functions/number-formats'
 import { useRegionProdBonus } from '@/hooks/use-region-prod-bonus'
 import { FactoryIcon, FlagIcon, PickaxeIcon } from 'lucide-react'
-import { WarEra } from 'warera-api'
+import { WarEra } from '@/api/types'
 import { ItemImage } from '../atoms/ItemImage'
 import { Badge } from '../ui/badge'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card'

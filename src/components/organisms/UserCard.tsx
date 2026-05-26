@@ -25,7 +25,7 @@ import {
   UserRoundPenIcon,
 } from 'lucide-react'
 import { DateTime } from 'luxon'
-import { WarEra } from 'warera-api'
+import { WarEra } from '@/api/types'
 import { ItemImage } from '../atoms/ItemImage'
 import { Badge } from '../ui/badge'
 import { Button } from '../ui/button'

@@ -1,6 +1,5 @@
-import { crafingRecipes } from '@/api/warera-item-recipes'
+import { craftingRecipes } from '@/api/warera-item-recipes'
 import { useTradingTopOrders } from '@/api/warera-api'
-import { useWarEraApiBatchQuery } from '@/api/warera-api-framework'
 import { armorLevels, armorTypes, weaponsCodes } from '@/api/warera-api-schema'
 import { ItemImage } from '@/components/atoms/ItemImage'
 import { Money } from '@/components/molecules/Money'
@@ -10,7 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { aggregateTransactions, useEquipmentTransactions } from '@/hooks/use-item-market-price'
 import { createFileRoute } from '@tanstack/react-router'
 import { useMemo, useState } from 'react'
-import { WarEra } from 'warera-api'
+import { WarEra } from '@/api/types'
 import { DateTime } from 'luxon'
 import { moneyFormat, percentFormat } from '@/functions/number-formats'
 import { cn } from '@/lib/utils'
@@ -336,7 +335,7 @@ function CraftingPage() {
   const fixedRecipeByLevel = useMemo(() => {
     const map = new Map<Level, { scrap: number; steel: number }>()
     for (const level of LEVELS) {
-      const recipe = crafingRecipes.find((r) => r.type === 'fixed' && r.level === level)
+      const recipe = craftingRecipes.find((r) => r.type === 'fixed' && r.level === level)
       map.set(level, { scrap: recipe?.scrap ?? 0, steel: recipe?.steel ?? 0 })
     }
     return map
@@ -345,7 +344,7 @@ function CraftingPage() {
   const randomRecipeByLevel = useMemo(() => {
     const map = new Map<Level, { scrap: number; steel: number }>()
     for (const level of LEVELS) {
-      const recipe = crafingRecipes.find((r) => r.type === 'random' && r.level === level)
+      const recipe = craftingRecipes.find((r) => r.type === 'random' && r.level === level)
       map.set(level, { scrap: recipe?.scrap ?? 0, steel: recipe?.steel ?? 0 })
     }
     return map

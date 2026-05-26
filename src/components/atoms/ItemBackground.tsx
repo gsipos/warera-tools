@@ -2,11 +2,11 @@ import { equipmentCodes, weaponsCodes } from '@/api/warera-api-schema'
 import { cn } from '@/lib/utils'
 import { cva } from 'class-variance-authority'
 import { PropsWithChildren } from 'react'
-import { WarEra } from 'warera-api'
+import { WarEra } from '@/api/types'
 
 interface Props {
   level?: WarEra.ArmorLevel
-  code?: WarEra.ItemCode | WarEra.EquipmentCode
+  code?: string
   className?: string
 }
 
@@ -23,7 +23,7 @@ export const backgroundVariants = cva('flex flex-col items-center justify-start 
   },
 })
 
-const getLevel = (code?: WarEra.ItemCode | WarEra.EquipmentCode): WarEra.ArmorLevel | null => {
+const getLevel = (code?: string): WarEra.ArmorLevel | null => {
   if (!code) {
     return null
   }

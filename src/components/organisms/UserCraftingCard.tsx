@@ -1,4 +1,3 @@
-import { useTransactions } from '@/api/warera-api'
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '../ui/card'
 import { ItemBackground } from '../atoms/ItemBackground'
 import { ItemImage } from '../atoms/ItemImage'
@@ -7,8 +6,7 @@ import { useTimeBoxedTransactions } from '@/hooks/game/use-time-boxed-transactio
 import { ItemThumbnail } from '../molecules/ItemThumbnail'
 import { ScrollArea } from '../ui/scroll-area'
 import { useItemMarketPrice } from '@/hooks/use-item-market-price'
-import { WarEra } from 'warera-api'
-import { useState } from 'react'
+import { WarEra } from '@/api/types'
 import { TimeRangeSelect } from '../molecules/TimeRangeSelect'
 import { Field, FieldLabel } from '../ui/field'
 import { useDateRangeStore } from '@/stores/date-range-store'
@@ -20,11 +18,7 @@ const ItemThumbnailWithAvgMarketPrice = ({ item, pricingDate }: { item: WarEra.I
 }
 
 export const UserCraftingCard = ({ userId }: { userId: string }) => {
-  const craftingTxQuery = useTransactions({
-    userId: userId,
-    transactionType: 'craftItem',
-  })
-  const craftingTxs = useTimeBoxedTransactions(craftingTxQuery)
+  const craftingTxs = useTimeBoxedTransactions({ userId, transactionType: 'craftItem' })
   const scrapsAmount = craftingTxs.reduce((acc, tx) => acc + tx.quantity, 0)
 
   const startOfToday = DateTime.now().startOf('day')
@@ -45,11 +39,7 @@ export const UserCraftingCard = ({ userId }: { userId: string }) => {
     .filter((item) => !craftedItemsToday.includes(item))
     .filter((item) => !craftedItemsYesterday.includes(item))
 
-  const dismantledItems = useTransactions({
-    userId: userId,
-    transactionType: 'dismantleItem',
-  })
-  const dismantledTxs = useTimeBoxedTransactions(dismantledItems)
+  const dismantledTxs = useTimeBoxedTransactions({ userId, transactionType: 'dismantleItem' })
   const dismantledScraps = dismantledTxs.reduce((acc, tx) => acc + tx.quantity, 0)
 
   const lastTxTimeStamp = craftingTxs.at(-1)?.createdAt

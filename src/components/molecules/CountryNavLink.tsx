@@ -7,7 +7,7 @@ import { useCountry } from '@/hooks/game/useCountry'
 import { CountryFlag } from './CountryFlag'
 
 export const CountryNavLink = (props: { countryId: string; onNavigate?: () => void }) => {
-  const country = useCountry(props.countryId)
+  const { country } = useCountry(props.countryId)
 
   if (!country) return <Skeleton className="h-5 w-20" />
 
