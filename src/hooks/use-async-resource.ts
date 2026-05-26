@@ -64,9 +64,7 @@ export function useBatchAsyncResource<TItem, TData>(
       enabled: items.length > 0,
     })),
     combine: (queryResults) => {
-      const data = queryResults
-        .filter((q) => q.isSuccess)
-        .flatMap((q) => q.data as TData[])
+      const data = queryResults.filter((q) => q.isSuccess).flatMap((q) => q.data as TData[])
       const isLoading = queryResults.some((q) => q.isLoading)
       const error = queryResults.find((q) => q.error)?.error ?? null
       return { data, queries: queryResults, isLoading, error }

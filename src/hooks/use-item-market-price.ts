@@ -82,7 +82,10 @@ export const useEquipmentTransactions = (eqCode: WarEra.EquipmentCode, fromDate?
 }
 
 export const useItemMarketPrice = (item: WarEra.Item, fromDate?: DateTime) => {
-  const { txList } = useTransactionsFromDate(item.code as WarEra.EquipmentCode, fromDate ?? DateTime.now().minus({ weeks: 2 }))
+  const { txList } = useTransactionsFromDate(
+    item.code as WarEra.EquipmentCode,
+    fromDate ?? DateTime.now().minus({ weeks: 2 }),
+  )
 
   const itemSkillId = skillsToString(item.skills)
   const filteredTxList = txList.filter(

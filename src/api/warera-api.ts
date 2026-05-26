@@ -85,79 +85,64 @@ async function collectPages<T>(
 // --- Non-paginated endpoints (tRPC client) ---
 
 export const useCountries = () =>
-  useAsyncResource(['country.getAllCountries'], () =>
-    cast<WarEra.Country[]>(apiClient.country.getAllCountries()),
-  )
+  useAsyncResource(['country.getAllCountries'], () => cast<WarEra.Country[]>(apiClient.country.getAllCountries()))
 
 export const useRegionObject = () =>
-  useAsyncResource(['region.getRegionsObject'], () =>
-    cast<WarEra.RegionObject>(apiClient.region.getRegionsObject()),
-  )
+  useAsyncResource(['region.getRegionsObject'], () => cast<WarEra.RegionObject>(apiClient.region.getRegionsObject()))
 
 export const useItemTradingPrices = () =>
-  useAsyncResource(['itemTrading.getPrices'], () =>
-    cast<WarEra.ItemPrices>(apiClient.itemTrading.getPrices()),
-  )
+  useAsyncResource(['itemTrading.getPrices'], () => cast<WarEra.ItemPrices>(apiClient.itemTrading.getPrices()))
 
 export const useTradingTopOrders = (itemCode: WarEra.ItemCode, limit: number = 10) =>
-  useAsyncResource(
-    ['tradingOrder.getTopOrders', { itemCode, limit }],
-    () => cast<WarEra.TradingTopOrder<typeof itemCode>>(apiClient.tradingOrder.getTopOrders({ itemCode, limit })),
+  useAsyncResource(['tradingOrder.getTopOrders', { itemCode, limit }], () =>
+    cast<WarEra.TradingTopOrder<typeof itemCode>>(apiClient.tradingOrder.getTopOrders({ itemCode, limit })),
   )
 
 export const useUserLite = (userId: string) =>
-  useAsyncResource(
-    ['user.getUserLite', { userId }],
-    () => cast<WarEra.UserLite>(apiClient.user.getUserLite({ userId })),
+  useAsyncResource(['user.getUserLite', { userId }], () =>
+    cast<WarEra.UserLite>(apiClient.user.getUserLite({ userId })),
   )
 
 export const useUserCurrentEquipment = (userId: string) =>
-  useAsyncResource(
-    ['inventory.fetchCurrentEquipment', { userId }],
-    () => cast<WarEra.UserCurrentEquipment>(apiClient.inventory.fetchCurrentEquipment({ userId })),
+  useAsyncResource(['inventory.fetchCurrentEquipment', { userId }], () =>
+    cast<WarEra.UserCurrentEquipment>(apiClient.inventory.fetchCurrentEquipment({ userId })),
   )
 
 export const useCompany = (companyId: string) =>
-  useAsyncResource(
-    ['company.getById', { companyId }],
-    () => cast<WarEra.Company>(apiClient.company.getById({ companyId })),
+  useAsyncResource(['company.getById', { companyId }], () =>
+    cast<WarEra.Company>(apiClient.company.getById({ companyId })),
   )
 
 export const useWorkOffersByCompanyId = (companyId: string) =>
-  useAsyncResource(
-    ['workOffer.getWorkOfferByCompanyId', { companyId }],
-    () => cast<WarEra.WorkOffer[]>(apiClient.workOffer.getWorkOfferByCompanyId({ companyId })),
+  useAsyncResource(['workOffer.getWorkOfferByCompanyId', { companyId }], () =>
+    cast<WarEra.WorkOffer[]>(apiClient.workOffer.getWorkOfferByCompanyId({ companyId })),
   )
 
 // Note: company.getRecommendedRegionIds is not exposed on the typed client.
 // Using raw tRPC fetch until the API client package adds it.
 export const useRecommendedRegionsForCompany = (companyId: string, includeDeposit: boolean) =>
-  useAsyncResource(
-    ['company.getRecommendedRegionIds', { companyId, includeDeposit }],
-    () => rawTrpcFetch<WarEra.RecommendedRegionForCompany[]>('company.getRecommendedRegionIds', { companyId, includeDeposit }),
+  useAsyncResource(['company.getRecommendedRegionIds', { companyId, includeDeposit }], () =>
+    rawTrpcFetch<WarEra.RecommendedRegionForCompany[]>('company.getRecommendedRegionIds', {
+      companyId,
+      includeDeposit,
+    }),
   )
 
 // --- Batch endpoints (tRPC client with chunking) ---
 
 export const useAllUsersLite = (userIds: string[]) =>
-  useBatchAsyncResource(
-    ['user.getUserLite', 'batch'],
-    userIds,
-    (userId) => cast<WarEra.UserLite>(apiClient.user.getUserLite({ userId })),
+  useBatchAsyncResource(['user.getUserLite', 'batch'], userIds, (userId) =>
+    cast<WarEra.UserLite>(apiClient.user.getUserLite({ userId })),
   )
 
 export const useWorkOffersByCompanies = (companyIds: string[]) =>
-  useBatchAsyncResource(
-    ['workOffer.getWorkOfferByCompanyId', 'batch'],
-    companyIds,
-    (companyId) => cast<WarEra.WorkOffer[]>(apiClient.workOffer.getWorkOfferByCompanyId({ companyId })),
+  useBatchAsyncResource(['workOffer.getWorkOfferByCompanyId', 'batch'], companyIds, (companyId) =>
+    cast<WarEra.WorkOffer[]>(apiClient.workOffer.getWorkOfferByCompanyId({ companyId })),
   )
 
 export const useCompanies = (companyIds: string[]) =>
-  useBatchAsyncResource(
-    ['company.getById', 'batch'],
-    companyIds,
-    (companyId) => cast<WarEra.Company>(apiClient.company.getById({ companyId })),
+  useBatchAsyncResource(['company.getById', 'batch'], companyIds, (companyId) =>
+    cast<WarEra.Company>(apiClient.company.getById({ companyId })),
   )
 
 // --- Paginated endpoints (tRPC client with autoPaginate) ---
@@ -166,14 +151,21 @@ export const useCompanies = (companyIds: string[]) =>
 export const useWorkOffers = (limit: number = 10, maxPages: number = 50) =>
   useAsyncResource(
     ['workOffer.getWorkOffersPaginated', { limit, maxPages }],
-    () => collectPages(apiClient.workOffer.getWorkOffersPaginated({ limit, autoPaginate: true }), maxPages) as unknown as Cast<WarEra.WorkOffer[]>,
+    () =>
+      collectPages(
+        apiClient.workOffer.getWorkOffersPaginated({ limit, autoPaginate: true }),
+        maxPages,
+      ) as unknown as Cast<WarEra.WorkOffer[]>,
   )
 
 // Users per country can be very large; cap at 20 pages (20 * limit items).
 export const useUsersByCountry = (countryId: WarEra.CountryId, limit = 50, maxPages: number = 20) =>
   useAsyncResource(
     ['user.getUsersByCountry', { countryId, limit, maxPages }],
-    () => collectPages(apiClient.user.getUsersByCountry({ countryId, limit, autoPaginate: true }), maxPages) as Cast<WarEra.UserReference[]>,
+    () =>
+      collectPages(apiClient.user.getUsersByCountry({ countryId, limit, autoPaginate: true }), maxPages) as Cast<
+        WarEra.UserReference[]
+      >,
   )
 
 // A single user's companies is typically a small set; default limit is generous.

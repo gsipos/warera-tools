@@ -38,12 +38,12 @@ This document describes how data fetching works in warera-tools, the rules for u
 
 ### Key Packages
 
-| Package | Role |
-|---------|------|
-| `@wareraprojects/api` | Typed tRPC client — handles HTTP, batching, retries, rate limiting |
-| `@tanstack/react-query` v5 | Caching, deduplication, UI state (loading/error/success) |
-| `@instructure/idb-cache` | IndexedDB persistence for opt-in immutable data caching |
-| `zustand` | Lightweight stores for refresh epoch and global loading state |
+| Package                    | Role                                                               |
+| -------------------------- | ------------------------------------------------------------------ |
+| `@wareraprojects/api`      | Typed tRPC client — handles HTTP, batching, retries, rate limiting |
+| `@tanstack/react-query` v5 | Caching, deduplication, UI state (loading/error/success)           |
+| `@instructure/idb-cache`   | IndexedDB persistence for opt-in immutable data caching            |
+| `zustand`                  | Lightweight stores for refresh epoch and global loading state      |
 
 ---
 
@@ -63,12 +63,11 @@ Never call `apiClient` directly from pages or components. Every endpoint should 
 ```typescript
 // src/api/warera-api.ts
 export const useCountries = () =>
-  useAsyncResource(['country.getAllCountries'], () =>
-    cast<WarEra.Country[]>(apiClient.country.getAllCountries()),
-  )
+  useAsyncResource(['country.getAllCountries'], () => cast<WarEra.Country[]>(apiClient.country.getAllCountries()))
 ```
 
 The hook automatically:
+
 - Includes the refresh epoch in the query key (so `refresh()` triggers a refetch)
 - Reports loading state to the global loading indicator
 - Returns standard React Query result (`{ data, isLoading, error }`)
@@ -79,10 +78,8 @@ When you need to fetch the same endpoint for many IDs:
 
 ```typescript
 export const useCompanies = (companyIds: string[]) =>
-  useBatchAsyncResource(
-    ['company.getById'],
-    companyIds,
-    (id) => cast<WarEra.Company>(apiClient.company.getById({ companyId: id })),
+  useBatchAsyncResource(['company.getById'], companyIds, (id) =>
+    cast<WarEra.Company>(apiClient.company.getById({ companyId: id })),
   )
 ```
 
@@ -94,10 +91,10 @@ This chunks requests (default 50 per chunk) and runs chunks in parallel via `use
 export const useWorkOffers = (limit: number = 10, maxPages: number = 50) =>
   useAsyncResource(
     ['workOffer.getWorkOffersPaginated', { limit, maxPages }],
-    () => collectPages(
-      apiClient.workOffer.getWorkOffersPaginated({ limit, autoPaginate: true }),
-      maxPages,
-    ) as Cast<WarEra.WorkOffer[]>,
+    () =>
+      collectPages(apiClient.workOffer.getWorkOffersPaginated({ limit, autoPaginate: true }), maxPages) as Cast<
+        WarEra.WorkOffer[]
+      >,
   )
 ```
 
@@ -127,6 +124,7 @@ export const Route = createFileRoute('/users/$userId')({
 ```
 
 Inside that provider, queries using `usePersistedQuery` get:
+
 - **24-hour stale time** — no refetch for 24 hours
 - **`offlineFirst` network mode** — serves from IndexedDB immediately, revalidates in background
 - **Persisted to IndexedDB** — survives page reloads and browser restarts
@@ -165,6 +163,7 @@ The app has a manual refresh system that lets users trigger a full data reload:
 ```
 
 **How it works:**
+
 1. `useRefreshStore` (zustand) holds a monotonically increasing `epoch` counter
 2. `useAsyncResource` reads `epoch` and includes it in every query key
 3. When a user clicks refresh, `epoch` increments
@@ -183,13 +182,13 @@ When the WarEra API adds a new endpoint before the `@wareraprojects/api` package
 ```typescript
 // src/api/warera-api.ts
 export const useNewEndpoint = (someId: string) =>
-  useAsyncResource(
-    ['namespace.newEndpoint', { someId }],
-    () => rawTrpcFetch<ExpectedResponseType>('namespace.newEndpoint', { someId }),
+  useAsyncResource(['namespace.newEndpoint', { someId }], () =>
+    rawTrpcFetch<ExpectedResponseType>('namespace.newEndpoint', { someId }),
   )
 ```
 
 **Limitations of `rawTrpcFetch`:**
+
 - No automatic retries
 - No rate limiting
 - No request batching
@@ -223,12 +222,12 @@ async function collectPages<T>(
 
 1. **Always set a reasonable `maxPages`** — prevents runaway pagination from consuming memory or stalling the UI
 
-   | Endpoint | Recommended maxPages | Rationale |
-   |----------|---------------------|-----------|
-   | Work offers | 50 | Moderate dataset |
-   | Users by country | 20 | Large per-page results |
-   | Transactions | 100 | Historical, possibly large |
-   | Company IDs | 100 | Usually small total |
+   | Endpoint         | Recommended maxPages | Rationale                  |
+   | ---------------- | -------------------- | -------------------------- |
+   | Work offers      | 50                   | Moderate dataset           |
+   | Users by country | 20                   | Large per-page results     |
+   | Transactions     | 100                  | Historical, possibly large |
+   | Company IDs      | 100                  | Usually small total        |
 
 2. **Watch for the console warning** — `[collectPages] Reached maxPages limit` means you're truncating results. Either increase the limit or add UI indication that results are partial.
 
@@ -249,6 +248,7 @@ async function collectPages<T>(
 **Why it exists:** The `@wareraprojects/api` package doesn't expose every endpoint yet (e.g., `company.getRecommendedRegionIds`).
 
 **Impact:**
+
 - No retry on failure
 - No rate limiting (can trigger 429s under load)
 - No request batching
@@ -268,6 +268,7 @@ const cast = <T>(p: Promise<unknown>): Cast<T> => p as Cast<T>
 **Why it exists:** The tRPC client returns structurally identical types that differ in minor strictness (e.g., `string` vs string-literal unions like `ItemCode`). The local `WarEra` namespace in `src/api/types.ts` preserves backward compatibility with existing components.
 
 **Impact:**
+
 - Hides potential type mismatches at the API boundary
 - Runtime shape mismatches would only surface as bugs, not compile errors
 - Duplicates type definitions between `@wareraprojects/api` and local types
@@ -278,11 +279,11 @@ const cast = <T>(p: Promise<unknown>): Cast<T> => p as Cast<T>
 
 **What:** The tRPC client and `rawTrpcFetch` have different rate limiting behavior.
 
-| Aspect | `@wareraprojects/api` client | `rawTrpcFetch` |
-|--------|------------------------------|----------------|
-| Rate limit | 100–200 req/min (built-in) | None |
-| Retry on 429 | Yes (exponential backoff) | No |
-| Batching | Yes (up to 50 per batch) | No |
+| Aspect       | `@wareraprojects/api` client | `rawTrpcFetch` |
+| ------------ | ---------------------------- | -------------- |
+| Rate limit   | 100–200 req/min (built-in)   | None           |
+| Retry on 429 | Yes (exponential backoff)    | No             |
+| Batching     | Yes (up to 50 per batch)     | No             |
 
 **Impact:** Heavy use of `rawTrpcFetch` can exhaust the API rate limit, causing failures for both raw and client-managed requests (they share the same API key/IP).
 
@@ -300,15 +301,15 @@ const cast = <T>(p: Promise<unknown>): Cast<T> => p as Cast<T>
 
 ## File Reference
 
-| File | Purpose |
-|------|---------|
-| `src/api/client.ts` | Shared `apiClient` instance (singleton) |
-| `src/api/warera-api.ts` | All API hooks — the single entry point for data fetching |
-| `src/api/types.ts` | Local `WarEra.*` type namespace (backward compat bridge) |
-| `src/api/warera-api-schema.ts` | Zod schemas and item code enums |
-| `src/hooks/use-async-resource.ts` | `useAsyncResource` and `useBatchAsyncResource` wrappers |
-| `src/stores/refresh-store.ts` | Zustand store for refresh epoch |
-| `src/hooks/use-loading-state.ts` | Global loading state tracking |
-| `src/persistence/PersistedDataProvider.tsx` | React context for IndexedDB-backed queries |
-| `src/persistence/persisted-client.ts` | Scoped QueryClient + IDB configuration |
-| `src/persistence/usePersistedQuery.ts` | Hook for queries inside PersistedDataProvider |
+| File                                        | Purpose                                                  |
+| ------------------------------------------- | -------------------------------------------------------- |
+| `src/api/client.ts`                         | Shared `apiClient` instance (singleton)                  |
+| `src/api/warera-api.ts`                     | All API hooks — the single entry point for data fetching |
+| `src/api/types.ts`                          | Local `WarEra.*` type namespace (backward compat bridge) |
+| `src/api/warera-api-schema.ts`              | Zod schemas and item code enums                          |
+| `src/hooks/use-async-resource.ts`           | `useAsyncResource` and `useBatchAsyncResource` wrappers  |
+| `src/stores/refresh-store.ts`               | Zustand store for refresh epoch                          |
+| `src/hooks/use-loading-state.ts`            | Global loading state tracking                            |
+| `src/persistence/PersistedDataProvider.tsx` | React context for IndexedDB-backed queries               |
+| `src/persistence/persisted-client.ts`       | Scoped QueryClient + IDB configuration                   |
+| `src/persistence/usePersistedQuery.ts`      | Hook for queries inside PersistedDataProvider            |

@@ -13,10 +13,10 @@ Dashboard & tools for [warera.io](https://warera.io) game.
 
 Create a `.env` file in the project root (or set these in your deployment environment):
 
-| Variable | Required | Description |
-|----------|----------|-------------|
-| `VITE_WARERA_DEFAULT_API_KEY` | Yes | API key for authenticating with the WarEra tRPC API (`api2.warera.io`). Passed via `X-API-Key` header. |
-| `VITE_QUERY_CACHE_BUSTER` | Yes | Integer value used to invalidate the IndexedDB persisted cache. Bump this when response shapes change to force a fresh fetch for all users. |
+| Variable                      | Required | Description                                                                                                                                 |
+| ----------------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| `VITE_WARERA_DEFAULT_API_KEY` | Yes      | API key for authenticating with the WarEra tRPC API (`api2.warera.io`). Passed via `X-API-Key` header.                                      |
+| `VITE_QUERY_CACHE_BUSTER`     | Yes      | Integer value used to invalidate the IndexedDB persisted cache. Bump this when response shapes change to force a fresh fetch for all users. |
 
 > **Note:** `VITE_`-prefixed variables are embedded in the client bundle at build time. Do not use secrets here — this is a public-facing SPA.
 

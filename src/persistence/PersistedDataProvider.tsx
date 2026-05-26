@@ -22,10 +22,7 @@ interface PersistedDataProviderProps {
  */
 export function PersistedDataProvider({ children }: PersistedDataProviderProps) {
   return (
-    <PersistQueryClientProvider
-      client={persistedQueryClient}
-      persistOptions={{ persister: persistedStoragePersister }}
-    >
+    <PersistQueryClientProvider client={persistedQueryClient} persistOptions={{ persister: persistedStoragePersister }}>
       {children}
     </PersistQueryClientProvider>
   )

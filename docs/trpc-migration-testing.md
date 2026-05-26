@@ -137,15 +137,15 @@ This document covers manual testing after the migration from direct API calls to
 
 ## Potentially Removable Dependencies
 
-| Package | Reason |
-|---------|--------|
-| `vaul` | Not imported anywhere in src/ |
-| `recharts` | Only in unused shadcn chart stub; active charts use `echarts` |
-| `react-day-picker` | Only in unused calendar component |
-| `embla-carousel-react` | Only in unused carousel component |
-| `input-otp` | Only in unused input-otp component |
-| `cmdk` | Only in unused command component |
-| `react-resizable-panels` | Only in unused resizable component |
-| `next-themes` | Only in sonner toast (may be needed if dark mode is used) |
+| Package                  | Reason                                                        |
+| ------------------------ | ------------------------------------------------------------- |
+| `vaul`                   | Not imported anywhere in src/                                 |
+| `recharts`               | Only in unused shadcn chart stub; active charts use `echarts` |
+| `react-day-picker`       | Only in unused calendar component                             |
+| `embla-carousel-react`   | Only in unused carousel component                             |
+| `input-otp`              | Only in unused input-otp component                            |
+| `cmdk`                   | Only in unused command component                              |
+| `react-resizable-panels` | Only in unused resizable component                            |
+| `next-themes`            | Only in sonner toast (may be needed if dark mode is used)     |
 
 > **Note:** These shadcn/ui stub components are commonly kept for future use. Removal is optional and depends on project plans.
