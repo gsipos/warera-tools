@@ -197,7 +197,7 @@ export const useNewEndpoint = (someId: string) =>
 
 ### Option B: Update `@wareraprojects/api` (preferred)
 
-1. Update the package: `npm update @wareraprojects/api`
+1. Upgrade the package to an exact version by following `references/sdk-upgrade.md` in the `warera-api` skill (`npm install --legacy-peer-deps --save-exact @wareraprojects/api@<version>`)
 2. Add the hook using the typed client in `warera-api.ts`
 3. Remove any `rawTrpcFetch` usage for that endpoint
 

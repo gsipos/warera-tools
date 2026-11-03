@@ -61,6 +61,7 @@ Derived data (joins, aggregation, time boxing) goes in `src/hooks/game/`, not in
 ## SDK facts worth knowing
 
 - `createAPIClient` options: `url`, `apiKey`, `headers`, `fetch`, `logger`, `maxBatchSize` (max 50, `1` disables batching), `batchIntervalMs`, `logBatches`, `retry` (bool or `RetryOptions`), `rateLimit` (requests per minute, default 200 with an API key, 100 without), and in 0.4.0 `voidInputProcedures`.
+- `@trpc/server` is a direct dependency on purpose: `@trpc/client` imports it at runtime and 0.4.0 stopped declaring it as a peer. Keep it pinned to the version `@trpc/client` requires (see `references/sdk-upgrade.md`).
 - Retries default to 3 attempts with jittered exponential backoff on 408, 409, 425, 429, 500, 502, 503, 504. `retry.onRetry` is how `client.ts` feeds the loading indicator.
 - Calls made in the same tick are batched into one HTTP request. Oversized batches are split automatically. Do not add your own batching.
 - The whole API key budget is shared by the typed client and `rawTrpcFetch`. Heavy raw use causes 429s for everything.
