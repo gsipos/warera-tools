@@ -1,5 +1,17 @@
 import { createAPIClient } from '@wareraprojects/api'
+import { WarEra } from '@/api/types'
 import { useLoadingState } from '@/hooks/use-loading-state'
+
+/**
+ * Procedures the WarEra API serves but the SDK does not type yet.
+ * Registered through `_ce` so they get the same batching, retries and rate limiting as typed calls.
+ */
+type CustomEndpoints = {
+  'company.getRecommendedRegionIds': {
+    input: { companyId: string; includeDeposit: boolean }
+    output: WarEra.RecommendedRegionForCompany[]
+  }
+}
 
 /**
  * Shared tRPC API client instance for the WarEra API.
@@ -18,7 +30,7 @@ export const apiClient = createAPIClient({
       useLoadingState.getState().onRequestRetry()
     },
   },
-})
+})._ce<CustomEndpoints>()
 
 // DEV-ONLY: Smoke test to validate client connectivity.
 // Uncomment during development to verify the client works:
