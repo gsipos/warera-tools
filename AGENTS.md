@@ -55,7 +55,7 @@ Environment: `.env` holds `VITE_WARERA_DEFAULT_API_KEY` and `VITE_QUERY_CACHE_BU
 
 1. Every API call is a hook exported from `src/api/warera-api.ts`. Pages and components never import `apiClient` directly.
 2. Single query: `useAsyncResource(queryKey, fn)`. Many ids: `useBatchAsyncResource`. Paginated: `collectPages(..., maxPages)` with an explicit page cap.
-3. Prefer the typed client over `rawTrpcFetch`. The raw helper is a stopgap with no batching, retry or rate limiting.
+3. Never call the API with a raw `fetch`. A procedure missing from the SDK types is registered as a custom endpoint in `src/api/client.ts` so it keeps batching, retries and rate limiting.
 4. Wrap a route in `PersistedDataProvider` only for immutable, expensive, staleness-tolerant data (for example transaction history).
 5. Before adding or changing a hook, read the `warera-api` skill. It documents the SDK surface, the version delta, and the hook recipes.
 

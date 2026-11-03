@@ -175,33 +175,31 @@ This is intentionally coarse-grained: one refresh reloads everything. For select
 
 ## How to Handle New Endpoints Not in the Typed Client
 
-When the WarEra API adds a new endpoint before the `@wareraprojects/api` package is updated:
+The SDK client is a proxy: any `apiClient.<router>.<procedure>(input)` path is sent as a tRPC query, typed or not. When the WarEra API serves a procedure that the `@wareraprojects/api` types do not cover yet, register it as a custom endpoint in `src/api/client.ts` so the call is fully typed and still goes through the SDK's batching, retries and rate limiting:
 
-### Option A: Use `rawTrpcFetch` (temporary stopgap)
+```typescript
+// src/api/client.ts
+type CustomEndpoints = {
+  'router.procedure': {
+    input: { someId: string }
+    output: WarEra.SomeResponse
+  }
+}
+
+export const apiClient = createAPIClient({ ... })._ce<CustomEndpoints>()
+```
 
 ```typescript
 // src/api/warera-api.ts
-export const useNewEndpoint = (someId: string) =>
-  useAsyncResource(['namespace.newEndpoint', { someId }], () =>
-    rawTrpcFetch<ExpectedResponseType>('namespace.newEndpoint', { someId }),
-  )
+export const useSomeResponse = (someId: string) =>
+  useAsyncResource(['router.procedure', { someId }], () => apiClient.router.procedure({ someId }))
 ```
 
-**Limitations of `rawTrpcFetch`:**
+Keep the `input` and `output` shapes in `src/api/types.ts` next to the other `WarEra.*` types. Once an SDK release types the procedure, drop it from `CustomEndpoints` and rely on the built-in definition.
 
-- No automatic retries
-- No rate limiting
-- No request batching
-- No type safety on input parameters
-- Must be replaced once the typed client is updated
+No custom endpoint is registered today. The last one, `company.getRecommendedRegionIds`, disappeared from the WarEra API in game update v0.27 (2026-10-26) together with deposits and country specialization, and the companies card reads `company.getProductionBonus` instead. Before registering a procedure, confirm the live API still answers it (a tRPC `NOT_FOUND` means it was removed) with the endpoint explorer at https://warera.realmarijn.nl/api-explorer, which also records when the game last changed a response shape.
 
-### Option B: Update `@wareraprojects/api` (preferred)
-
-1. Update the package: `npm update @wareraprojects/api`
-2. Add the hook using the typed client in `warera-api.ts`
-3. Remove any `rawTrpcFetch` usage for that endpoint
-
-**Always prefer Option B.** `rawTrpcFetch` exists only as a stopgap for rapid iteration.
+Never add a raw `fetch()` against `api2.warera.io`: it would bypass the client's rate limiter and compete with every other request for the same API key budget.
 
 ---
 
@@ -241,20 +239,13 @@ async function collectPages<T>(
 
 ## Known Limitations & Technical Debt
 
-### 1. `rawTrpcFetch` stopgap
+### 1. SDK types lag behind the game
 
-**What:** A raw `fetch()` wrapper that bypasses the tRPC client entirely.
+**What:** The SDK types describe the API as of their release. Game updates remove or reshape fields without a new SDK release; since v0.27 that includes `country.rankings.countryProductionBonus`, `country.specializedItem` and `region.deposit`.
 
-**Why it exists:** The `@wareraprojects/api` package doesn't expose every endpoint yet (e.g., `company.getRecommendedRegionIds`).
+**Impact:** A field the types mark as required can be missing at runtime and crash any component that dereferences it.
 
-**Impact:**
-
-- No retry on failure
-- No rate limiting (can trigger 429s under load)
-- No request batching
-- Manual URL construction
-
-**Resolution:** Remove once `@wareraprojects/api` exposes the missing endpoints. Track which hooks use it and migrate them as the package is updated.
+**Resolution:** Mark such fields optional in the `WarEra.*` mapping in `src/api/types.ts` and read them with optional chaining, so `tsc` forces every consumer to handle the absence.
 
 ### 2. Type casting approach
 
@@ -275,21 +266,7 @@ const cast = <T>(p: Promise<unknown>): Cast<T> => p as Cast<T>
 
 **Resolution:** Gradually migrate components to use types directly from `@wareraprojects/api`. Once all consumers are updated, remove `src/api/types.ts` and the `cast<>` helper.
 
-### 3. Rate limiting differences
-
-**What:** The tRPC client and `rawTrpcFetch` have different rate limiting behavior.
-
-| Aspect       | `@wareraprojects/api` client | `rawTrpcFetch` |
-| ------------ | ---------------------------- | -------------- |
-| Rate limit   | 100–200 req/min (built-in)   | None           |
-| Retry on 429 | Yes (exponential backoff)    | No             |
-| Batching     | Yes (up to 50 per batch)     | No             |
-
-**Impact:** Heavy use of `rawTrpcFetch` can exhaust the API rate limit, causing failures for both raw and client-managed requests (they share the same API key/IP).
-
-**Resolution:** Minimize `rawTrpcFetch` usage. If you must use it for a high-frequency endpoint, add manual throttling or switch to the typed client ASAP.
-
-### 4. All-at-once pagination loading
+### 3. All-at-once pagination loading
 
 **What:** Paginated hooks block until all pages are fetched. There's no incremental/streaming UI.
 

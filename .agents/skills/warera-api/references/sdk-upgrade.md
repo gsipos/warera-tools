@@ -16,7 +16,7 @@ Client changes:
 
 Procedures the app uses today are all present and unchanged in name: `country.getAllCountries`, `region.getRegionsObject`, `itemTrading.getPrices`, `tradingOrder.getTopOrders`, `user.getUserLite`, `user.getUsersByCountry`, `inventory.fetchCurrentEquipment`, `company.getById`, `company.getCompanies`, `workOffer.getWorkOfferByCompanyId`, `workOffer.getWorkOffersPaginated`, `transaction.getPaginatedTransactions`.
 
-Still missing from the types in 0.4.0: `company.getRecommendedRegionIds` (by `companyId`), which the app calls through `rawTrpcFetch`. The typed sibling is `company.getRecommendedRegionIdsByItemCode`.
+No procedure the app uses is missing from the 0.4.0 types. `company.getRecommendedRegionIds` was removed from the live API in game v0.27 and is no longer called; `procedures.md` lists the response fields that update removed as well.
 
 ## Upgrade procedure
 
@@ -28,20 +28,8 @@ Still missing from the types in 0.4.0: `company.getRecommendedRegionIds` (by `co
    ```
 
 3. Run `npm run tsc`. Expect failures only where `src/api/types.ts` narrows an SDK type whose shape changed; fix the `Omit<...> & {...}` mapping rather than widening with `any`.
-4. Grep for `rawTrpcFetch` and replace any call whose procedure is now typed with the typed client.
-5. Replace the remaining `rawTrpcFetch('company.getRecommendedRegionIds', ...)` with a custom endpoint registration so it gets batching, retries and rate limiting:
-
-   ```ts
-   type CustomEndpoints = {
-     'company.getRecommendedRegionIds': {
-       input: { companyId: string; includeDeposit: boolean }
-       output: WarEra.RecommendedRegionForCompany[]
-     }
-   }
-   export const apiClient = createAPIClient({ ... })._ce<CustomEndpoints>()
-   ```
-
-   Then delete `rawTrpcFetch` and update `docs/api-layer.md` sections that describe it.
+4. Check `CustomEndpoints` in `src/api/client.ts`. Remove any entry whose procedure the new SDK version now types, and update the hook if the SDK's input or output shape differs from the hand-written one.
+5. Compare the installed types against the live API for the fields `src/api/types.ts` marks optional (listed in `procedures.md`). Keep them optional until the SDK drops them too.
 
 6. Bump `VITE_QUERY_CACHE_BUSTER` in `.env` if any persisted response shape changed.
 7. Run `npm run lint && npm run format:check && npm run build` and smoke test the pages that use the touched hooks (`/users/:id`, `/countries/:id`, `/itemMarket`).

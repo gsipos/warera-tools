@@ -3,50 +3,6 @@ import { apiClient } from './client'
 import { useAsyncResource, useBatchAsyncResource } from '@/hooks/use-async-resource'
 import { DateTime } from 'luxon'
 
-const TRPC_BASE_URL = 'https://api2.warera.io/trpc/'
-
-/**
- * TEMPORARY STOPGAP: Raw tRPC fetch for endpoints not yet available on the typed client.
- * This bypasses the official tRPC client and lacks its retry/rate-limiting features.
- * Remove this function once the API client package exposes all needed endpoints.
- */
-async function rawTrpcFetch<TData>(endpoint: string, input: Record<string, unknown>): Promise<TData> {
-  const url = new URL(endpoint, TRPC_BASE_URL)
-  url.searchParams.set('input', JSON.stringify(input))
-  const response = await fetch(url.toString(), {
-    headers: { 'X-API-Key': import.meta.env.VITE_WARERA_DEFAULT_API_KEY },
-  })
-
-  if (!response.ok) {
-    // Attempt to extract a tRPC error message from the response body
-    let errorMessage = `rawTrpcFetch ${endpoint} failed: HTTP ${response.status} ${response.statusText}`
-    try {
-      const errorBody = (await response.json()) as {
-        error?: { message?: string; code?: string; data?: unknown }
-      }
-      if (errorBody.error?.message) {
-        errorMessage += ` — ${errorBody.error.code ?? 'UNKNOWN'}: ${errorBody.error.message}`
-      }
-    } catch {
-      // Body wasn't JSON; use the status-only message
-    }
-    throw new Error(errorMessage)
-  }
-
-  const json = (await response.json()) as
-    | { result: { data: TData } }
-    | { error: { message?: string; code?: string; data?: unknown } }
-
-  // tRPC can return 200 with an error envelope in some configurations
-  if ('error' in json) {
-    const code = json.error.code ?? 'UNKNOWN'
-    const msg = json.error.message ?? 'Unknown tRPC error'
-    throw new Error(`rawTrpcFetch ${endpoint} returned tRPC error — ${code}: ${msg}`)
-  }
-
-  return json.result.data
-}
-
 // Type bridge: the tRPC client returns structurally compatible types that differ
 // only in minor strictness (e.g. string vs string-literal unions). We cast through
 // unknown to bridge until local WarEra types are removed in a future phase.
@@ -118,14 +74,9 @@ export const useWorkOffersByCompanyId = (companyId: string) =>
     cast<WarEra.WorkOffer[]>(apiClient.workOffer.getWorkOfferByCompanyId({ companyId })),
   )
 
-// Note: company.getRecommendedRegionIds is not exposed on the typed client.
-// Using raw tRPC fetch until the API client package adds it.
-export const useRecommendedRegionsForCompany = (companyId: string, includeDeposit: boolean) =>
-  useAsyncResource(['company.getRecommendedRegionIds', { companyId, includeDeposit }], () =>
-    rawTrpcFetch<WarEra.RecommendedRegionForCompany[]>('company.getRecommendedRegionIds', {
-      companyId,
-      includeDeposit,
-    }),
+export const useCompanyProductionBonus = (companyId: string) =>
+  useAsyncResource(['company.getProductionBonus', { companyId }], () =>
+    cast<WarEra.CompanyProductionBonus>(apiClient.company.getProductionBonus({ companyId })),
   )
 
 // --- Batch endpoints (tRPC client with chunking) ---
