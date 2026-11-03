@@ -37,6 +37,12 @@ All API access goes through a single file: **`src/api/warera-api.ts`**.
 
 📖 **[API Layer Documentation](./docs/api-layer.md)** — detailed guide for developers working with the data-fetching layer.
 
+## AI-assisted development
+
+- [`AGENTS.md`](./AGENTS.md) — project instructions for coding agents (stack, commands, conventions, data-layer rules). Harness-agnostic; Claude Code, Copilot and Codex all read it.
+- [`.agents/skills/`](./.agents/skills) — agent skills. `warera-api` documents the WarEra SDK and hook recipes, `new-dashboard-page` the page/route/chart workflow; the rest are vendored framework skills. `.claude/skills` is a symlink to the same folder.
+- `.vscode/mcp.json` — optional MCP servers (context7 docs, Chrome DevTools) for VS Code.
+
 ## Documentation
 
 - [API Layer Architecture](./docs/api-layer.md) — how data fetching works, rules, patterns, and limitations
