@@ -1,6 +1,6 @@
 # WarEra API procedures
 
-Generated from `@wareraprojects/api` 0.4.0 type definitions on 2026-11-03 with `scripts/list-procedures.sh`. The app currently has 0.3.2 installed; procedures marked **new** exist only after upgrading (see `sdk-upgrade.md`).
+Generated from `@wareraprojects/api` 0.4.0 type definitions on 2026-11-03 with `scripts/list-procedures.sh`. 0.4.0 is the installed version; procedures marked **new** were added by it (see `sdk-upgrade.md`).
 
 Legend: **used** = wrapped by a hook in `src/api/warera-api.ts`; **paginated** = supports `autoPaginate`; **new** = added between 0.3.2 and 0.4.0.
 
