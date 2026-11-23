@@ -8,7 +8,7 @@ import {
   PaginationPrevious,
 } from '@/components/ui/pagination'
 import { RegionCard } from '../organisms/RegionCard'
-import { ReactNode, useState } from 'react'
+import { useState } from 'react'
 
 const usePagination = <T extends unknown>(items: T[], itemsPerPage: number) => {
   const totalItems = items.length
@@ -66,7 +66,6 @@ const RegionPagination = (props: { currentPage: number; totalPages: number; onPa
 interface Props {
   regions: ExtendedRegion[]
   pageTitle: string
-  emptyState?: ReactNode
 }
 
 export const RegionPageTemplate = (props: Props) => {
@@ -85,7 +84,6 @@ export const RegionPageTemplate = (props: Props) => {
         />
       </div>
       <div className="col-span-full flex justify-end"></div>
-      {regions.length === 0 && props.emptyState && <div className="col-span-full">{props.emptyState}</div>}
       {pagination.shownItems.map((extRegion) => (
         <RegionCard
           region={extRegion.region}

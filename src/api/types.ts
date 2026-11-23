@@ -108,7 +108,7 @@ export namespace WarEra {
 
   export type RegionObject = Record<string, Region>
 
-  /** Deposits left the game in v0.27 and the SDK no longer types them; kept so the deposit UI still compiles. */
+  /** Deposits left the game in v0.27 and the SDK no longer types them; item production bonuses still read the optional field. */
   export interface Deposit {
     type: ItemCode
     endsAt: string

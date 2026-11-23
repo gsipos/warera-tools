@@ -17,11 +17,8 @@ import { Route as CountriesIndexRouteImport } from './pages/countries.index'
 import { Route as CountriesCountryIdRouteImport } from './pages/countries.$countryId'
 import { Route as CountriesAlliancesRouteImport } from './pages/countries.alliances'
 import { Route as CountriesMatchupRouteImport } from './pages/countries.matchup'
-import { Route as DepositsIndexRouteImport } from './pages/deposits.index'
 import { Route as ItemProductionRouteImport } from './pages/item.production'
-import { Route as ItemDepositsItemCodeRouteImport } from './pages/itemDeposits.$itemCode'
 import { Route as ItemMarketIndexRouteImport } from './pages/itemMarket.index'
-import { Route as ItemsIndexRouteImport } from './pages/items.index'
 import { Route as UsersUserIdRouteImport } from './pages/users.$userId'
 
 const IndexRoute = IndexRouteImport.update({
@@ -64,29 +61,14 @@ const CountriesMatchupRoute = CountriesMatchupRouteImport.update({
   path: '/matchup',
   getParentRoute: () => CountriesRouteRoute,
 } as any)
-const DepositsIndexRoute = DepositsIndexRouteImport.update({
-  id: '/deposits/',
-  path: '/deposits/',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const ItemProductionRoute = ItemProductionRouteImport.update({
   id: '/item/production',
   path: '/item/production',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ItemDepositsItemCodeRoute = ItemDepositsItemCodeRouteImport.update({
-  id: '/itemDeposits/$itemCode',
-  path: '/itemDeposits/$itemCode',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const ItemMarketIndexRoute = ItemMarketIndexRouteImport.update({
   id: '/itemMarket/',
   path: '/itemMarket/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ItemsIndexRoute = ItemsIndexRouteImport.update({
-  id: '/items/',
-  path: '/items/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const UsersUserIdRoute = UsersUserIdRouteImport.update({
@@ -104,12 +86,9 @@ export interface FileRoutesByFullPath {
   '/countries/alliances': typeof CountriesAlliancesRoute
   '/countries/matchup': typeof CountriesMatchupRoute
   '/item/production': typeof ItemProductionRoute
-  '/itemDeposits/$itemCode': typeof ItemDepositsItemCodeRoute
   '/users/$userId': typeof UsersUserIdRoute
   '/countries/': typeof CountriesIndexRoute
-  '/deposits/': typeof DepositsIndexRoute
   '/itemMarket/': typeof ItemMarketIndexRoute
-  '/items/': typeof ItemsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -119,12 +98,9 @@ export interface FileRoutesByTo {
   '/countries/alliances': typeof CountriesAlliancesRoute
   '/countries/matchup': typeof CountriesMatchupRoute
   '/item/production': typeof ItemProductionRoute
-  '/itemDeposits/$itemCode': typeof ItemDepositsItemCodeRoute
   '/users/$userId': typeof UsersUserIdRoute
   '/countries': typeof CountriesIndexRoute
-  '/deposits': typeof DepositsIndexRoute
   '/itemMarket': typeof ItemMarketIndexRoute
-  '/items': typeof ItemsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -136,12 +112,9 @@ export interface FileRoutesById {
   '/countries/alliances': typeof CountriesAlliancesRoute
   '/countries/matchup': typeof CountriesMatchupRoute
   '/item/production': typeof ItemProductionRoute
-  '/itemDeposits/$itemCode': typeof ItemDepositsItemCodeRoute
   '/users/$userId': typeof UsersUserIdRoute
   '/countries/': typeof CountriesIndexRoute
-  '/deposits/': typeof DepositsIndexRoute
   '/itemMarket/': typeof ItemMarketIndexRoute
-  '/items/': typeof ItemsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -154,12 +127,9 @@ export interface FileRouteTypes {
     | '/countries/alliances'
     | '/countries/matchup'
     | '/item/production'
-    | '/itemDeposits/$itemCode'
     | '/users/$userId'
     | '/countries/'
-    | '/deposits/'
     | '/itemMarket/'
-    | '/items/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -169,12 +139,9 @@ export interface FileRouteTypes {
     | '/countries/alliances'
     | '/countries/matchup'
     | '/item/production'
-    | '/itemDeposits/$itemCode'
     | '/users/$userId'
     | '/countries'
-    | '/deposits'
     | '/itemMarket'
-    | '/items'
   id:
     | '__root__'
     | '/'
@@ -185,12 +152,9 @@ export interface FileRouteTypes {
     | '/countries/alliances'
     | '/countries/matchup'
     | '/item/production'
-    | '/itemDeposits/$itemCode'
     | '/users/$userId'
     | '/countries/'
-    | '/deposits/'
     | '/itemMarket/'
-    | '/items/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -199,11 +163,8 @@ export interface RootRouteChildren {
   CraftingRoute: typeof CraftingRoute
   RegionsRoute: typeof RegionsRoute
   ItemProductionRoute: typeof ItemProductionRoute
-  ItemDepositsItemCodeRoute: typeof ItemDepositsItemCodeRoute
   UsersUserIdRoute: typeof UsersUserIdRoute
-  DepositsIndexRoute: typeof DepositsIndexRoute
   ItemMarketIndexRoute: typeof ItemMarketIndexRoute
-  ItemsIndexRoute: typeof ItemsIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -264,13 +225,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CountriesMatchupRouteImport
       parentRoute: typeof CountriesRouteRoute
     }
-    '/deposits/': {
-      id: '/deposits/'
-      path: '/deposits'
-      fullPath: '/deposits/'
-      preLoaderRoute: typeof DepositsIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/item/production': {
       id: '/item/production'
       path: '/item/production'
@@ -278,25 +232,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ItemProductionRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/itemDeposits/$itemCode': {
-      id: '/itemDeposits/$itemCode'
-      path: '/itemDeposits/$itemCode'
-      fullPath: '/itemDeposits/$itemCode'
-      preLoaderRoute: typeof ItemDepositsItemCodeRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/itemMarket/': {
       id: '/itemMarket/'
       path: '/itemMarket'
       fullPath: '/itemMarket/'
       preLoaderRoute: typeof ItemMarketIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/items/': {
-      id: '/items/'
-      path: '/items'
-      fullPath: '/items/'
-      preLoaderRoute: typeof ItemsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/users/$userId': {
@@ -333,11 +273,8 @@ const rootRouteChildren: RootRouteChildren = {
   CraftingRoute: CraftingRoute,
   RegionsRoute: RegionsRoute,
   ItemProductionRoute: ItemProductionRoute,
-  ItemDepositsItemCodeRoute: ItemDepositsItemCodeRoute,
   UsersUserIdRoute: UsersUserIdRoute,
-  DepositsIndexRoute: DepositsIndexRoute,
   ItemMarketIndexRoute: ItemMarketIndexRoute,
-  ItemsIndexRoute: ItemsIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

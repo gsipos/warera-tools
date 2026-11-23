@@ -1,16 +1,5 @@
 import { Link } from '@tanstack/react-router'
-import {
-  MapIcon,
-  GlobeIcon,
-  FlagIcon,
-  ShoppingCartIcon,
-  FactoryIcon,
-  StarIcon,
-  PackageIcon,
-  ChevronDownIcon,
-  ChevronRightIcon,
-  HomeIcon,
-} from 'lucide-react'
+import { MapIcon, GlobeIcon, FlagIcon, ShoppingCartIcon, FactoryIcon, StarIcon, HomeIcon } from 'lucide-react'
 import {
   Sidebar,
   SidebarContent,
@@ -22,24 +11,18 @@ import {
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
-  SidebarMenuSub,
-  SidebarMenuSubItem,
-  SidebarMenuSubButton,
   SidebarSeparator,
   useSidebar,
 } from '@/components/ui/sidebar'
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 import { useFavouriteState } from '@/hooks/use-favourite-state'
 import { UserNavLink } from '@/components/molecules/UserNavLink'
 import { CountryNavLink } from '@/components/molecules/CountryNavLink'
-import { mapLinks, marketLinks, depositLinks } from '@/components/navigation/app-nav'
+import { mapLinks, marketLinks } from '@/components/navigation/app-nav'
 import { cn } from '@/lib/utils'
-import { useState } from 'react'
 
 export function AppSidebarNav() {
   const { setOpenMobile, isMobile } = useSidebar()
   const favouriteState = useFavouriteState()
-  const [depositsOpen, setDepositsOpen] = useState(false)
 
   const handleNavClick = () => {
     if (isMobile) {
@@ -214,59 +197,6 @@ export function AppSidebarNav() {
             )}
           </SidebarGroupContent>
         </SidebarGroup>
-
-        {/* Secondary Navigation: Deposits (Collapsible) */}
-        <Collapsible open={depositsOpen} onOpenChange={setDepositsOpen} className="group/collapsible">
-          <SidebarGroup>
-            <SidebarGroupLabel asChild>
-              <CollapsibleTrigger className="w-full">
-                <PackageIcon className="mr-2 size-4 shrink-0" />
-                <span className="flex-1 truncate">Deposits</span>
-                {depositsOpen ? (
-                  <ChevronDownIcon className="ml-auto size-4 shrink-0 transition-transform" />
-                ) : (
-                  <ChevronRightIcon className="ml-auto size-4 shrink-0 transition-transform" />
-                )}
-              </CollapsibleTrigger>
-            </SidebarGroupLabel>
-            <CollapsibleContent>
-              <SidebarGroupContent>
-                <SidebarMenu>
-                  <SidebarMenuItem>
-                    <SidebarMenuButton asChild onClick={handleNavClick}>
-                      <Link
-                        to="/deposits"
-                        activeProps={{
-                          className: 'bg-sidebar-accent text-sidebar-accent-foreground font-medium',
-                        }}
-                      >
-                        <PackageIcon />
-                        <span>All Deposits</span>
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                  {/* Specific deposit types in a submenu */}
-                  <SidebarMenuSub>
-                    {depositLinks.slice(2).map((link) => (
-                      <SidebarMenuSubItem key={link.href}>
-                        <SidebarMenuSubButton asChild onClick={handleNavClick}>
-                          <Link
-                            to={link.href}
-                            activeProps={{
-                              className: 'bg-sidebar-accent text-sidebar-accent-foreground',
-                            }}
-                          >
-                            <span className="truncate">{link.title.replace('Deposit: ', '')}</span>
-                          </Link>
-                        </SidebarMenuSubButton>
-                      </SidebarMenuSubItem>
-                    ))}
-                  </SidebarMenuSub>
-                </SidebarMenu>
-              </SidebarGroupContent>
-            </CollapsibleContent>
-          </SidebarGroup>
-        </Collapsible>
       </SidebarContent>
 
       {/* Footer: Utilities */}
