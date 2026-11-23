@@ -74,10 +74,9 @@ export const useWorkOffersByCompanyId = (companyId: string) =>
     cast<WarEra.WorkOffer[]>(apiClient.workOffer.getWorkOfferByCompanyId({ companyId })),
   )
 
-// company.getRecommendedRegionIds is registered as a custom endpoint in client.ts.
-export const useRecommendedRegionsForCompany = (companyId: string, includeDeposit: boolean) =>
-  useAsyncResource(['company.getRecommendedRegionIds', { companyId, includeDeposit }], () =>
-    apiClient.company.getRecommendedRegionIds({ companyId, includeDeposit }),
+export const useCompanyProductionBonus = (companyId: string) =>
+  useAsyncResource(['company.getProductionBonus', { companyId }], () =>
+    cast<WarEra.CompanyProductionBonus>(apiClient.company.getProductionBonus({ companyId })),
   )
 
 // --- Batch endpoints (tRPC client with chunking) ---

@@ -7,7 +7,10 @@ export const useTopProdBonusCountry = () => {
 
   return useMemo(() => {
     return countries.reduce((topCountry, country) => {
-      if (country.rankings.countryProductionBonus.value > (topCountry?.rankings.countryProductionBonus.value ?? 0)) {
+      if (
+        (country.rankings.countryProductionBonus?.value ?? 0) >
+        (topCountry?.rankings.countryProductionBonus?.value ?? 0)
+      ) {
         return country
       }
       return topCountry

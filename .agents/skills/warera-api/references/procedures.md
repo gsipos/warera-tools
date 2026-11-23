@@ -39,8 +39,8 @@ Legend: **used** = wrapped by a hook in `src/api/warera-api.ts`; **paginated** =
 
 - `company.getById` — used
 - `company.getCompanies` — used, paginated
-- `company.getProductionBonus`
-- `company.getRecommendedRegionIdsByItemCode`
+- `company.getProductionBonus` — used. Since game v0.27 (2026-10-26) the live response is only `{ depositBonus, total }`; the SDK still types `strategicBonus`, `ethicSpecializationBonus` and `ethicDepositBonus`, which the API no longer returns.
+- `company.getRecommendedRegionIdsByItemCode` — dead: answers 200 with an empty array for every item code since v0.27 removed deposits and country specialization.
 
 ## contribution
 
@@ -209,6 +209,10 @@ Legend: **used** = wrapped by a hook in `src/api/warera-api.ts`; **paginated** =
 - `worker.getTotalWorkersCount`
 - `worker.getWorkers`
 
-## Not in the SDK types
+## Removed from the live API
 
-- `company.getRecommendedRegionIds` (input `{ companyId, includeDeposit }`) — **used**, registered as a custom endpoint through `apiClient._ce<CustomEndpoints>()` in `src/api/client.ts`. The SDK only types the sibling `company.getRecommendedRegionIdsByItemCode` (input `{ itemCode, includeDeposit }`). As of 2026-11-03 the live API answers `NOT_FOUND` for this path and the sibling returns an empty list for every item code, so the hook currently yields no data.
+- `company.getRecommendedRegionIds` (input `{ companyId, includeDeposit }`) — answers tRPC `NOT_FOUND` since game v0.27 (2026-10-26). It was never in the SDK types; the app registered it as a custom endpoint until the companies card switched to `company.getProductionBonus`. Nothing is registered through `apiClient._ce<...>()` today.
+
+## Response fields the game removed in v0.27
+
+The SDK types still declare them as required, so `src/api/types.ts` marks them optional: `country.specializedItem`, `country.rankings.countryProductionBonus`, `region.deposit`.

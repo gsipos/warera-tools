@@ -34,7 +34,7 @@ export const RegionCard = ({ region, country, initialCountry }: Props) => {
 
   const isOccupied = initialCountryId !== currentCountryId
 
-  const prodBonus = currentCountry?.rankings.countryProductionBonus.value || 0
+  const prodBonus = currentCountry?.rankings.countryProductionBonus?.value ?? 0
   const specialization = currentCountry?.specializedItem
 
   return (

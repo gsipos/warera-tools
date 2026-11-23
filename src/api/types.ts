@@ -98,8 +98,12 @@ export namespace WarEra {
 
   // --- Mapped types from @wareraprojects/api ---
 
-  export type Country = Omit<CountryListItem, 'specializedItem'> & {
+  /** Specialization and the production bonus ranking left the game in v0.27 (2026-10-26); the SDK still types them. */
+  export type Country = Omit<CountryListItem, 'specializedItem' | 'rankings'> & {
     specializedItem?: ItemCode
+    rankings: Omit<CountryListItem['rankings'], 'countryProductionBonus'> & {
+      countryProductionBonus?: RankingValueTier
+    }
   }
 
   export type Region = Omit<RegionsObjectItem, 'deposit'> & {
@@ -181,13 +185,9 @@ export namespace WarEra {
     transactionType?: TransactionType
   }
 
-  export interface RecommendedRegionForCompany {
-    bonus: number
+  /** Live shape of `company.getProductionBonus`. The SDK still types pre-v0.27 fields the API no longer returns. */
+  export interface CompanyProductionBonus {
     depositBonus: number
-    regionId: string
-    strategicBonus: number
-    taxPercent: number
-    ethicDepositBonus: number
-    ethicSpecializationBonus: number
+    total: number
   }
 }

@@ -17,7 +17,7 @@ export const useRegionProdBonus = () => {
   const bonuses: RegionProdBonus[] = regions
     .map((region) => {
       const country = region.country
-      const baseProdBonus = country?.rankings.countryProductionBonus.value || 0
+      const baseProdBonus = country?.rankings.countryProductionBonus?.value ?? 0
       const specialization = country?.specializedItem
 
       itemCodeSet.add(specialization)

@@ -12,7 +12,7 @@ export const Route = createFileRoute('/countries/')({
 const sortValues: Record<CountrySortValue, (country: WarEra.Country) => number> = {
   money: (country) => country.money,
   population: (country) => country.rankings.countryActivePopulation.value,
-  production: (country) => country.rankings.countryProductionBonus.value,
+  production: (country) => country.rankings.countryProductionBonus?.value ?? 0,
   development: (country) => country.rankings.countryDevelopment.value,
   weeklyDamage: (country) => country.rankings.weeklyCountryDamages.value,
   totalDamage: (country) => country.rankings.countryDamages.value,

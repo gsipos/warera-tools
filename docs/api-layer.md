@@ -180,9 +180,9 @@ The SDK client is a proxy: any `apiClient.<router>.<procedure>(input)` path is s
 ```typescript
 // src/api/client.ts
 type CustomEndpoints = {
-  'company.getRecommendedRegionIds': {
-    input: { companyId: string; includeDeposit: boolean }
-    output: WarEra.RecommendedRegionForCompany[]
+  'router.procedure': {
+    input: { someId: string }
+    output: WarEra.SomeResponse
   }
 }
 
@@ -191,13 +191,13 @@ export const apiClient = createAPIClient({ ... })._ce<CustomEndpoints>()
 
 ```typescript
 // src/api/warera-api.ts
-export const useRecommendedRegionsForCompany = (companyId: string, includeDeposit: boolean) =>
-  useAsyncResource(['company.getRecommendedRegionIds', { companyId, includeDeposit }], () =>
-    apiClient.company.getRecommendedRegionIds({ companyId, includeDeposit }),
-  )
+export const useSomeResponse = (someId: string) =>
+  useAsyncResource(['router.procedure', { someId }], () => apiClient.router.procedure({ someId }))
 ```
 
 Keep the `input` and `output` shapes in `src/api/types.ts` next to the other `WarEra.*` types. Once an SDK release types the procedure, drop it from `CustomEndpoints` and rely on the built-in definition.
+
+No custom endpoint is registered today. The last one, `company.getRecommendedRegionIds`, disappeared from the WarEra API in game update v0.27 (2026-10-26) together with deposits and country specialization, and the companies card reads `company.getProductionBonus` instead. Before registering a procedure, confirm the live API still answers it (a tRPC `NOT_FOUND` means it was removed) with the endpoint explorer at https://warera.realmarijn.nl/api-explorer, which also records when the game last changed a response shape.
 
 Never add a raw `fetch()` against `api2.warera.io`: it would bypass the client's rate limiter and compete with every other request for the same API key budget.
 
@@ -239,13 +239,13 @@ async function collectPages<T>(
 
 ## Known Limitations & Technical Debt
 
-### 1. Custom endpoints are typed by hand
+### 1. SDK types lag behind the game
 
-**What:** `company.getRecommendedRegionIds` is not in the SDK types and is registered through `_ce<CustomEndpoints>()` in `src/api/client.ts`.
+**What:** The SDK types describe the API as of their release. Game updates remove or reshape fields without a new SDK release; since v0.27 that includes `country.rankings.countryProductionBonus`, `country.specializedItem` and `region.deposit`.
 
-**Impact:** The input and output types are maintained in this repo, so an upstream change to the procedure surfaces at runtime, not at compile time.
+**Impact:** A field the types mark as required can be missing at runtime and crash any component that dereferences it.
 
-**Resolution:** When an SDK release adds the procedure, remove it from `CustomEndpoints`.
+**Resolution:** Mark such fields optional in the `WarEra.*` mapping in `src/api/types.ts` and read them with optional chaining, so `tsc` forces every consumer to handle the absence.
 
 ### 2. Type casting approach
 
