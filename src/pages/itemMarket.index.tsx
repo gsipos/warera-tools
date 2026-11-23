@@ -106,17 +106,21 @@ const DualSkillTxHeatmap = ({
         <CardTitle>{title[type]}</CardTitle>
       </CardHeader>
       <CardContent>
-        <ErrorBoundary
-          resetKeys={[series]}
-          fallback={<div className="text-red-500">Failed to load heatmap chart.</div>}
-        >
-          <HeatMapChart
-            className="h-80 w-full"
-            xAxisLabels={firstSkillValues.map((x) => '' + x)}
-            yAxisLabels={secondSkillValues.map((x) => '' + x)}
-            seriesData={series}
-          />
-        </ErrorBoundary>
+        {series.length === 0 ? (
+          <div className="text-muted-foreground">No transactions to show.</div>
+        ) : (
+          <ErrorBoundary
+            resetKeys={[series]}
+            fallback={<div className="text-red-500">Failed to load heatmap chart.</div>}
+          >
+            <HeatMapChart
+              className="h-80 w-full"
+              xAxisLabels={firstSkillValues.map((x) => '' + x)}
+              yAxisLabels={secondSkillValues.map((x) => '' + x)}
+              seriesData={series}
+            />
+          </ErrorBoundary>
+        )}
       </CardContent>
     </Card>
   )
