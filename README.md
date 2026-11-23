@@ -6,7 +6,7 @@ Dashboard & tools for [warera.io](https://warera.io) game.
 
 ### Prerequisites
 
-- Node.js 20.19+ or 22.12+ (required by Vite 7)
+- Node.js 20.19+ or 22.12+ (required by Vite 8)
 - npm
 
 ### Environment Variables

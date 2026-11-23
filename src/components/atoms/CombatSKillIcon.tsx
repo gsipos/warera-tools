@@ -21,7 +21,7 @@ const combarSkillIcons = {
   criticalDamages: CritDamagesIcon,
   lootChance: LootChangeIcon,
   hunger: HungerIcon,
-} as const satisfies Partial<Record<keyof WarEra.UserLite['skills'], React.FC<React.SVGProps<SVGSVGElement>>>>
+} as const satisfies Partial<Record<WarEra.SkillKey, React.FC<React.SVGProps<SVGSVGElement>>>>
 
 export const CombarSkillIcon = ({ skill, className }: { skill: keyof typeof combarSkillIcons; className?: string }) => {
   const Icon = combarSkillIcons[skill] || Fragment

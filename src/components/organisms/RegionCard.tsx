@@ -1,13 +1,12 @@
 import { CountryFlag } from '@/components/molecules/CountryFlag'
 import { Badge } from '@/components/ui/badge'
-import { Card, CardAction, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardAction, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
 import { SimpleTooltip } from '@/components/ui/tooltip'
 import { countFormat, percentFormat } from '@/functions/number-formats'
 import { cn } from '@/lib/utils'
 import { FlameIcon, LandmarkIcon, Link2Icon, Link2OffIcon } from 'lucide-react'
 import { WarEra } from '@/api/types'
-import { Deposit } from '../molecules/Deposit'
 import { ItemImage } from '../atoms/ItemImage'
 
 interface Props {
@@ -52,10 +51,6 @@ export const RegionCard = ({ region, country, initialCountry }: Props) => {
         </CardTitle>
         <CardAction></CardAction>
       </CardHeader>
-
-      <CardContent className="flex flex-col gap-4">
-        <Deposit deposit={region.deposit} productionBonus={prodBonus} specialization={specialization} />
-      </CardContent>
 
       <CardFooter className="gap-2">
         {specialization ? (

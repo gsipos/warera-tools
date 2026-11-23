@@ -1,5 +1,3 @@
-import { depositItemCodes } from '@/api/warera-item-recipes'
-
 /**
  * Navigation item structure used throughout the app
  */
@@ -39,25 +37,14 @@ export const mapLinks: NavItem[] = [
 ]
 
 /**
- * Deposit navigation links: general deposits page, production bonuses, and individual deposit types
- * Dynamically computed based on available deposit item codes
+ * Analysis navigation links
  */
-export const depositLinks: NavItem[] = [
-  {
-    title: 'Deposits',
-    href: '/deposits',
-    description: 'List of all deposits.',
-  },
+export const analysisLinks: NavItem[] = [
   {
     title: 'Item Production bonuses',
     href: '/item/production',
     description: 'Analyze production bonuses and optimal locations for each item.',
   },
-  ...depositItemCodes.map((code) => ({
-    title: `Deposit: ${code}`,
-    href: `/itemDeposits/${code}`,
-    description: `Regions with deposit type: ${code}.`,
-  })),
 ]
 
 /**
@@ -80,8 +67,8 @@ export const navigationGroups: NavGroup[] = [
     links: mapLinks,
   },
   {
-    groupTitle: 'Deposits',
-    links: depositLinks,
+    groupTitle: 'Analysis',
+    links: analysisLinks,
   },
   {
     groupTitle: 'Market',

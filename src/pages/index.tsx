@@ -15,7 +15,7 @@ import {
 import { Separator } from '@/components/ui/separator'
 import { useFavouriteState } from '@/hooks/use-favourite-state'
 import { createFileRoute, Link } from '@tanstack/react-router'
-import { EarthIcon, ExternalLinkIcon, FactoryIcon, FlagIcon, HandshakeIcon, PickaxeIcon, StoreIcon } from 'lucide-react'
+import { EarthIcon, ExternalLinkIcon, FactoryIcon, FlagIcon, HandshakeIcon, StoreIcon } from 'lucide-react'
 import { ReactNode } from 'react'
 
 export const Route = createFileRoute('/')({
@@ -48,21 +48,9 @@ const navCards: NavCard[] = [
     description: 'View the alliance relationships between countries in WarEra.',
     link: '/countries/alliances/',
   },
-  {
-    icon: <PickaxeIcon />,
-    title: 'Deposits',
-    description: 'Explore detailed information about all deposits in WarEra.',
-    link: '/deposits/',
-  },
 ]
 
-const depositNavCards: NavCard[] = [
-  {
-    icon: <PickaxeIcon />,
-    title: 'Deposits',
-    description: 'Explore detailed information about all deposits in WarEra.',
-    link: '/deposits/',
-  },
+const analysisNavCards: NavCard[] = [
   {
     icon: <FactoryIcon />,
     title: 'Production',
@@ -161,8 +149,8 @@ function Index() {
       </ItemGroup>
 
       <ItemGroup className="gap-2">
-        <ItemGroupSubTitle>Deposits</ItemGroupSubTitle>
-        {depositNavCards.map((card) => (
+        <ItemGroupSubTitle>Analysis</ItemGroupSubTitle>
+        {analysisNavCards.map((card) => (
           <NavCardComponent key={card.title} card={card} />
         ))}
       </ItemGroup>

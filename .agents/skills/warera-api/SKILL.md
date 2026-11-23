@@ -1,6 +1,6 @@
 ---
 name: warera-api
-description: How warera-tools fetches game data from the WarEra tRPC API through the @wareraprojects/api SDK. Use when adding or changing a data hook in src/api/warera-api.ts, calling a new endpoint, debugging rate limits or pagination, registering a custom endpoint, or upgrading the SDK. Includes the full procedure list and the 0.3.2 to 0.4.0 delta.
+description: How warera-tools fetches game data from the WarEra tRPC API through the @wareraprojects/api SDK. Use when adding or changing a data hook in src/api/warera-api.ts, calling a new endpoint, debugging rate limits or pagination, registering a custom endpoint, or upgrading the SDK. Includes the full procedure list and the SDK version deltas up to 0.5.0.
 ---
 
 # WarEra API and SDK
@@ -44,12 +44,12 @@ export const useCompanies = (companyIds: string[]) =>
 Paginated procedure (always cap pages):
 
 ```ts
-export const useWorkOffers = (limit = 10, maxPages = 50) =>
+export const useUsersByCountry = (countryId: WarEra.CountryId, limit = 50, maxPages = 20) =>
   useAsyncResource(
-    ['workOffer.getWorkOffersPaginated', { limit, maxPages }],
+    ['user.getUsersByCountry', { countryId, limit, maxPages }],
     () =>
-      collectPages(apiClient.workOffer.getWorkOffersPaginated({ limit, autoPaginate: true }), maxPages) as Cast<
-        WarEra.WorkOffer[]
+      collectPages(apiClient.user.getUsersByCountry({ countryId, limit, autoPaginate: true }), maxPages) as Cast<
+        WarEra.UserReference[]
       >,
   )
 ```
@@ -60,15 +60,15 @@ Derived data (joins, aggregation, time boxing) goes in `src/hooks/game/`, not in
 
 ## SDK facts worth knowing
 
-- `createAPIClient` options: `url`, `apiKey`, `headers`, `fetch`, `logger`, `maxBatchSize` (max 50, `1` disables batching), `batchIntervalMs`, `logBatches`, `retry` (bool or `RetryOptions`), `rateLimit` (requests per minute, default 200 with an API key, 100 without), and in 0.4.0 `voidInputProcedures`.
-- Retries default to 3 attempts with jittered exponential backoff on 408, 409, 425, 429, 500, 502, 503, 504. `retry.onRetry` is how `client.ts` feeds the loading indicator.
+- `createAPIClient` options: `url`, `apiKey`, `headers`, `fetch`, `logger`, `maxBatchSize` (max 50, `1` disables batching), `batchIntervalMs`, `logBatches`, `retry` (bool or `RetryOptions`), `rateLimit` (requests per minute; when omitted the client starts at 200 with an API key, 100 without, then follows the server's `ratelimit-policy` header), `timeoutMs`, and `voidInputProcedures`.
+- Retries default to 3 attempts with jittered exponential backoff on 408, 425, 429, 500, 502, 503, 504 (0.5.0 stopped retrying 409). `retry.onRetry` is how `client.ts` feeds the loading indicator.
 - Calls made in the same tick are batched into one HTTP request. Oversized batches are split automatically. Do not add your own batching.
 - Every request shares one API key budget and the client's rate limiter. Never bypass the client with a raw `fetch`.
-- Pagination: pass `autoPaginate: true` and the call returns an `AsyncIterableIterator<{ items, cursor }>`. The SDK also accepts `maxPages` and `cursorEnd: Date` in the same input. `collectPages` in `warera-api.ts` adds a page cap and warning on top. Cursors look like `"{isoDate}|{id}"`. Known cursor-paginated procedures: `article.getArticlesPaginated`, `battle.getBattles`, `company.getCompanies`, `event.getEventsPaginated`, `mu.getManyPaginated`, `transaction.getPaginatedTransactions`, `user.getUsersByCountry`, `workOffer.getWorkOffersPaginated`. Other `*Paginated` procedures added in 0.4.0 may also work; check the response type for `nextCursor` first.
+- Pagination: pass `autoPaginate: true` and the call returns an `AsyncIterableIterator<{ items, cursor }>`. The SDK also accepts `maxPages` and `cursorEnd: Date` in the same input. `collectPages` in `warera-api.ts` adds a page cap and warning on top. Cursors look like `"{isoDate}|{id}"`. Known cursor-paginated procedures: `article.getArticlesPaginated`, `battle.getBattles`, `company.getCompanies`, `event.getEventsPaginated`, `mu.getManyPaginated`, `transaction.getPaginatedTransactions`, `user.getUsersByCountry`. Other `*Paginated` procedures may also work; check the response type for `nextCursor` first.
 - `contribution.*` endpoints use one-based `page` input with a fixed 10 rows per page, not cursors.
-- The client is a proxy: any `apiClient.<router>.<procedure>(input)` path is sent as a tRPC query, typed or not. To call an endpoint missing from the types with full typing, add it to `CustomEndpoints` in `client.ts`, which is passed to `apiClient._ce<...>()`. This keeps batching, retries and rate limiting. Nothing is registered today. Check that the live API still answers the path before adding one: game updates remove procedures without an SDK release (`company.getRecommendedRegionIds` went away in v0.27).
-- Procedures with a `z.void()` server schema reject `{}`. The SDK sends no input for the ones it knows (`VOID_INPUT_PROCEDURES`, currently `gameStat.getWorldDevelopment`); list extra ones in `voidInputProcedures`.
-- `worker.getWorkers` needs `companyId`, `userId` or both and returns a discriminated union on `type`. `election.getElections` needs `countryId`, `partyId` or both. `upgradeConstruction.listConstructions` needs `regionId`, `countryId` or both. `sanction.getPaginated.type` is uppercase (`BAN`, `MUTE_USER`).
+- The client is a proxy: any `apiClient.<router>.<procedure>(input)` path is sent as a tRPC query, typed or not. To call an endpoint missing from the types with full typing, add it to `CustomEndpoints` in `client.ts`, which is passed to `apiClient._ce<...>()`. This keeps batching, retries and rate limiting. Nothing is registered today. The SDK also ships its own typed custom endpoints on the default client, such as `user.getUserSkills`. Check that the live API still answers the path before adding one: game updates remove procedures without an SDK release (`company.getRecommendedRegionIds` went away in v0.27).
+- Procedures with a `z.void()` server schema reject `{}`. The SDK sends no input for the ones it knows (`VOID_INPUT_PROCEDURES`, for example `gameStat.getWorldDevelopment`); list extra ones in `voidInputProcedures`.
+- `election.getElections` needs `countryId`, `partyId` or both. `upgradeConstruction.listConstructions` needs `regionId`, `countryId` or both. `sanction.getPaginated.type` is uppercase (`BAN`, `MUTE_USER`).
 - `work.*` stats procedures need a Premium API key (HTTP 403 otherwise).
 - Endpoint explorer with live responses: https://warera.realmarijn.nl/api-explorer. OpenAPI spec: https://api2.warera.io/openapi.json. SDK source: https://github.com/WarEraProjects/TRPC.
 
@@ -90,5 +90,5 @@ Derived data (joins, aggregation, time boxing) goes in `src/hooks/game/`, not in
 ## References
 
 - `references/procedures.md`: every procedure in the SDK, which ones the app uses, which are new in 0.4.0.
-- `references/sdk-upgrade.md`: 0.3.2 to 0.4.0 delta and the upgrade procedure.
+- `references/sdk-upgrade.md`: SDK version deltas (0.3.2 to 0.5.0) and the upgrade procedure.
 - `scripts/list-procedures.sh`: regenerate the procedure list from the installed package.

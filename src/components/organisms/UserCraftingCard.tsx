@@ -1,3 +1,4 @@
+import { formatOptionalIsoDateTime } from '@/functions/date-formats'
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '../ui/card'
 import { ItemBackground } from '../atoms/ItemBackground'
 import { ItemImage } from '../atoms/ItemImage'
@@ -52,7 +53,7 @@ export const UserCraftingCard = ({ userId }: { userId: string }) => {
         <CardTitle>Crafting</CardTitle>
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
-        <div>Since {DateTime.fromISO(lastTxTimeStamp ?? '').toLocaleString(DateTime.DATETIME_SHORT)}</div>
+        <div>Since {formatOptionalIsoDateTime(lastTxTimeStamp)}</div>
         <div>Items Crafted: {craftingTxs.length}</div>
         <div className="flex flex-row items-center gap-2">
           Scraps used:

@@ -17,7 +17,6 @@ export const queryClient = new QueryClient({
       networkMode: 'offlineFirst',
       retry: 5,
       retryDelay: exponentialBackoff,
-      experimental_prefetchInRender: true,
     },
   },
 })

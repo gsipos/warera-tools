@@ -54,32 +54,17 @@ This document covers manual testing after the migration from direct API calls to
 - [ ] Production data loads
 - [ ] Recipe/crafting info displays
 
-### 8. Item Deposits (`/itemDeposits/$itemCode`)
-
-- [ ] Deposit locations load
-- [ ] Map/list of deposits renders
-
-### 9. Items List (`/items`)
-
-- [ ] Full item catalog loads
-- [ ] Item details accessible
-
-### 10. Deposits Index (`/deposits`)
-
-- [ ] Deposit overview loads
-- [ ] Filtering works
-
-### 11. Crafting (`/crafting`)
+### 8. Crafting (`/crafting`)
 
 - [ ] Crafting recipes load
 - [ ] Calculator/planner works
 
-### 12. Regions (`/regions`)
+### 9. Regions (`/regions`)
 
 - [ ] Region list loads
 - [ ] Region details accessible
 
-### 13. User Profile (`/users/$userId`)
+### 10. User Profile (`/users/$userId`)
 
 - [ ] User data loads
 - [ ] Profile information displays

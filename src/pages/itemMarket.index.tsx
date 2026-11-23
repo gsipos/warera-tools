@@ -5,17 +5,16 @@ import { HeatMapChart } from '@/components/organisms/HeatMapChart'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { DateTime } from 'luxon'
 import { useEffect, useState } from 'react'
 import { WarEra } from '@/api/types'
 import { ErrorBoundary } from 'react-error-boundary'
 import z from 'zod'
-import { zodValidator, fallback } from '@tanstack/zod-adapter'
 import { PriceDistributionChart } from '@/components/organisms/PriceDistributionChart'
 import { useIsMobile } from '@/hooks/use-mobile'
 import {
   AggregatedTx,
   useAggregatedTransactions,
+  MAX_FETCHED_TRANSACTIONS,
   useEquipmentTransactions,
   useTransactionTimeSeries,
 } from '@/hooks/use-item-market-price'
@@ -23,9 +22,10 @@ import { TransactionTimeSeriesChart } from '@/components/organisms/TransactionTi
 import { TimeRangeSelect } from '@/components/molecules/TimeRangeSelect'
 import { useDateRangeStore } from '@/stores/date-range-store'
 import { PersistedDataProvider } from '@/persistence'
+import { formatOptionalIsoDateTime } from '@/functions/date-formats'
 
 const itemMarketSearchSchema = z.object({
-  code: fallback(z.enum(equipmentCodes).default('gun'), 'gun'),
+  code: z.enum(equipmentCodes).catch('gun'),
 })
 
 type ItemMarketSearch = z.infer<typeof itemMarketSearchSchema>
@@ -36,7 +36,7 @@ export const Route = createFileRoute('/itemMarket/')({
       <RouteComponent />
     </PersistedDataProvider>
   ),
-  validateSearch: zodValidator(itemMarketSearchSchema),
+  validateSearch: itemMarketSearchSchema,
 })
 
 const SingleSkillChart = ({ txGroups }: { txGroups: AggregatedTx[] }) => {
@@ -106,17 +106,21 @@ const DualSkillTxHeatmap = ({
         <CardTitle>{title[type]}</CardTitle>
       </CardHeader>
       <CardContent>
-        <ErrorBoundary
-          resetKeys={[series]}
-          fallback={<div className="text-red-500">Failed to load heatmap chart.</div>}
-        >
-          <HeatMapChart
-            className="h-80 w-full"
-            xAxisLabels={firstSkillValues.map((x) => '' + x)}
-            yAxisLabels={secondSkillValues.map((x) => '' + x)}
-            seriesData={series}
-          />
-        </ErrorBoundary>
+        {series.length === 0 ? (
+          <div className="text-muted-foreground">No transactions to show.</div>
+        ) : (
+          <ErrorBoundary
+            resetKeys={[series]}
+            fallback={<div className="text-red-500">Failed to load heatmap chart.</div>}
+          >
+            <HeatMapChart
+              className="h-80 w-full"
+              xAxisLabels={firstSkillValues.map((x) => '' + x)}
+              yAxisLabels={secondSkillValues.map((x) => '' + x)}
+              seriesData={series}
+            />
+          </ErrorBoundary>
+        )}
       </CardContent>
     </Card>
   )
@@ -134,7 +138,10 @@ function RouteComponent() {
 
   const fromDate = useDateRangeStore((s) => s.startDate)
 
-  const { txList, txGroups, lastTxTimeStamp, latestTxTimeStamp, tqQuery } = useEquipmentTransactions(eqCode, fromDate)
+  const { txList, txGroups, lastTxTimeStamp, latestTxTimeStamp, isTruncated, tqQuery } = useEquipmentTransactions(
+    eqCode,
+    fromDate,
+  )
 
   const timeSeries = useTransactionTimeSeries(txList)
 
@@ -147,10 +154,16 @@ function RouteComponent() {
             <CardTitle>Transactions</CardTitle>
           </CardHeader>
           <CardContent>
-            <div>Transaction Count: {txList.length}</div>
+            <div>Transaction Count: {tqQuery.isPending ? 'loading…' : txList.length}</div>
 
-            <div>From: {DateTime.fromISO(lastTxTimeStamp ?? '').toLocaleString(DateTime.DATETIME_SHORT)}</div>
-            <div>To: {DateTime.fromISO(latestTxTimeStamp ?? '').toLocaleString(DateTime.DATETIME_SHORT)}</div>
+            <div>From: {formatOptionalIsoDateTime(lastTxTimeStamp)}</div>
+            <div>To: {formatOptionalIsoDateTime(latestTxTimeStamp)}</div>
+            {isTruncated && (
+              <div className="text-muted-foreground max-w-56 text-sm">
+                Only the latest {MAX_FETCHED_TRANSACTIONS.toLocaleString()} transactions are loaded, so the range above
+                is shorter than the selected period.
+              </div>
+            )}
           </CardContent>
           <CardFooter>
             <TimeRangeSelect />

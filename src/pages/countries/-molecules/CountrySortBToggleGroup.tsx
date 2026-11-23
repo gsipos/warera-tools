@@ -3,14 +3,7 @@ import { SimpleTooltip } from '@/components/ui/tooltip'
 import { BedIcon, CoinsIcon, FactoryIcon, MapIcon, PiggyBankIcon, SwordIcon, SwordsIcon, UsersIcon } from 'lucide-react'
 
 export type CountrySortValue =
-  | 'money'
-  | 'population'
-  | 'production'
-  | 'development'
-  | 'weeklyDamage'
-  | 'totalDamage'
-  | 'regionDiff'
-  | 'wealth'
+  'money' | 'population' | 'production' | 'development' | 'weeklyDamage' | 'totalDamage' | 'regionDiff' | 'wealth'
 
 export const CountrySortButtonGroup = ({
   value,

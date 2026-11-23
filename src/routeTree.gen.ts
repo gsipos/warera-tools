@@ -9,29 +9,21 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './pages/__root'
-import { Route as RegionsRouteImport } from './pages/regions'
-import { Route as CraftingRouteImport } from './pages/crafting'
-import { Route as CountriesRouteRouteImport } from './pages/countries.route'
 import { Route as IndexRouteImport } from './pages/index'
-import { Route as ItemsIndexRouteImport } from './pages/items.index'
-import { Route as ItemMarketIndexRouteImport } from './pages/itemMarket.index'
-import { Route as DepositsIndexRouteImport } from './pages/deposits.index'
+import { Route as CountriesRouteRouteImport } from './pages/countries.route'
+import { Route as CraftingRouteImport } from './pages/crafting'
+import { Route as RegionsRouteImport } from './pages/regions'
 import { Route as CountriesIndexRouteImport } from './pages/countries.index'
-import { Route as UsersUserIdRouteImport } from './pages/users.$userId'
-import { Route as ItemDepositsItemCodeRouteImport } from './pages/itemDeposits.$itemCode'
-import { Route as ItemProductionRouteImport } from './pages/item.production'
-import { Route as CountriesMatchupRouteImport } from './pages/countries.matchup'
-import { Route as CountriesAlliancesRouteImport } from './pages/countries.alliances'
 import { Route as CountriesCountryIdRouteImport } from './pages/countries.$countryId'
+import { Route as CountriesAlliancesRouteImport } from './pages/countries.alliances'
+import { Route as CountriesMatchupRouteImport } from './pages/countries.matchup'
+import { Route as ItemProductionRouteImport } from './pages/item.production'
+import { Route as ItemMarketIndexRouteImport } from './pages/itemMarket.index'
+import { Route as UsersUserIdRouteImport } from './pages/users.$userId'
 
-const RegionsRoute = RegionsRouteImport.update({
-  id: '/regions',
-  path: '/regions',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CraftingRoute = CraftingRouteImport.update({
-  id: '/crafting',
-  path: '/crafting',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CountriesRouteRoute = CountriesRouteRouteImport.update({
@@ -39,24 +31,14 @@ const CountriesRouteRoute = CountriesRouteRouteImport.update({
   path: '/countries',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const CraftingRoute = CraftingRouteImport.update({
+  id: '/crafting',
+  path: '/crafting',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ItemsIndexRoute = ItemsIndexRouteImport.update({
-  id: '/items/',
-  path: '/items/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ItemMarketIndexRoute = ItemMarketIndexRouteImport.update({
-  id: '/itemMarket/',
-  path: '/itemMarket/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DepositsIndexRoute = DepositsIndexRouteImport.update({
-  id: '/deposits/',
-  path: '/deposits/',
+const RegionsRoute = RegionsRouteImport.update({
+  id: '/regions',
+  path: '/regions',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CountriesIndexRoute = CountriesIndexRouteImport.update({
@@ -64,24 +46,9 @@ const CountriesIndexRoute = CountriesIndexRouteImport.update({
   path: '/',
   getParentRoute: () => CountriesRouteRoute,
 } as any)
-const UsersUserIdRoute = UsersUserIdRouteImport.update({
-  id: '/users/$userId',
-  path: '/users/$userId',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ItemDepositsItemCodeRoute = ItemDepositsItemCodeRouteImport.update({
-  id: '/itemDeposits/$itemCode',
-  path: '/itemDeposits/$itemCode',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ItemProductionRoute = ItemProductionRouteImport.update({
-  id: '/item/production',
-  path: '/item/production',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CountriesMatchupRoute = CountriesMatchupRouteImport.update({
-  id: '/matchup',
-  path: '/matchup',
+const CountriesCountryIdRoute = CountriesCountryIdRouteImport.update({
+  id: '/$countryId',
+  path: '/$countryId',
   getParentRoute: () => CountriesRouteRoute,
 } as any)
 const CountriesAlliancesRoute = CountriesAlliancesRouteImport.update({
@@ -89,10 +56,25 @@ const CountriesAlliancesRoute = CountriesAlliancesRouteImport.update({
   path: '/alliances',
   getParentRoute: () => CountriesRouteRoute,
 } as any)
-const CountriesCountryIdRoute = CountriesCountryIdRouteImport.update({
-  id: '/$countryId',
-  path: '/$countryId',
+const CountriesMatchupRoute = CountriesMatchupRouteImport.update({
+  id: '/matchup',
+  path: '/matchup',
   getParentRoute: () => CountriesRouteRoute,
+} as any)
+const ItemProductionRoute = ItemProductionRouteImport.update({
+  id: '/item/production',
+  path: '/item/production',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ItemMarketIndexRoute = ItemMarketIndexRouteImport.update({
+  id: '/itemMarket/',
+  path: '/itemMarket/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const UsersUserIdRoute = UsersUserIdRouteImport.update({
+  id: '/users/$userId',
+  path: '/users/$userId',
+  getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
@@ -104,12 +86,9 @@ export interface FileRoutesByFullPath {
   '/countries/alliances': typeof CountriesAlliancesRoute
   '/countries/matchup': typeof CountriesMatchupRoute
   '/item/production': typeof ItemProductionRoute
-  '/itemDeposits/$itemCode': typeof ItemDepositsItemCodeRoute
   '/users/$userId': typeof UsersUserIdRoute
   '/countries/': typeof CountriesIndexRoute
-  '/deposits': typeof DepositsIndexRoute
-  '/itemMarket': typeof ItemMarketIndexRoute
-  '/items': typeof ItemsIndexRoute
+  '/itemMarket/': typeof ItemMarketIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -119,12 +98,9 @@ export interface FileRoutesByTo {
   '/countries/alliances': typeof CountriesAlliancesRoute
   '/countries/matchup': typeof CountriesMatchupRoute
   '/item/production': typeof ItemProductionRoute
-  '/itemDeposits/$itemCode': typeof ItemDepositsItemCodeRoute
   '/users/$userId': typeof UsersUserIdRoute
   '/countries': typeof CountriesIndexRoute
-  '/deposits': typeof DepositsIndexRoute
   '/itemMarket': typeof ItemMarketIndexRoute
-  '/items': typeof ItemsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -136,12 +112,9 @@ export interface FileRoutesById {
   '/countries/alliances': typeof CountriesAlliancesRoute
   '/countries/matchup': typeof CountriesMatchupRoute
   '/item/production': typeof ItemProductionRoute
-  '/itemDeposits/$itemCode': typeof ItemDepositsItemCodeRoute
   '/users/$userId': typeof UsersUserIdRoute
   '/countries/': typeof CountriesIndexRoute
-  '/deposits/': typeof DepositsIndexRoute
   '/itemMarket/': typeof ItemMarketIndexRoute
-  '/items/': typeof ItemsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -154,12 +127,9 @@ export interface FileRouteTypes {
     | '/countries/alliances'
     | '/countries/matchup'
     | '/item/production'
-    | '/itemDeposits/$itemCode'
     | '/users/$userId'
     | '/countries/'
-    | '/deposits'
-    | '/itemMarket'
-    | '/items'
+    | '/itemMarket/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -169,12 +139,9 @@ export interface FileRouteTypes {
     | '/countries/alliances'
     | '/countries/matchup'
     | '/item/production'
-    | '/itemDeposits/$itemCode'
     | '/users/$userId'
     | '/countries'
-    | '/deposits'
     | '/itemMarket'
-    | '/items'
   id:
     | '__root__'
     | '/'
@@ -185,12 +152,9 @@ export interface FileRouteTypes {
     | '/countries/alliances'
     | '/countries/matchup'
     | '/item/production'
-    | '/itemDeposits/$itemCode'
     | '/users/$userId'
     | '/countries/'
-    | '/deposits/'
     | '/itemMarket/'
-    | '/items/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -199,27 +163,17 @@ export interface RootRouteChildren {
   CraftingRoute: typeof CraftingRoute
   RegionsRoute: typeof RegionsRoute
   ItemProductionRoute: typeof ItemProductionRoute
-  ItemDepositsItemCodeRoute: typeof ItemDepositsItemCodeRoute
   UsersUserIdRoute: typeof UsersUserIdRoute
-  DepositsIndexRoute: typeof DepositsIndexRoute
   ItemMarketIndexRoute: typeof ItemMarketIndexRoute
-  ItemsIndexRoute: typeof ItemsIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/regions': {
-      id: '/regions'
-      path: '/regions'
-      fullPath: '/regions'
-      preLoaderRoute: typeof RegionsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/crafting': {
-      id: '/crafting'
-      path: '/crafting'
-      fullPath: '/crafting'
-      preLoaderRoute: typeof CraftingRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/countries': {
@@ -229,32 +183,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CountriesRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/crafting': {
+      id: '/crafting'
+      path: '/crafting'
+      fullPath: '/crafting'
+      preLoaderRoute: typeof CraftingRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/items/': {
-      id: '/items/'
-      path: '/items'
-      fullPath: '/items'
-      preLoaderRoute: typeof ItemsIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/itemMarket/': {
-      id: '/itemMarket/'
-      path: '/itemMarket'
-      fullPath: '/itemMarket'
-      preLoaderRoute: typeof ItemMarketIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/deposits/': {
-      id: '/deposits/'
-      path: '/deposits'
-      fullPath: '/deposits'
-      preLoaderRoute: typeof DepositsIndexRouteImport
+    '/regions': {
+      id: '/regions'
+      path: '/regions'
+      fullPath: '/regions'
+      preLoaderRoute: typeof RegionsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/countries/': {
@@ -264,32 +204,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CountriesIndexRouteImport
       parentRoute: typeof CountriesRouteRoute
     }
-    '/users/$userId': {
-      id: '/users/$userId'
-      path: '/users/$userId'
-      fullPath: '/users/$userId'
-      preLoaderRoute: typeof UsersUserIdRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/itemDeposits/$itemCode': {
-      id: '/itemDeposits/$itemCode'
-      path: '/itemDeposits/$itemCode'
-      fullPath: '/itemDeposits/$itemCode'
-      preLoaderRoute: typeof ItemDepositsItemCodeRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/item/production': {
-      id: '/item/production'
-      path: '/item/production'
-      fullPath: '/item/production'
-      preLoaderRoute: typeof ItemProductionRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/countries/matchup': {
-      id: '/countries/matchup'
-      path: '/matchup'
-      fullPath: '/countries/matchup'
-      preLoaderRoute: typeof CountriesMatchupRouteImport
+    '/countries/$countryId': {
+      id: '/countries/$countryId'
+      path: '/$countryId'
+      fullPath: '/countries/$countryId'
+      preLoaderRoute: typeof CountriesCountryIdRouteImport
       parentRoute: typeof CountriesRouteRoute
     }
     '/countries/alliances': {
@@ -299,12 +218,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CountriesAlliancesRouteImport
       parentRoute: typeof CountriesRouteRoute
     }
-    '/countries/$countryId': {
-      id: '/countries/$countryId'
-      path: '/$countryId'
-      fullPath: '/countries/$countryId'
-      preLoaderRoute: typeof CountriesCountryIdRouteImport
+    '/countries/matchup': {
+      id: '/countries/matchup'
+      path: '/matchup'
+      fullPath: '/countries/matchup'
+      preLoaderRoute: typeof CountriesMatchupRouteImport
       parentRoute: typeof CountriesRouteRoute
+    }
+    '/item/production': {
+      id: '/item/production'
+      path: '/item/production'
+      fullPath: '/item/production'
+      preLoaderRoute: typeof ItemProductionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/itemMarket/': {
+      id: '/itemMarket/'
+      path: '/itemMarket'
+      fullPath: '/itemMarket/'
+      preLoaderRoute: typeof ItemMarketIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/users/$userId': {
+      id: '/users/$userId'
+      path: '/users/$userId'
+      fullPath: '/users/$userId'
+      preLoaderRoute: typeof UsersUserIdRouteImport
+      parentRoute: typeof rootRouteImport
     }
   }
 }
@@ -333,11 +273,8 @@ const rootRouteChildren: RootRouteChildren = {
   CraftingRoute: CraftingRoute,
   RegionsRoute: RegionsRoute,
   ItemProductionRoute: ItemProductionRoute,
-  ItemDepositsItemCodeRoute: ItemDepositsItemCodeRoute,
   UsersUserIdRoute: UsersUserIdRoute,
-  DepositsIndexRoute: DepositsIndexRoute,
   ItemMarketIndexRoute: ItemMarketIndexRoute,
-  ItemsIndexRoute: ItemsIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

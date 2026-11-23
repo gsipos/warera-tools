@@ -33,17 +33,6 @@ export const itemRecipes: Record<WarEra.ItemCode, WarEra.ItemRecipe> = {
   scraps: onlyProduction(1),
 }
 
-export const depositItemCodes: WarEra.ItemCode[] = [
-  'grain',
-  'limestone',
-  'lead',
-  'petroleum',
-  'iron',
-  'coca',
-  'livestock',
-  'fish',
-]
-
 interface CraftingRecipe {
   type: 'fixed' | 'random'
   level: WarEra.ArmorLevel

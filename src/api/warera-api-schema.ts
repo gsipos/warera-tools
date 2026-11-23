@@ -35,7 +35,7 @@ export const itemsSchema = z.enum([
   'iron',
 ])
 
-export const itemTradingPricesSchema = z.record(itemsSchema, z.number())
+export const itemTradingPricesSchema = z.partialRecord(itemsSchema, z.number())
 
 export const itemPricesCollectionSchema = z.object({
   item: itemsSchema,

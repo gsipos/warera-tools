@@ -1,4 +1,4 @@
-import { useUserLite } from '@/api/warera-api'
+import { useUserWithSkills } from '@/api/warera-api'
 import { AppSplashScreen } from '@/components/organisms/AppSplashScreen'
 import { UserCashflowCard } from '@/components/organisms/UserCashflowCard'
 import { UserCard } from '@/components/organisms/UserCard'
@@ -21,7 +21,7 @@ export const Route = createFileRoute('/users/$userId')({
 
 function RouteComponent() {
   const { userId } = Route.useParams()
-  const user = useUserLite(userId).data
+  const user = useUserWithSkills(userId).data
 
   if (!user) {
     return <AppSplashScreen />

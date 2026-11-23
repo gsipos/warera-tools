@@ -40,7 +40,6 @@ export const persistedQueryClient = new QueryClient({
       networkMode: 'offlineFirst',
       retry: 5,
       retryDelay: (attemptIndex) => Math.min(1_000 * 2 ** attemptIndex, 30_000),
-      experimental_prefetchInRender: true,
     },
   },
 })

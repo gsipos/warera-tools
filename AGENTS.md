@@ -8,7 +8,7 @@ This file is the single source of project instructions for every coding agent (C
 
 | Area       | Choice                                                                                           |
 | ---------- | ------------------------------------------------------------------------------------------------ |
-| Runtime    | Node 22.12 (`.nvmrc`), npm, Vite 7                                                               |
+| Runtime    | Node 22.23 (`.nvmrc`), npm, Vite 8                                                               |
 | UI         | React 19 with the React Compiler enabled (do not hand-memoize unless profiling shows a need)     |
 | Language   | TypeScript strict, plus `exactOptionalPropertyTypes` and `noUncheckedIndexedAccess`              |
 | Routing    | TanStack Router, file-based routes in `src/pages/`, generated `src/routeTree.gen.ts` (committed) |
@@ -22,7 +22,7 @@ This file is the single source of project instructions for every coding agent (C
 ## Commands
 
 ```bash
-npm ci --legacy-peer-deps   # install (CI uses the same flag)
+npm ci                      # install; .npmrc sets legacy-peer-deps, exact saves and the 7-day release-age gate
 npm start                   # dev server on http://localhost:3001
 npm run tsc                 # type check
 npm run lint                # oxlint

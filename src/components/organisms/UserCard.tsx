@@ -75,7 +75,7 @@ export const UserCompaniesProdSummary = ({ userId }: { userId: string }) => {
   )
 }
 
-export const UserCombatSummary = ({ user }: { user: WarEra.UserLite }) => {
+export const UserCombatSummary = ({ user }: { user: WarEra.UserWithSkills }) => {
   const attack = user.skills.attack.total
   const armor = user.skills.armor.total
   const precision = user.skills.precision.total
@@ -201,7 +201,7 @@ const UserRespecBadge = ({ user }: { user: WarEra.UserLite }) => {
   )
 }
 
-const UserHealthBar = ({ user }: { user: WarEra.UserLite }) => {
+const UserHealthBar = ({ user }: { user: WarEra.UserWithSkills }) => {
   const health = user.skills.health
   const percent = (health.currentBarValue / health.total) * 100
 
@@ -224,7 +224,7 @@ const UserHealthBar = ({ user }: { user: WarEra.UserLite }) => {
   )
 }
 
-const UserHungerBar = ({ user }: { user: WarEra.UserLite }) => {
+const UserHungerBar = ({ user }: { user: WarEra.UserWithSkills }) => {
   const hunger = user.skills.hunger
   const percent = (hunger.currentBarValue / hunger.total) * 100
   return (
@@ -273,7 +273,7 @@ const UserLastSeenBadge = ({ lastConnectionAt }: { lastConnectionAt: string }) =
 
 export type UserCardContent = 'skills' | 'companies' | 'combat' | 'misc' | 'all'
 
-export const UserCard = ({ user, view }: { user: WarEra.UserLite; view?: UserCardContent }) => {
+export const UserCard = ({ user, view }: { user: WarEra.UserWithSkills; view?: UserCardContent }) => {
   const ecoSkillLevels = getUserEcoSkillLevels(user)
   const combatSkillLevels = getUserCombatSkillLevels(user)
   const totalSkillLevels = ecoSkillLevels + combatSkillLevels
