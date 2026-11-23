@@ -1,27 +1,42 @@
 # WarEra API procedures
 
-Generated from `@wareraprojects/api` 0.4.0 type definitions on 2026-11-03 with `scripts/list-procedures.sh`. The app currently has 0.3.2 installed; procedures marked **new** exist only after upgrading (see `sdk-upgrade.md`).
+Generated from `@wareraprojects/api` 0.5.0 type definitions on 2026-11-23 with `scripts/list-procedures.sh`. The app has 0.5.0 installed. The list includes the SDK-packaged custom endpoints (the `*CustomEndpoints` types), which the default client also exposes.
 
-Legend: **used** = wrapped by a hook in `src/api/warera-api.ts`; **paginated** = supports `autoPaginate`; **new** = added between 0.3.2 and 0.4.0.
+Legend: **used** = wrapped by a hook in `src/api/warera-api.ts`; **paginated** = supports `autoPaginate` (the input has a `cursor` field); **new** = added between 0.4.0 and 0.5.0 (see `sdk-upgrade.md`).
 
 ## alliance
 
-- `alliance.getById` — new
-- `alliance.getByIds` — new
-- `alliance.getManyPaginated` — new
+- `alliance.getById`
+- `alliance.getByIds`
+- `alliance.getManyPaginated` — paginated
+- `alliance.getStrategicResourceBonuses` — new
 
 ## article
 
 - `article.getArticleById`
 - `article.getArticleLiteById`
 - `article.getArticlesPaginated` — paginated
-- `article.getWelcomeArticleByCountryId` — new
+- `article.getPinnedArticles` — new
+- `article.getWelcomeArticleByCountryId`
+
+## articleInteraction
+
+- `articleInteraction.getArticleDislikers` — new
+- `articleInteraction.getArticleGemTippers` — new
+- `articleInteraction.getArticleLikers` — new
+- `articleInteraction.getArticleTippers` — new
+
+## assetSale
+
+- `assetSale.getLastSkinGifts` — new
 
 ## battle
 
+- `battle.getActiveBattlesByCountry` — new
 - `battle.getBattles` — paginated
 - `battle.getById`
 - `battle.getLiveBattleData`
+- `battle.getViewersCount` — new
 
 ## battleLootSummary
 
@@ -33,39 +48,56 @@ Legend: **used** = wrapped by a hook in `src/api/warera-api.ts`; **paginated** =
 
 ## battleRanking
 
-- `battleRanking.getRanking`
+- `battleRanking.getRanking` — paginated
 
 ## company
 
 - `company.getById` — used
 - `company.getCompanies` — used, paginated
-- `company.getProductionBonus` — used. Since game v0.27 (2026-10-26) the live response is only `{ depositBonus, total }`; the SDK still types `strategicBonus`, `ethicSpecializationBonus` and `ethicDepositBonus`, which the API no longer returns.
-- `company.getRecommendedRegionIdsByItemCode` — dead: answers 200 with an empty array for every item code since v0.27 removed deposits and country specialization.
+- `company.getProductionBonus` — used. Since game v0.27 (2026-10-26) the live response is only `{ depositBonus, total }`; 0.5.0 types only those two fields, both `@deprecated`.
+- `company.getRecommendedRegionIdsByItemCode` — dead: answers 200 with an empty array for every item code since v0.27 removed deposits and country specialization. Still typed in 0.5.0, marked `@deprecated`.
 
 ## contribution
 
-- `contribution.getCountryUnrestContributions` — new
-- `contribution.getRegionContributions` — new
+- `contribution.getCountryUnrestContributions`
+- `contribution.getRegionContributions`
 
 ## country
 
 - `country.getAllCountries` — used
 - `country.getCountryById`
-- `country.getUnrestData` — new
+- `country.getStrategicResourceBonuses` — new
+- `country.getUnrestData`
 
 ## countryDiplomacy
 
-- `countryDiplomacy.getByCountry` — new
+- `countryDiplomacy.getByCountry`
 
 ## donation
 
-- `donation.getManyPaginated`
+- `donation.getManyPaginated` — paginated
 - `donation.getTotalDonations`
 
 ## election
 
-- `election.getElection` — new
-- `election.getElections`
+- `election.getElection`
+- `election.getElections` — paginated
+
+## employee
+
+- `employee.getById` — new
+- `employee.getCompanyEmployees` — new
+- `employee.getCompanyEstimate` — new
+- `employee.getCompanyRoster` — new
+- `employee.getManagerPointValue` — new
+- `employee.getMyEmployees` — new
+- `employee.getMyWorkforceSummary` — new
+
+## employeeEvent
+
+- `employeeEvent.getHistory` — new
+- `employeeEvent.getMine` — new
+- `employeeEvent.getPendingCount` — new
 
 ## event
 
@@ -75,19 +107,25 @@ Legend: **used** = wrapped by a hook in `src/api/warera-api.ts`; **paginated** =
 
 - `gameConfig.getDates`
 - `gameConfig.getGameConfig`
+- `gameConfig.getMaxBountyRate` — new
 
 ## gameStat
 
+- `gameStat.getBadgeStats` — new
 - `gameStat.getEquipmentAvgByCode`
-- `gameStat.getWorldDevelopment` — new
+- `gameStat.getMilestoneStats` — new
+- `gameStat.getPpMoneyValue` — new
+- `gameStat.getPpMoneyValueByItem` — new
+- `gameStat.getWorldDevelopment`
 
 ## giveaway
 
-- `giveaway.getManyPaginated` — new
+- `giveaway.getManyPaginated` — paginated
 
 ## government
 
 - `government.getByCountryId`
+- `government.getCongressSeats` — new
 
 ## inventory
 
@@ -99,16 +137,33 @@ Legend: **used** = wrapped by a hook in `src/api/warera-api.ts`; **paginated** =
 
 ## itemTrading
 
+- `itemTrading.getItemTrading` — new
 - `itemTrading.getPrices` — used
+
+## manager
+
+- `manager.getByCompanyId` — new
+
+## managerOffer
+
+- `managerOffer.getByCompanyId` — new
+- `managerOffer.getManyPaginated` — new, paginated
+- `managerOffer.getWageStats` — new
+
+## map
+
+- `map.getMapData` — new
 
 ## mercenaryContractAuction
 
-- `mercenaryContractAuction.getPaginatedAuctions`
+- `mercenaryContractAuction.getActiveAuctions` — new, paginated
+- `mercenaryContractAuction.getPaginatedAuctions` — paginated
 
 ## mu
 
 - `mu.getById`
 - `mu.getManyPaginated` — paginated
+- `mu.getReputationBuyStatus` — new
 
 ## muMember
 
@@ -117,7 +172,13 @@ Legend: **used** = wrapped by a hook in `src/api/warera-api.ts`; **paginated** =
 ## party
 
 - `party.getById`
-- `party.getManyPaginated`
+- `party.getInactiveMemberIds` — new
+- `party.getManyPaginated` — paginated
+
+## poll
+
+- `poll.getPoll` — new
+- `poll.getPollVoters` — new, paginated
 
 ## ranking
 
@@ -125,7 +186,7 @@ Legend: **used** = wrapped by a hook in `src/api/warera-api.ts`; **paginated** =
 
 ## region
 
-- `region.getAll` — new
+- `region.getAll`
 - `region.getById`
 - `region.getRegionsObject` — used
 
@@ -136,25 +197,25 @@ Legend: **used** = wrapped by a hook in `src/api/warera-api.ts`; **paginated** =
 
 ## sanction
 
-- `sanction.getPaginated` — new
+- `sanction.getPaginated` — paginated
 
 ## search
 
 - `search.searchAnything`
-- `search.searchMus` — new
-- `search.searchUsers` — new
+- `search.searchMus`
+- `search.searchUsers`
 
 ## shop
 
-- `shop.getLastGifts` — new
-- `shop.getSubscribedUsers` — new
-- `shop.getTopGiftGivers` — new
+- `shop.getLastGifts`
+- `shop.getSubscribedUsers`
+- `shop.getTopGiftGivers`
 
 ## tournament
 
-- `tournament.getById` — new
+- `tournament.getById`
 - `tournament.getLastTournament`
-- `tournament.getManyPaginated` — new
+- `tournament.getManyPaginated` — paginated
 
 ## tournamentTeam
 
@@ -165,6 +226,7 @@ Legend: **used** = wrapped by a hook in `src/api/warera-api.ts`; **paginated** =
 
 - `tradingOrder.getPublicOrdersByOwner`
 - `tradingOrder.getTopOrders` — used
+- `tradingOrder.getTopOrdersPerItemCode` — new
 
 ## transaction
 
@@ -172,42 +234,36 @@ Legend: **used** = wrapped by a hook in `src/api/warera-api.ts`; **paginated** =
 
 ## upgrade
 
+- `upgrade.getMapUpgrades` — new
 - `upgrade.getUpgradeByTypeAndEntity`
 
 ## upgradeConstruction
 
-- `upgradeConstruction.getMapConstructions` — new
-- `upgradeConstruction.getRegionConstructions` — new
-- `upgradeConstruction.listConstructions` — new
+- `upgradeConstruction.getMapConstructions`
+- `upgradeConstruction.getRegionConstructions`
+- `upgradeConstruction.listConstructions` — paginated
 
 ## user
 
+- `user.getTodayClaimCount` — new. Not the key owner's count: the same number with and without an API key.
 - `user.getUserById`
-- `user.getUserLite` — used
+- `user.getUserLite` — used. No longer returns `skills` or `skillsExpiration`; use `user.getUserSkills`.
+- `user.getUserSkills` — used, new. Answers without an API key.
 - `user.getUsersByCountry` — used, paginated
 
 ## war
 
-- `war.getById` — new
+- `war.getById`
 
 ## work
 
 - `work.getStatsByCompany`
 - `work.getStatsByUserId`
-- `work.getStatsByWorker` — new
-- `work.getStatsByWorkerAndCompany`
 
-## workOffer
+## Removed in 0.5.0
 
-- `workOffer.getById`
-- `workOffer.getWageStats`
-- `workOffer.getWorkOfferByCompanyId` — used
-- `workOffer.getWorkOffersPaginated` — used, paginated
-
-## worker
-
-- `worker.getTotalWorkersCount`
-- `worker.getWorkers`
+- `workOffer.getById`, `workOffer.getWageStats`, `workOffer.getWorkOfferByCompanyId`, `workOffer.getWorkOffersPaginated`. The whole router is gone; the live API returns 404 for it since game v0.27. The app no longer calls any of them.
+- `worker.getTotalWorkersCount`, `worker.getWorkers`, `work.getStatsByWorker`, `work.getStatsByWorkerAndCompany`. The API no longer serves them (the old work system was removed in game v0.27).
 
 ## Removed from the live API
 
@@ -215,4 +271,4 @@ Legend: **used** = wrapped by a hook in `src/api/warera-api.ts`; **paginated** =
 
 ## Response fields the game removed in v0.27
 
-The SDK types still declare them as required, so `src/api/types.ts` marks them optional: `country.specializedItem`, `country.rankings.countryProductionBonus`, `region.deposit`.
+0.5.0 no longer declares `country.specializedItem`, `country.rankings.countryProductionBonus` or `region.deposit`. `src/api/types.ts` adds them back as optional, so the app still compiles while it reads them. Keep them optional until the app stops reading them.

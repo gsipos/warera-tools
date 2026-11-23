@@ -26,7 +26,7 @@ This document describes how data fetching works in warera-tools, the rules for u
 │  @wareraprojects/api — tRPC Client                           │
 │  (src/api/client.ts)                                         │
 │  • Automatic request batching (max 50 per batch)             │
-│  • Built-in rate limiting (100–200 req/min with API key)     │
+│  • Built-in rate limiting (follows the server's limit)       │
 │  • Automatic retries with exponential backoff on 408/429/5xx │
 │  • Auto-pagination via autoPaginate: true                    │
 │  • End-to-end TypeScript types                               │
@@ -88,12 +88,12 @@ This chunks requests (default 50 per chunk) and runs chunks in parallel via `use
 ### 4. Use `collectPages` for paginated endpoints
 
 ```typescript
-export const useWorkOffers = (limit: number = 10, maxPages: number = 50) =>
+export const useUsersByCountry = (countryId: WarEra.CountryId, limit = 50, maxPages: number = 20) =>
   useAsyncResource(
-    ['workOffer.getWorkOffersPaginated', { limit, maxPages }],
+    ['user.getUsersByCountry', { countryId, limit, maxPages }],
     () =>
-      collectPages(apiClient.workOffer.getWorkOffersPaginated({ limit, autoPaginate: true }), maxPages) as Cast<
-        WarEra.WorkOffer[]
+      collectPages(apiClient.user.getUsersByCountry({ countryId, limit, autoPaginate: true }), maxPages) as Cast<
+        WarEra.UserReference[]
       >,
   )
 ```
