@@ -211,4 +211,4 @@ Legend: **used** = wrapped by a hook in `src/api/warera-api.ts`; **paginated** =
 
 ## Not in the SDK types
 
-- `company.getRecommendedRegionIds` (input `{ companyId, includeDeposit }`) — **used** through `rawTrpcFetch`. The SDK only types the sibling `company.getRecommendedRegionIdsByItemCode` (input `{ itemCode, includeDeposit }`). Register the companyId variant through `apiClient._ce<...>()` to get batching and retries back.
+- `company.getRecommendedRegionIds` (input `{ companyId, includeDeposit }`) — **used**, registered as a custom endpoint through `apiClient._ce<CustomEndpoints>()` in `src/api/client.ts`. The SDK only types the sibling `company.getRecommendedRegionIdsByItemCode` (input `{ itemCode, includeDeposit }`). As of 2026-11-03 the live API answers `NOT_FOUND` for this path and the sibling returns an empty list for every item code, so the hook currently yields no data.
