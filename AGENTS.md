@@ -22,7 +22,7 @@ This file is the single source of project instructions for every coding agent (C
 ## Commands
 
 ```bash
-npm ci --legacy-peer-deps   # install (CI uses the same flag)
+npm ci                      # install; .npmrc sets legacy-peer-deps, exact saves and the 7-day release-age gate
 npm start                   # dev server on http://localhost:3001
 npm run tsc                 # type check
 npm run lint                # oxlint
