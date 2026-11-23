@@ -1,3 +1,4 @@
+import { DepositsRemovedEmpty } from '@/components/molecules/DepositsRemovedEmpty'
 import { RegionPageTemplate } from '@/components/templates/RegionPageTemplate'
 import { useExtendedRegions } from '@/hooks/game/use-extended-region'
 import { createFileRoute } from '@tanstack/react-router'
@@ -19,5 +20,11 @@ function ItemDepositsPage() {
         (a.country?.rankings.countryProductionBonus?.value ?? 0),
     )
 
-  return <RegionPageTemplate regions={diplayedRegions} pageTitle={`Deposits of ${itemCode}`} />
+  return (
+    <RegionPageTemplate
+      regions={diplayedRegions}
+      pageTitle={`Deposits of ${itemCode}`}
+      emptyState={<DepositsRemovedEmpty />}
+    />
+  )
 }
