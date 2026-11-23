@@ -1,4 +1,4 @@
-import { useTransactions } from '@/api/warera-api'
+import { TRANSACTION_MAX_PAGES, useTransactions } from '@/api/warera-api'
 import { DateTime, Interval } from 'luxon'
 import { WarEra } from '@/api/types'
 
@@ -55,9 +55,12 @@ export const useAggregatedTransactions = (txList: WarEra.Transaction[]) => {
   return aggregateTransactions(txList)
 }
 
+const TRANSACTION_PAGE_SIZE = 50
+export const MAX_FETCHED_TRANSACTIONS = TRANSACTION_PAGE_SIZE * TRANSACTION_MAX_PAGES
+
 const useTransactionsFromDate = (eqCode: WarEra.EquipmentCode, fromDate: DateTime) => {
   const tqQuery = useTransactions({
-    limit: 50,
+    limit: TRANSACTION_PAGE_SIZE,
     transactionType: 'itemMarket',
     itemCode: eqCode,
     from: fromDate,
@@ -67,18 +70,20 @@ const useTransactionsFromDate = (eqCode: WarEra.EquipmentCode, fromDate: DateTim
     .filter((tx) => DateTime.fromISO(tx.createdAt ?? '') >= fromDate)
 
   const lastTxTimeStamp = txList.at(-1)?.createdAt
+  // Busy items can exceed the page cap before reaching fromDate; only the newest transactions are loaded then.
+  const isTruncated = (tqQuery.data?.length ?? 0) >= MAX_FETCHED_TRANSACTIONS
 
-  return { tqQuery, txList, lastTxTimeStamp }
+  return { tqQuery, txList, lastTxTimeStamp, isTruncated }
 }
 
 export const useEquipmentTransactions = (eqCode: WarEra.EquipmentCode, fromDate?: DateTime) => {
-  const { tqQuery, txList, lastTxTimeStamp } = useTransactionsFromDate(
+  const { tqQuery, txList, lastTxTimeStamp, isTruncated } = useTransactionsFromDate(
     eqCode,
     fromDate ?? DateTime.now().minus({ weeks: 2 }),
   )
   const txGroups = useAggregatedTransactions(txList)
   const latestTxTimeStamp = txList.at(0)?.createdAt
-  return { txList, txGroups, lastTxTimeStamp, latestTxTimeStamp, tqQuery }
+  return { txList, txGroups, lastTxTimeStamp, latestTxTimeStamp, tqQuery, isTruncated }
 }
 
 export const useItemMarketPrice = (item: WarEra.Item, fromDate?: DateTime) => {

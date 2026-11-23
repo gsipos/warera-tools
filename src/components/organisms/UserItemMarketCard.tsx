@@ -1,3 +1,4 @@
+import { formatOptionalIsoDateTime } from '@/functions/date-formats'
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '../ui/card'
 import { Separator } from '../ui/separator'
 import { ItemBackground } from '../atoms/ItemBackground'
@@ -45,7 +46,7 @@ export const UserItemMarketCard = ({ userId }: { userId: string }) => {
         <CardTitle>Item Market</CardTitle>
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
-        <div>Since {DateTime.fromISO(lastTxTimeStamp ?? '').toLocaleString(DateTime.DATETIME_SHORT)}</div>
+        <div>Since {formatOptionalIsoDateTime(lastTxTimeStamp)}</div>
         <div>
           Items Sold: {soldItems.length} for {soldValue.toLocaleString()}{' '}
           <span className="text-muted-foreground">({soldPerValue.toFixed(1)} avg)</span>

@@ -1,5 +1,5 @@
+import { formatOptionalIsoDateTime } from '@/functions/date-formats'
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '../ui/card'
-import { DateTime } from 'luxon'
 import { WarEra } from '@/api/types'
 import { Separator } from '@radix-ui/react-separator'
 import { ItemBackground } from '../atoms/ItemBackground'
@@ -51,7 +51,7 @@ export const UserTradingCard = ({ userId }: { userId: string }) => {
         <CardTitle>Trade Market</CardTitle>
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
-        <div>Since {DateTime.fromISO(lastTxTimeStamp ?? '').toLocaleString(DateTime.DATETIME_SHORT)}</div>
+        <div>Since {formatOptionalIsoDateTime(lastTxTimeStamp)}</div>
         <div>Items Sold for {moneyFormat.format(soldValue ?? 0)}</div>
         <div>Items Bought for {moneyFormat.format(boughtValue ?? 0)}</div>
 

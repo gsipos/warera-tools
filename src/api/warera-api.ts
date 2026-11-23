@@ -116,6 +116,8 @@ export const useCompanyIdsByUserId = (userId: string) =>
 
 // Transactions are naturally bounded by cursorEnd (date range), but we still
 // apply a safeguard of 100 pages to prevent runaway pagination.
+export const TRANSACTION_MAX_PAGES = 100
+
 export const useTransactions = (options: WarEra.TransactionOptions & { from?: DateTime }) => {
   const { from, ...apiOptions } = options
   const cursorEnd = from?.toJSDate()
@@ -128,7 +130,7 @@ export const useTransactions = (options: WarEra.TransactionOptions & { from?: Da
           ...(cursorEnd ? { cursorEnd } : {}),
           autoPaginate: true,
         }),
-        100,
+        TRANSACTION_MAX_PAGES,
       ) as unknown as Cast<WarEra.Transaction[]>,
   )
 }
