@@ -1,13 +1,11 @@
 import type {
   CountryListItem,
   RegionsObjectItem,
-  RegionDeposit,
   RankingValueTier,
   UserGetUserLiteResponse,
   UsersByCountryItem,
   UserSkills,
   CompanyGetByIdResponse,
-  WorkOfferListItem,
   TransactionListItem,
   TradingOrderGetTopOrdersResponse,
   ItemTradingGetPricesResponse,
@@ -20,13 +18,11 @@ import type {
 export type {
   CountryListItem,
   RegionsObjectItem,
-  RegionDeposit,
   RankingValueTier,
   UserGetUserLiteResponse,
   UsersByCountryItem,
   UserSkills,
   CompanyGetByIdResponse,
-  WorkOfferListItem,
   TransactionListItem,
   TradingOrderGetTopOrdersResponse,
   ItemTradingGetPricesResponse,
@@ -112,9 +108,11 @@ export namespace WarEra {
 
   export type RegionObject = Record<string, Region>
 
-  /** Region deposit with typed item code. */
-  export type Deposit = Omit<RegionDeposit, 'type'> & {
+  /** Deposits left the game in v0.27 and the SDK no longer types them; kept so the deposit UI still compiles. */
+  export interface Deposit {
     type: ItemCode
+    endsAt: string
+    bonusPercent: number
   }
 
   export type Rank = RankingValueTier
@@ -129,6 +127,11 @@ export namespace WarEra {
     }
   }
 
+  /** `user.getUserLite` stopped returning skills in v0.27; they come from `user.getUserSkills`. */
+  export type UserWithSkills = UserLite & {
+    skills: UserSkills
+  }
+
   export type UserReference = UsersByCountryItem
 
   export type SkillKey = keyof UserSkills
@@ -136,8 +139,6 @@ export namespace WarEra {
   export type Company = Omit<CompanyGetByIdResponse, 'itemCode'> & {
     itemCode: ItemCode
   }
-
-  export type WorkOffer = WorkOfferListItem
 
   export type Transaction = Omit<TransactionListItem, 'itemCode' | 'item' | 'money' | 'quantity'> & {
     itemCode: ItemCode | EquipmentCode

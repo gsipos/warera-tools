@@ -24,7 +24,7 @@ export const CountryAllianceChart = ({ className }: Props) => {
     }))
     const links = countries
       .map((e) =>
-        e.allies.map((a) => ({
+        (e.allies ?? []).map((a) => ({
           source: e._id,
           target: a,
         })),

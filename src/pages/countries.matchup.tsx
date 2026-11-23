@@ -41,7 +41,7 @@ const Matchup = () => {
   const [selectedCountry, setSelectedCountry] = useState<string | undefined>(undefined)
 
   const country = countries.find((c) => c._id === selectedCountry)
-  const allies = countries.filter((c) => country?.allies.includes(c._id))
+  const allies = countries.filter((c) => country?.allies?.includes(c._id))
   const alliesOfAlliesIds = allies.map((a) => a.allies).flat()
   const alliesOfAllies = countries.filter((c) => alliesOfAlliesIds.includes(c._id))
 

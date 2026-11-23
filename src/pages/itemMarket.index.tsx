@@ -10,7 +10,6 @@ import { useEffect, useState } from 'react'
 import { WarEra } from '@/api/types'
 import { ErrorBoundary } from 'react-error-boundary'
 import z from 'zod'
-import { zodValidator, fallback } from '@tanstack/zod-adapter'
 import { PriceDistributionChart } from '@/components/organisms/PriceDistributionChart'
 import { useIsMobile } from '@/hooks/use-mobile'
 import {
@@ -25,7 +24,7 @@ import { useDateRangeStore } from '@/stores/date-range-store'
 import { PersistedDataProvider } from '@/persistence'
 
 const itemMarketSearchSchema = z.object({
-  code: fallback(z.enum(equipmentCodes).default('gun'), 'gun'),
+  code: z.enum(equipmentCodes).catch('gun'),
 })
 
 type ItemMarketSearch = z.infer<typeof itemMarketSearchSchema>
@@ -36,7 +35,7 @@ export const Route = createFileRoute('/itemMarket/')({
       <RouteComponent />
     </PersistedDataProvider>
   ),
-  validateSearch: zodValidator(itemMarketSearchSchema),
+  validateSearch: itemMarketSearchSchema,
 })
 
 const SingleSkillChart = ({ txGroups }: { txGroups: AggregatedTx[] }) => {

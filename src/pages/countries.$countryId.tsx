@@ -30,7 +30,7 @@ export const Route = createFileRoute('/countries/$countryId')({
 })
 
 const toSum = (a: number, b: number) => a + b
-const usecountryUserBuildDistribution = (users: WarEra.UserLite[]) => {
+const usecountryUserBuildDistribution = (users: WarEra.UserWithSkills[]) => {
   return useMemo(() => {
     const eco = users.map((user) => getUserEcoSkillLevels(user)).reduce(toSum, 0)
     const dmg = users.map((user) => getUserCombatSkillLevels(user)).reduce(toSum, 0)
@@ -50,7 +50,7 @@ const CountryStatItem = (props: { icon: ReactNode; label: ReactNode; value: numb
   )
 }
 
-const CountryStatsCard = ({ users }: { users: WarEra.UserLite[] }) => {
+const CountryStatsCard = ({ users }: { users: WarEra.UserWithSkills[] }) => {
   const skillDistribution = usecountryUserBuildDistribution(users)
 
   const userCount = users.length

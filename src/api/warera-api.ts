@@ -69,27 +69,26 @@ export const useCompany = (companyId: string) =>
     cast<WarEra.Company>(apiClient.company.getById({ companyId })),
   )
 
-export const useWorkOffersByCompanyId = (companyId: string) =>
-  useAsyncResource(['workOffer.getWorkOfferByCompanyId', { companyId }], () =>
-    cast<WarEra.WorkOffer[]>(apiClient.workOffer.getWorkOfferByCompanyId({ companyId })),
-  )
-
 export const useCompanyProductionBonus = (companyId: string) =>
   useAsyncResource(['company.getProductionBonus', { companyId }], () =>
     cast<WarEra.CompanyProductionBonus>(apiClient.company.getProductionBonus({ companyId })),
   )
 
+const fetchUserWithSkills = async (userId: string): Promise<WarEra.UserWithSkills> => {
+  const [user, { skills }] = await Promise.all([
+    cast<WarEra.UserLite>(apiClient.user.getUserLite({ userId })),
+    apiClient.user.getUserSkills({ userId }),
+  ])
+  return { ...user, skills }
+}
+
+export const useUserWithSkills = (userId: string) =>
+  useAsyncResource(['user.getUserLite', 'user.getUserSkills', { userId }], () => fetchUserWithSkills(userId))
+
 // --- Batch endpoints (tRPC client with chunking) ---
 
-export const useAllUsersLite = (userIds: string[]) =>
-  useBatchAsyncResource(['user.getUserLite', 'batch'], userIds, (userId) =>
-    cast<WarEra.UserLite>(apiClient.user.getUserLite({ userId })),
-  )
-
-export const useWorkOffersByCompanies = (companyIds: string[]) =>
-  useBatchAsyncResource(['workOffer.getWorkOfferByCompanyId', 'batch'], companyIds, (companyId) =>
-    cast<WarEra.WorkOffer[]>(apiClient.workOffer.getWorkOfferByCompanyId({ companyId })),
-  )
+export const useAllUsersWithSkills = (userIds: string[]) =>
+  useBatchAsyncResource(['user.getUserLite', 'user.getUserSkills', 'batch'], userIds, fetchUserWithSkills)
 
 export const useCompanies = (companyIds: string[]) =>
   useBatchAsyncResource(['company.getById', 'batch'], companyIds, (companyId) =>
@@ -97,17 +96,6 @@ export const useCompanies = (companyIds: string[]) =>
   )
 
 // --- Paginated endpoints (tRPC client with autoPaginate) ---
-
-// Work offers can be a large dataset; cap at 50 pages to avoid memory pressure.
-export const useWorkOffers = (limit: number = 10, maxPages: number = 50) =>
-  useAsyncResource(
-    ['workOffer.getWorkOffersPaginated', { limit, maxPages }],
-    () =>
-      collectPages(
-        apiClient.workOffer.getWorkOffersPaginated({ limit, autoPaginate: true }),
-        maxPages,
-      ) as unknown as Cast<WarEra.WorkOffer[]>,
-  )
 
 // Users per country can be very large; cap at 20 pages (20 * limit items).
 export const useUsersByCountry = (countryId: WarEra.CountryId, limit = 50, maxPages: number = 20) =>

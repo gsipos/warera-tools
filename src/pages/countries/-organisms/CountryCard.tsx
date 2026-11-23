@@ -47,7 +47,7 @@ export const CountryCard = (props: { country: WarEra.Country; idx?: number | und
       <CardContent>
         <div className="flex flex-row gap-2">
           <div>Allies with:</div>
-          <CountryFlagList cId={props.country.allies} />
+          <CountryFlagList cId={props.country.allies ?? []} />
         </div>
         <Separator />
         <div className="flex flex-row gap-2">

@@ -1,16 +1,16 @@
 import { DateTime } from 'luxon'
 import { WarEra } from '@/api/types'
 
-export const ecoSkills: WarEra.SkillKey[] = ['companies', 'entrepreneurship', 'energy', 'production', 'management']
+export const ecoSkills: WarEra.SkillKey[] = ['companies', 'energy', 'production', 'management']
 
 const toSum = (a: number, b: number) => a + b
-export const getUserEcoSkillLevels = (user: WarEra.UserLite) =>
+export const getUserEcoSkillLevels = (user: WarEra.UserWithSkills) =>
   Object.entries(user.skills)
     .filter(([k]) => ecoSkills.includes(k as WarEra.SkillKey))
     .map(([, value]) => value.level)
     .reduce(toSum, 0)
 
-export const getUserCombatSkillLevels = (user: WarEra.UserLite) =>
+export const getUserCombatSkillLevels = (user: WarEra.UserWithSkills) =>
   Object.entries(user.skills)
     .filter(([k]) => !ecoSkills.includes(k as WarEra.SkillKey))
     .map(([, value]) => value.level)
@@ -18,7 +18,7 @@ export const getUserCombatSkillLevels = (user: WarEra.UserLite) =>
 
 export const getUserRespecDetails = (user: WarEra.UserLite) => {
   const lastRespec = user.dates?.lastSkillsResetAt
-  const nextPossibleRespecDate = DateTime.fromISO(lastRespec).plus({ days: 7 })
+  const nextPossibleRespecDate = DateTime.fromISO(lastRespec ?? '').plus({ days: 7 })
   const canRespec = lastRespec
     ? DateTime.now().toMillis() >= nextPossibleRespecDate.toMillis()
     : !!user.leveling.freeReset
